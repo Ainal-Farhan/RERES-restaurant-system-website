@@ -1,0 +1,10 @@
+.btn-back-user-list {
+    width: 100px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-manage-user-list {
+    padding: 2px 3px 2px 3px;
+}
