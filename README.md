@@ -49,7 +49,7 @@
       <th colspan="2">Remote Database</th>
     </tr>
     <tr>
-      <th colspan="2">Note</th>
+      <th>Note</th>
       <td>Can be viewed via phpmyadmin, mysql workbench, etc</td>
     </tr>
   </thead>
