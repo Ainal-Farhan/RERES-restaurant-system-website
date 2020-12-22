@@ -5,10 +5,12 @@ package com.RERES.path;
 */
 
 public interface Path {
-    String MAIN_PATH = "WEB-INF";
+    String MAIN_PATH_ASSETS = "/assets";
+    String MAIN_PATH_JSP = "/WEB-INF";
     
     // Path for the main view file
-    String MAIN_VIEW_PATH = MAIN_PATH + "/jsp/src/views";
+    //--------------------------------------------------------------------------
+    String MAIN_VIEW_PATH = MAIN_PATH_JSP + "/jsp/src/views";
     
     // Path for views
     String MANAGE_BOOKING_VIEW_PATH = MAIN_VIEW_PATH + "/manageBooking.jsp";
@@ -23,5 +25,24 @@ public interface Path {
     String DOCUMENTATION_VIEW_PATH = MAIN_VIEW_PATH + "/documentation.jsp";
     String MEMBERSHIP_VIEW_PATH = MAIN_VIEW_PATH + "/membership.jsp";
     String HELP_CHAT_VIEW_PATH = MAIN_VIEW_PATH + "/helpChat.jsp";
+    //--------------------------------------------------------------------------
+    
+    // Path for the main component file
+    //--------------------------------------------------------------------------
+    String MAIN_COMPONENT_PATH = MAIN_PATH_JSP + "/jsp/src/components";
+    
+    // Path for components
+    String COMPONENT_PROGRESS_BAR_PATH = MAIN_COMPONENT_PATH + "/progressBar.jsp";
+    //--------------------------------------------------------------------------
+    
+    // Main path for assets img
+    //--------------------------------------------------------------------------
+    String MAIN_PATH_IMAGE = MAIN_PATH_ASSETS + "/img";
+    
+    // Path for img
+    String RERES_LOGO_PATH = MAIN_PATH_IMAGE + "/RERES";
+    String PROFILE_PICTURE_CUSTOMER_PATH = MAIN_PATH_IMAGE + "/profile/customer";
+    String PROFILE_PICTURE_STAFF_PATH = MAIN_PATH_IMAGE + "/profile/staff";
+    //--------------------------------------------------------------------------
 
 }

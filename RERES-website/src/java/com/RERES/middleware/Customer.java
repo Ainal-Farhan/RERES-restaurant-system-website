@@ -10,5 +10,16 @@ package com.RERES.middleware;
  * @author PC
  */
 public class Customer extends User{
+    private int customerID;
     
+    public Customer() {
+    }
+    
+    public void setCustomerID(int customerID) {
+        this.customerID = customerID;
+    }
+    
+    public int getCustomerID() {
+        return customerID;
+    }
 }

@@ -8,3 +8,12 @@
 .btn-manage-user-list {
     padding: 2px 3px 2px 3px;
 }
+
+.button-view-by-admin {
+    margin: 10px 10px 10px 10px;
+}
+
+.table-view-list td,
+.table-view-list th{
+    text-align: center;
+}

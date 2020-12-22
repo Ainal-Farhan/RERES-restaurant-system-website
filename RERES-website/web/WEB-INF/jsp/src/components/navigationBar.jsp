@@ -1,3 +1,4 @@
+<%@page import="com.RERES.path.Path"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -13,7 +14,7 @@
             <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="#"><img src="${pageContext.servletContext.contextPath}/assets/img/RERES/RERES-logo.PNG" width="78" height="36" alt="RERES-logo"/></a>
+                        <a class="nav-link" href="#"><img src="${pageContext.servletContext.contextPath}<% out.println(Path.RERES_LOGO_PATH); %>/RERES-logo.PNG" width="78" height="36" alt="RERES-logo"/></a>
                     </li>
                     <li class="nav-item">
                         <button class="btn btn-primary navigate-button-custom">

@@ -10,5 +10,16 @@ package com.RERES.middleware;
  * @author PC
  */
 public class Staff extends User{
+    private int staffID;
     
+    public Staff() {
+    }
+    
+    public void setStaffID(int staffID) {
+        this.staffID = staffID;
+    }
+    
+    public int getStaffID() {
+        return staffID;
+    }
 }

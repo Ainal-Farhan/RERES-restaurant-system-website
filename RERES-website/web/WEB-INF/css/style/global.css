@@ -1,4 +1,11 @@
-.content-container{
+content .content-container{
     min-height: 100vh;
+}
+
+.container-custom {
+    width: 95%;
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
 }
 
