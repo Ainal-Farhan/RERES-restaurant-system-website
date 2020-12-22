@@ -63,7 +63,7 @@ public class UserServlet extends HttpServlet {
             request.setAttribute("staff", this.staff);
             request.setAttribute("labels", this.labels);
             
-            String currentUserType = "admin";
+            String currentUserType = "staff";
             request.setAttribute("currentUserType", currentUserType);
             
             RequestDispatcher reqDispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.VIEW_USER_LIST_VIEW_PATH);
