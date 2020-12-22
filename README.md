@@ -14,7 +14,7 @@
     </tr>
     <tr>
       <th>Languages</th>
-      <td>Java, JSP</td>
+      <td>Java, JSP, CSS</td>
     </tr>
     <tr>
       <th>Build Tool</th>
