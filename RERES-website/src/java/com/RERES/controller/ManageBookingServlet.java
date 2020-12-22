@@ -31,8 +31,8 @@ public class ManageBookingServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         
         try (PrintWriter out = response.getWriter()) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher(Path.MANAGE_BOOKING_VIEW_PATH);
-            dispatcher.include(request, response);
+            RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.MANAGE_BOOKING_VIEW_PATH);
+            dispatcher.forward(request, response);
         }
     }
 

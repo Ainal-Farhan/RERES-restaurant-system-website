@@ -33,8 +33,8 @@ public class HelpChatServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher(Path.HELP_CHAT_VIEW_PATH);
-            dispatcher.include(request, response);
+            RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.HELP_CHAT_VIEW_PATH);
+            dispatcher.forward(request, response);
         }
     }
 
