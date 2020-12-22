@@ -35,6 +35,7 @@ public class BookingTableServlet extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             RequestDispatcher dispatcher = request.getRequestDispatcher(Path.BOOKING_TABLE_VIEW_PATH);
             dispatcher.include(request, response);
+            //Haiiiii
         }
     }
 
