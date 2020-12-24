@@ -55,15 +55,29 @@ public class UserServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         
-        try (PrintWriter out = response.getWriter()) {            
-            setStaffInformation();
-            setCustomerInformation();
+        try (PrintWriter out = response.getWriter()) {
+            String customerBtn = request.getParameter("customer-btn");
+            String staffBtn = request.getParameter("staff-btn");
+            
+            String currentUserType = "admin";
+            
+            if(customerBtn != null && customerBtn.equalsIgnoreCase("customer")) {
+                setCustomerInformation();
+            }
+            
+            else if(staffBtn != null && staffBtn.equalsIgnoreCase("staff")) {
+                setStaffInformation();
+            }
+            
+            else {
+                setStaffInformation();
+                setCustomerInformation();
+            }
             
             request.setAttribute("customers", this.customers);
             request.setAttribute("staff", this.staff);
             request.setAttribute("labels", this.labels);
             
-            String currentUserType = "staff";
             request.setAttribute("currentUserType", currentUserType);
             
             RequestDispatcher reqDispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.VIEW_USER_LIST_VIEW_PATH);
@@ -78,8 +92,7 @@ public class UserServlet extends HttpServlet {
         try {
             staff = new ArrayList<Staff>();
                     
-            Connection con = null;
-            con = new Database().getCon();
+            Connection con = new Database().getCon();
             
             Statement st = con.createStatement();
             

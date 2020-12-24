@@ -49,35 +49,35 @@ public class Database {
             */
             
 //            Please change the user and password based on your own information
-
-        String[] username = {
-            "ainalfa_Danial",
-            "ainalfa_Zahir",
-            "ainalfa_Hasan"
-        };
-        
-        String[] password = {
-            "danial@123",
-            "zahir@123",
-            "hasan@123"
-        };
-            
-        for(int i = 0; i < 3; i++) {
-            try {
-                Database.con = DriverManager.getConnection(DATABASE_URL, username[i], password[i]);
-            }
-            catch(SQLException ex) {
-                if(i < 3)
-                    continue;
-                Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            if(Database.con != null) {
-                break;
-            }
-        }
+//
+//        String[] username = {
+//            "ainalfa_Danial",
+//            "ainalfa_Zahir",
+//            "ainalfa_Hasan"
+//        };
+//        
+//        String[] password = {
+//            "danial@123",
+//            "zahir@123",
+//            "hasan@123"
+//        };
+//            
+//        for(int i = 0; i < 3; i++) {
+//            try {
+//                Database.con = DriverManager.getConnection(DATABASE_URL, username[i], password[i]);
+//            }
+//            catch(SQLException ex) {
+//                if(i < 3)
+//                    continue;
+//                Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//            if(Database.con != null) {
+//                break;
+//            }
+//        }
 //            Please use this one if you want to connect to the local database
 //            All of the information may changes depends on the database beinng setup in the localhost
-//            DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "1234");
+        Database.con = DriverManager.getConnection("jdbc:mysql://localhost:3307/reres-db", "root", "");
                 
         return Database.con;
     }

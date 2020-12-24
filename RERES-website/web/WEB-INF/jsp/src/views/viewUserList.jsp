@@ -27,15 +27,13 @@
 
                 String currentUserType = (String)request.getAttribute("currentUserType");
                 String[] labels = (String[])request.getAttribute("labels");
-
+                
                 if(currentUserType.equalsIgnoreCase(USER_ADMIN)) {
                     out.println("<div class='button-view-by-admin'>");
-                        out.println("<button class='btn btn-primary' id='btn-customer' onClick='changeViewList()'>");
-                            out.println("Customer");
-                        out.println("</button>");
-                        out.println("<button class='btn btn-primary' id='btn-staff' onClick='changeViewList()'>");
-                            out.println("Staff");
-                        out.println("</button>");
+                        out.println("<form action='UserServlet' method='POST'>"); 
+                            out.println("<input type='submit' name='customer-btn' class='btn btn-primary' value='Customer'>");
+                            out.println("<input type='submit' name='staff-btn' class='btn btn-primary' value='Staff'>");
+                        out.println("</form>");
                     out.println("</div");
                 }
 
@@ -124,37 +122,6 @@
                 </div>
             </div>
         </content>
-        
-        <%  if(currentUserType.equalsIgnoreCase(USER_ADMIN)) { %>
-        <script>
-            var viewCustomer = true;
-            var viewStaff = false;
-
-            changeView();
-
-            function changeViewList() {
-                viewCustomer = !viewCustomer;
-                viewStaff = !viewStaff;
-            }
-
-            function changeView() {
-                if(viewCustomer) {
-                    document.getElementById('customer-list').style.display = "block";
-                    document.getElementById('staff-list').style.display = "none";
-                    document.getElementById('btn-customer').disabled = viewCustomer;
-                    document.getElementById('btn-staff').disabled = viewStaff;
-                }
-
-                if(viewStaff) {
-                    document.getElementById('customer-list').style.display = "none";
-                    document.getElementById('staff-list').style.display = "block";
-                    document.getElementById('btn-customer').disabled = viewCustomer;
-                    document.getElementById('btn-staff').disabled = viewStaff;
-                }
-            }
-
-        </script>
-        <%    } %>
         <footer>
             <%@include file = "../components/footer.jsp" %>
         </footer>

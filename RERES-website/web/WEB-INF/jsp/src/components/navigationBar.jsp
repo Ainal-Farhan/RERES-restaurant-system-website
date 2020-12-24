@@ -8,6 +8,10 @@
         
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
         <style><%@include file="../../../css/style/navigationBar.css"%></style>
+        
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     </head>
     <body>
         <nav class="navbar navbar-expand-md navbar-dark bg-dark">
@@ -17,34 +21,28 @@
                         <a class="nav-link" href="#"><img src="${pageContext.servletContext.contextPath}<% out.println(Path.RERES_LOGO_PATH); %>/RERES-logo.PNG" width="78" height="36" alt="RERES-logo"/></a>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-primary navigate-button-custom">
-                            <a class="nav-link" href="${pageContext.servletContext.contextPath}/ManageBookingServlet">Manage Booking</a>
-                        </button>
+                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/ManageBookingServlet">Manage Booking</a>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-primary navigate-button-custom">
-                            <a class="nav-link" href="${pageContext.servletContext.contextPath}/ManageUserServlet">Manage User</a>
-                        </button>
+                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/ManageUserServlet">Manage User</a>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-primary navigate-button-custom">
-                            <a class="nav-link" href="${pageContext.servletContext.contextPath}/PaymentServlet">Payment</a>
-                        </button>
+                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/PaymentServlet">Payment</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            User
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="${pageContext.servletContext.contextPath}/UserServlet?view-user=customer">Customer</a>
+                            <a class="dropdown-item" href="${pageContext.servletContext.contextPath}/UserServlet?view-user=staff">Staff</a>
+                        </div>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-primary navigate-button-custom">
-                            <a class="nav-link" href="${pageContext.servletContext.contextPath}/UserServlet">User List</a>
-                        </button>
+                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/BookingTableServlet">Booking Table</a>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-primary navigate-button-custom">
-                            <a class="nav-link" href="${pageContext.servletContext.contextPath}/BookingTableServlet">Booking Table</a>
-                        </button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="btn btn-primary navigate-button-custom">
-                            <a class="nav-link" href="${pageContext.servletContext.contextPath}/OrderFoodServlet">Order Food</a>
-                        </button>
+                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/OrderFoodServlet">Order Food</a>
                     </li>
                 </ul>
             </div>
@@ -57,34 +55,22 @@
             <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <button class="btn btn-primary navigate-button-custom">
-                            <a class="nav-link" href="${pageContext.servletContext.contextPath}/ProfileServlet">Profile</a>
-                        </button>
+                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/ProfileServlet">Profile</a>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-primary navigate-button-custom">
-                            <a class="nav-link" href="${pageContext.servletContext.contextPath}/LoginServlet">Login</a>
-                        </button>
+                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/LoginServlet">Login</a>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-primary navigate-button-custom">
-                            <a class="nav-link" href="${pageContext.servletContext.contextPath}/RegistrationServlet">Register</a>
-                        </button>
+                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/RegistrationServlet">Register</a>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-primary navigate-button-custom">
-                            <a class="nav-link" href="${pageContext.servletContext.contextPath}/DocumentationServlet">Documentation</a>
-                        </button>
+                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/DocumentationServlet">Documentation</a>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-primary navigate-button-custom">
-                            <a class="nav-link" href="${pageContext.servletContext.contextPath}/MembershipServlet">Membership</a>
-                        </button>
+                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/MembershipServlet">Membership</a>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-primary navigate-button-custom">
-                            <a class="nav-link" href="${pageContext.servletContext.contextPath}/HelpChatServlet">Help Chat</a>
-                        </button>
+                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/HelpChatServlet">Help Chat</a>
                     </li>
                 </ul>
             </div>
