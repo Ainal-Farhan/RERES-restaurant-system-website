@@ -5,10 +5,12 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Registration Page</title>
         <style><%@include file="../../../css/style/global.css"%></style>
+        <style><%@include file="../../../css/style/registration.css"%></style>
     </head>
     <body>
         <header>
             <%@include file = "../components/navigationBar.jsp" %>
+            <%@include file = "../components/homeNavigationBar.jsp" %>
         </header>
         
         <content>
