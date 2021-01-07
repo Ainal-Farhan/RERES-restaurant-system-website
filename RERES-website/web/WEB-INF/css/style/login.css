@@ -1,0 +1,15 @@
+.thumbnail {
+    position: relative;
+}
+
+.caption {
+    position: absolute;
+    top: 10%;
+    left: 0;
+    width: 100%;
+}
+
+h3 {
+    text-align: center;
+}
+
