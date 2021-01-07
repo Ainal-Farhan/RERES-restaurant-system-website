@@ -56,31 +56,28 @@ public class UserServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         
         try (PrintWriter out = response.getWriter()) {
-            String customerBtn = request.getParameter("customer-btn");
-            String staffBtn = request.getParameter("staff-btn");
+            String viewUser = request.getParameter("view-user");
             
             String currentUserType = "admin";
             
-            if(customerBtn != null && customerBtn.equalsIgnoreCase("customer")) {
+            if(viewUser.equalsIgnoreCase("customer")) {
                 setCustomerInformation();
+                request.setAttribute("customers", this.customers);
+                request.setAttribute("labels", this.labels);
+                request.setAttribute("currentUserType", currentUserType);
+                request.setAttribute("viewUser", viewUser);
             }
             
-            else if(staffBtn != null && staffBtn.equalsIgnoreCase("staff")) {
+            else if(viewUser.equalsIgnoreCase("staff")) {
                 setStaffInformation();
+                request.setAttribute("staff", this.staff);
+                request.setAttribute("labels", this.labels);
+                request.setAttribute("currentUserType", currentUserType);
             }
-            
             else {
-                setStaffInformation();
-                setCustomerInformation();
             }
             
-            request.setAttribute("customers", this.customers);
-            request.setAttribute("staff", this.staff);
-            request.setAttribute("labels", this.labels);
-            
-            request.setAttribute("currentUserType", currentUserType);
-            
-            RequestDispatcher reqDispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.VIEW_USER_LIST_VIEW_PATH);
+            RequestDispatcher reqDispatcher = getServletContext().getRequestDispatcher(Path.VIEW_USER_LIST_VIEW_PATH);
             reqDispatcher.forward(request,response);
         }
         catch(SQLException ex) {

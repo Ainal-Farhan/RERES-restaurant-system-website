@@ -28,16 +28,9 @@
                 String currentUserType = (String)request.getAttribute("currentUserType");
                 String[] labels = (String[])request.getAttribute("labels");
                 
-                if(currentUserType.equalsIgnoreCase(USER_ADMIN)) {
-                    out.println("<div class='button-view-by-admin'>");
-                        out.println("<form action='UserServlet' method='POST'>"); 
-                            out.println("<input type='submit' name='customer-btn' class='btn btn-primary' value='Customer'>");
-                            out.println("<input type='submit' name='staff-btn' class='btn btn-primary' value='Staff'>");
-                        out.println("</form>");
-                    out.println("</div");
-                }
-
-                if(currentUserType.equalsIgnoreCase(USER_ADMIN) || currentUserType.equalsIgnoreCase(USER_STAFF)) {
+                String viewUser = (String)request.getAttribute("viewUser");
+                
+                if(currentUserType.equalsIgnoreCase(USER_ADMIN) || currentUserType.equalsIgnoreCase(USER_STAFF) && viewUser.equalsIgnoreCase("staff")) {
                     ArrayList<Staff> staff = (ArrayList<Staff>)request.getAttribute("staff");
                     
                     out.println("<div class='table-responsive'  id='staff-list'>");
@@ -78,7 +71,7 @@
                     out.println("</div>");
                 }
 
-                if(currentUserType.equalsIgnoreCase(USER_ADMIN) || currentUserType.equalsIgnoreCase(USER_CUSTOMER)) {
+                if(currentUserType.equalsIgnoreCase(USER_ADMIN) || currentUserType.equalsIgnoreCase(USER_CUSTOMER) && viewUser.equalsIgnoreCase("cusotmer")) {
                     ArrayList<Customer> customers = (ArrayList<Customer>)request.getAttribute("customers");
 
                     out.println("<div class='table-responsive' id='customer-list' >");
