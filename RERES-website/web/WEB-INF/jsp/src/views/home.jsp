@@ -13,8 +13,18 @@
         
         <content>
             <div class="content-container">
-                <h1>Home Page</h1>
+                <div class="thumbnail text-center">
+                    <img class="img-responive" src="${pageContext.servletContext.contextPath}/assets/img/RERES/home.jpg" alt="home" style="width: 100%"/>
+                    <div class="caption">
+                        <p class="p1">Best Dining Experience You Will Get</p>
+                      <a href="${pageContext.servletContext.contextPath}/RegistrationServlet">
+                          <button class="bigHomeBtn" type="button">Book a table now!</button>
+                      </a>
+                    </div>
+                </div>
+                
             </div>
+            
         </content>
         
         <footer>
