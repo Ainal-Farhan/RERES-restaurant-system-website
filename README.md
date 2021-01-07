@@ -22,7 +22,7 @@
     </tr>
     <tr>
       <th>JAVA EE Version</th>
-      <td>JAVA EE 8 Web</td>
+      <td>JAVA EE 7 Web</td>
     </tr>
     <tr>
       <th>JDK</th>
@@ -30,7 +30,7 @@
     </tr>
     <tr>
       <th>server</th>
-      <td>Glassfish server</td>
+      <td>Glassfish server 4.1.1</td>
     </tr>
     <tr>
       <th>Framework</th>
@@ -38,7 +38,7 @@
     </tr>
     <tr>
       <th>IDE</th>
-      <td>Apache netbeans 12.1, netbeans 8.2</td>
+      <td>Apache netbeans 12.0, netbeans 8.2</td>
     </tr>
   </tbody>
 </table>
