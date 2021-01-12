@@ -12,7 +12,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Database {
-    final String DATABASE_URL = "jdbc:mysql://johnny.heliohost.org:3306/ainalfa_RERES-db?useTimeZone=true&serverTimezone=UTC&autoReconnect=true&useSSL=false";
+    //final String DATABASE_URL = "jdbc:mysql://johnny.heliohost.org:3306/ainalfa_RERES-db?useTimeZone=true&serverTimezone=UTC&autoReconnect=true&useSSL=false";
+    final String DATABASE_URL = "jdbc:mysql://localhost:3307/reres-db";
     
     private static Connection con = null;
     
@@ -77,7 +78,7 @@ public class Database {
 //        }
 //            Please use this one if you want to connect to the local database
 //            All of the information may changes depends on the database beinng setup in the localhost
-        Database.con = DriverManager.getConnection("jdbc:mysql://localhost:3307/reres-db", "root", "");
+        Database.con = DriverManager.getConnection(DATABASE_URL, "root", "");
                 
         return Database.con;
     }

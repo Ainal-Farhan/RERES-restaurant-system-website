@@ -9,7 +9,7 @@
     <body>
         <nav class="navbar navbar-expand-sm bg-light navbar-light">
             <a class="navbar-brand ml-4" href="${pageContext.servletContext.contextPath}/index.jsp">
-                <img src="${pageContext.servletContext.contextPath}/assets/img/RERES/RERES-logo2.png" alt="logo" style="width: 90px;">
+                <img src="${pageContext.servletContext.contextPath}/assets/img/RERES/RERES-logo.png" alt="logo" style="width: 90px;">
             </a>
             
             <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
