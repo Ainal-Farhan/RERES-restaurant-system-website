@@ -14,6 +14,7 @@
     </head>
     <body>
         <nav class="navbar navbar-expand-md navbar-light bg-light">
+          
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
                 <span class="navbar-toggler-icon"></span>
             </button>
