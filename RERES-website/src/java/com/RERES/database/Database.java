@@ -8,12 +8,10 @@ package com.RERES.database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Database {
     //final String DATABASE_URL = "jdbc:mysql://johnny.heliohost.org:3306/ainalfa_RERES-db?useTimeZone=true&serverTimezone=UTC&autoReconnect=true&useSSL=false";
-    final String DATABASE_URL = "jdbc:mysql://localhost:3307/reres-db";
+    final String DATABASE_URL = "jdbc:mysql://localhost:3307/reres-db?useTimeZone=true&serverTimezone=UTC&autoReconnect=true&useSSL=false";
     
     private static Connection con = null;
     

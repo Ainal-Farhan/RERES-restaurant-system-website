@@ -12,7 +12,7 @@
             <%@include file = "../components/navigationBar.jsp" %>
             <%@include file = "../components/homeNavigationBar.jsp" %>
         </header>
-        
+            <% session.setAttribute("currentUserType", "admin"); %>
         <content>
             <div class="content-container">
                 <div class="thumbnail text-center">

@@ -14,16 +14,16 @@
     </head>
     <body>
         <nav class="navbar navbar-expand-md navbar-light bg-light">
+          
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand mx-auto" href="${pageContext.servletContext.contextPath}/index.jsp"><img src="${pageContext.servletContext.contextPath}<% out.println(Path.RERES_LOGO_PATH); %>/RERES-logo.png" width="90" alt="RERES-logo"/></a>                
+                
             <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#"><img src="${pageContext.servletContext.contextPath}<% out.println(Path.RERES_LOGO_PATH); %>/RERES-logo.png" width="90" alt="RERES-logo"/></a>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="${pageContext.servletContext.contextPath}/ManageBookingServlet">Manage Booking</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/ManageUserServlet">Manage User</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="${pageContext.servletContext.contextPath}/PaymentServlet">Payment</a>
@@ -33,8 +33,16 @@
                             User
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="${pageContext.servletContext.contextPath}/UserServlet?view-user=customer">Customer</a>
-                            <a class="dropdown-item" href="${pageContext.servletContext.contextPath}/UserServlet?view-user=staff">Staff</a>
+                            <form action="UserServlet" method="POST">
+                                <input type="hidden" name="action" value="viewUserList">
+                                <input type="hidden" name="viewUserType" value="customer">
+                                <input type="submit" class="dropdown-item" value="Customer">
+                            </form>
+                            <form action="UserServlet" method="POST">
+                                <input type="hidden" name="action" value="viewUserList">
+                                <input type="hidden" name="viewUserType" value="staff">
+                                <input type="submit" class="dropdown-item" value="Staff">
+                            </form>
                         </div>
                     </li>
                     <li class="nav-item">
@@ -44,12 +52,6 @@
                         <a class="nav-link" href="${pageContext.servletContext.contextPath}/OrderFoodServlet">Order Food</a>
                     </li>
                 </ul>
-            </div>
-            <div class="mx-auto order-0">
-                <a class="navbar-brand mx-auto" href="${pageContext.servletContext.contextPath}/index.jsp">RERES</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
             </div>
             <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
                 <ul class="navbar-nav ml-auto">
