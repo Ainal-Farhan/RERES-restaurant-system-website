@@ -18,7 +18,7 @@
         
         <div class="content-container">
             <div class="container">
-                <form action="UserServlet" method="POST">
+                <form action="UserServlet" id="user-form" method="POST">
                     <div class="form-group">
                         <h1>User Details</h1>
                     </div>
@@ -140,7 +140,7 @@
                         
         <script>
             var gender = "<jsp:getProperty name="selectedUser" property="gender"/>";
-            
+                       
             changeInputStatus(true);
             
             if(gender === "male") {
