@@ -9,6 +9,7 @@ public interface SQLStatementList {
     // List of SELECT instruction
     String SQL_STATEMENT_RETRIEVE_ALL_USERS_INFORMATION = "SELECT * FROM User;";
     String SQL_STATEMENT_RETRIEVE_ALL_SPECIFIC_USER_INFORMATION = "SELECT * FROM User WHERE user_type=?;";
+
     String SQL_STATEMENT_RETRIEVE_ALL_BOOKING_WITH_PAYMENT_ORDER_AND_CUSTOMER_NAME_INFORMATION_BY_BOOKING_ID = "SELECT " +
         "   `payment`.`payment_id`, `payment`.`payment_status`, `payment`.`payment_method`, `payment`.`total_payment`, `payment`.`date_paid`, `payment`.`fk_bookingID`, " +
         "   `booking`.`booking_description`, `booking`.`booking_date`, `booking`.`booking_duration`, `booking`.`booking_start_time`, `booking`.`booking_end_time`, `booking`.`booking_status`, `booking`.`booking_quantity`, `booking`.`booking_price`, `booking`.`booking_date_created`, `booking`.`fk_userID`, " +
