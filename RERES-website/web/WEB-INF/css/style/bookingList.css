@@ -1,0 +1,20 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jan 13, 2021, 2:02:12 PM
+    Author     : ainal farhan
+*/
+
+.booking-list-container {
+    position: absolute;
+    top: 15%;
+    left: 2.5%;
+    width: 95%;
+    border-radius: 24px;
+    background-color: #FAFAFA;
+    padding: 30px 30px 30px 30px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+}

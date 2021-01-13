@@ -23,9 +23,6 @@
             <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/ManageBookingServlet">Manage Booking</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="${pageContext.servletContext.contextPath}/PaymentServlet">Payment</a>
                     </li>
                     <li class="nav-item dropdown">
@@ -42,6 +39,14 @@
                                 <input type="hidden" name="action" value="viewUserList">
                                 <input type="hidden" name="viewUserType" value="staff">
                                 <input type="submit" class="dropdown-item" value="Staff">
+                            </form>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <div aria-labelledby="navbarDropdown">
+                            <form action="BookingServlet" method="POST">
+                                <input type="hidden" name="action" value="viewBookingList">
+                                <input type="submit" class="dropdown-item nav-link" value="Booking List">
                             </form>
                         </div>
                     </li>

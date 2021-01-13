@@ -140,7 +140,6 @@
                         
         <script>
             var gender = "<jsp:getProperty name="selectedUser" property="gender"/>";
-            
             changeInputStatus(true);
             
             if(gender === "male") {

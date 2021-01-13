@@ -1,0 +1,90 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
+<%@page import="java.util.ArrayList"%>
+<%@page import="com.RERES.model.Booking" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>List of Booking</title>
+        
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" crossorigin="anonymous">
+        <style><%@include file="../../../css/style/global.css"%></style>
+        <style><%@include file="../../../css/style/bookingList.css"%></style>
+    </head>
+    <body>
+        <header>
+            <%@include file = "../components/navigationBar.jsp" %>
+        </header>
+        
+        <div class="content-container"> 
+            <img class="img-responive" src="${pageContext.servletContext.contextPath}/assets/img/RERES/booking-1.jpg" alt="home" style="width: 100%"/>
+            <div class="booking-list-container">
+                <div class='table-responsive' id='customer-list'>
+                    <table class='table table-hover table-view-list bg-light' style="border-radius:24px;">
+                        <%  
+                            String currentUserType = (String)session.getAttribute("currentUserType");
+                            int length = (Integer)request.getAttribute("labelsLength");
+                            
+                            if(currentUserType.equalsIgnoreCase("admin") || currentUserType.equalsIgnoreCase("staff")) {
+                                length++;
+                            }
+                        %>
+                        <thead class="thead-dark">
+                            <tr>
+                                <th colspan='<c:out value="<%= length %>" />'><h1>Booking List</h1></th>
+                            </tr>
+                            <tr>
+                                <c:forEach items="${requestScope.labels}" var="label" varStatus="loop">
+                                    <th scope='col'><c:out value="${label}" /></th>
+                                </c:forEach>
+                                <%  
+                                    if(currentUserType.equalsIgnoreCase("admin") || currentUserType.equalsIgnoreCase("staff")) {
+                                        out.println("<th scope='col'>Manage</th>");
+                                    }
+                                %>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:set var = "numberOfBooking" scope = "request" value = "${requestScope.bookingList.size()}"/>
+
+                            <c:if test = "${numberOfBooking == 0}">
+                                <tr>
+                                    <th scope='col' colspan='<c:out value="${fn:length(requestScope.labels)}" />'> There is no data available</th>
+                                </tr>
+                            </c:if>
+
+                            <c:if test = "${numberOfBooking > 0}">                                            
+                                <c:forEach items="${requestScope.bookingList}" var="booking" varStatus="loop">
+                                    <tr>
+                                        <th scope='row'><c:out value="${loop.index + 1}" /></th>
+                                        <td><c:out value="${booking.bookingDate}" /></td>
+                                        <td><c:out value="${booking.bookingStartTime.toString().substring(0, 5)}H" /></td>
+                                        <td><c:out value="${booking.bookingDuration}" /></td>
+                                        <td><c:out value="${booking.bookingStatus}" /></td>
+                                        <td><c:out value="${booking.bookingPrice}" /></td>
+                                        <td><c:out value="${booking.bookingDateCreated.toString().substring(0, 16)}H" /></td>
+                                        <%  if(currentUserType.equalsIgnoreCase("admin") || currentUserType.equalsIgnoreCase("staff")) { %>
+                                        <td>
+                                            <form action="BookingServlet" method="POST">
+                                                <input type="hidden" name="action" value="viewTheSelectedBooking">
+                                                <input type="hidden" name="bookingID" value="<c:out value="${booking.bookingID}" />">
+                                                <input type="submit" class="btn btn-primary" style="height:30px;padding:0 5px 0 5px;border-radius:50%;" value="Go">
+                                            </form>
+                                        </td>
+                                        <%    } %>
+                                    </tr>
+                                </c:forEach>
+                            </c:if>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+                                
+        <footer>
+            <%@include file = "../components/footer.jsp" %>
+        </footer>
+    </body>
+</html>
