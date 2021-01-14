@@ -14,86 +14,92 @@
             <%@include file = "../components/navigationBar.jsp" %>
         </header>
         
-        <content>
-            <div class="content-container">
-                <div class="container">
-                    <form>
-                        <div class="form-group">
-                            <h1>Payment Form</h1>
+        <%
+            double amountToPay = (Double)request.getAttribute("payAmount");
+            String payName = (String)request.getAttribute("payName");
+        %>
+        
+        <div class="content-container">
+            <div class="payment-container">
+                <form action="PaymentServlet" method="POST">
+                    <div class="form-group">
+                        <h1>Payment Form</h1>
+                    </div>
+
+                    <div class="form-group form-row align-items-center">
+                        <div class="col-3">
+                            <label for="TotalPayment">Total Payment</label>
+                        </div>
+                        <div class="col">
+                            <label id="TotalPayment"><%= String.format("RM%.2f", amountToPay) %></label>
+                            <input type="hidden" name="total-payment" value="<%= amountToPay %>">
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="form-group form-check-inline">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="PaymentOptions" id="visa" value="visa" checked>
+                            <label class="form-check-label" for="visa"><a href="https://www.freepnglogos.com/images/visa-logo-png-2022.html" title="Image from freepnglogos.com"><img src="https://www.freepnglogos.com/uploads/visa-inc-png-18.png" width="100" alt="visa inc png" /></a></label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="PaymentOptions" id="mastercard" value="mastercard">
+                            <label class="form-check-label" for="mastercard"><a href="https://www.freepnglogos.com/images/discover-logo-png-pic-5681.html" title="Image from freepnglogos.com"><img src="https://www.freepnglogos.com/uploads/discover-png-logo/mastercard-discover-logo-png-22.png" width="100" alt="mastercard discover logo png" /></a></label>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-row align-items-center">
+                        <div class="col-3">
+                            <label for="NameOnCard">Name</label>
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control" name="name-on-card" id="NameOnCard" value="<%= payName %>" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-row align-items-center">
+                        <div class="col-3">
+                            <label for="CardNumber">Card Number</label>
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control" name="card-number" id="CardNumber" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d]/,'')" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-row align-items-center">
+                        <div class="col-3">
+                            <label for="CardExpiryDateMonth">Expiry Date</label>
                         </div>
 
-                        <div class="form-group form-row align-items-center">
-                            <div class="col">
-                                <label for="TotalPayment">Total Payment</label>
+                        <div class="form-inline col-6">    
+                            <div class="mr-sm-1">
+                                <input type="number" min="1" max="12" class="form-control" name="card-expiry-date-month" id="CardExpiryDateMonth" required>
                             </div>
-                            <div class="col">
-                                <input type="text" class="form-control" name="total-payment" id="TotalPayment">
+                            <div class="mr-sm-1">
+                                <label for="CardExpiryDateYear">/</label>
                             </div>
-                        </div>
-
-                        <hr>
-
-                        <div class="">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="PaymentOptions" id="visa" value="visa">
-                                <label class="form-check-label" for="visa"><img src="" alt="VISA"></label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="PaymentOptions" id="mastercard" value="option2">
-                                <label class="form-check-label" for="mastercard"><img src="" alt="MASTERCARD"></label>
-                            </div>
-                        </div>
-
-                        <div class="form-group form-row align-items-center">
-                            <div class="col">
-                                <label for="NameOnCard">Name</label>
-                            </div>
-                            <div class="col">
-                                <input type="text" class="form-control" name="name-on-card" id="NameOnCard">
-                            </div>
-                        </div>
-
-                        <div class="form-group form-row align-items-center">
-                            <div class="col">
-                                <label for="CardNumber">Card Number</label>
-                            </div>
-                            <div class="col">
-                                <input type="text" class="form-control" name="card-number" id="CardNumber">
-                            </div>
-                        </div>
-
-                        <div class="form-group form-row align-items-center">
-                            <div class="col">
-                                <label for="CardExpiryDateMonth">Expiry Date</label>
-                            </div>
-
-                            <div class="form-inline col">    
-                                <div class="mr-sm-2">
-                                    <input type="number" min="1" max="12" class="form-control" name="card-expiry-date-month" id="CardExpiryDateMonth">
-                                </div>
-                                <div class="mr-sm-2">
-                                    <label for="CardExpiryDateYear">/</label>
-                                </div>
-                                <div class="mr-sm-2">
-                                    <input type="number" min="20" max="99" class="form-control" name="card-expiry-date-year" id="CardExpiryDateYear">
-                                </div>
-                            </div>
-
-                            <div class="col">
-                                <label for="CardCVC">CVC</label>
-                            </div>
-                            <div class="col">
-                                <input type="number" min="100" max="999" class="form-control" name="card-cvc" id="CardCVC">
+                            <div class="mr-sm-1">
+                                <input type="number" min="20" max="99" class="form-control" name="card-expiry-date-year" id="CardExpiryDateYear" required>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <button class="btn btn-success btn-group-payment">Pay RM190.00</button>
+                        <div class="col-1">
+                            <label for="CardCVC">CVC</label>
                         </div>
-                    </form>
-                </div>
+                        <div class="col-2">
+                            <input type="number" min="100" max="999" class="form-control" name="card-cvc" id="CardCVC" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" name="action" value="pay">
+                        <input type="hidden" name="bookingID" value="<%= (Integer)request.getAttribute("bookingID") %>">
+                        <input type="submit" class="btn btn-success btn-group-payment" value="Pay <%= String.format("RM%.2f", amountToPay) %>">
+                    </div>
+                </form>
             </div>
-        </content>
+        </div>
         
         <footer>
             <%@include file = "../components/footer.jsp" %>

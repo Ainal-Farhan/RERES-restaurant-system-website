@@ -17,13 +17,16 @@
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand mx-auto" href="${pageContext.servletContext.contextPath}/index.jsp"><img src="${pageContext.servletContext.contextPath}<% out.println(Path.RERES_LOGO_PATH); %>/RERES-logo.png" width="90" alt="RERES-logo"/></a>                
+            <a class="navbar-brand mx-auto" href="${pageContext.servletContext.contextPath}/index.jsp?currentUserType=admin&currentUserID=1"><img src="${pageContext.servletContext.contextPath}<% out.println(Path.RERES_LOGO_PATH); %>/RERES-logo.png" width="90" alt="RERES-logo"/></a>                
                 
             <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/PaymentServlet">Payment</a>
-                    </li>
+                    <%  
+                            String currentUserType = (String)session.getAttribute("currentUserType");
+                            int currentUserID = (Integer)session.getAttribute("currentUserID");
+                            
+                        if(currentUserType.equalsIgnoreCase("admin")) {
+                            %>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             User
@@ -49,6 +52,57 @@
                             </form>
                         </div>
                     </li>
+                    <%
+                        }
+                        else if(currentUserType.equalsIgnoreCase("staff")) {
+                            %>
+                    <li class="nav-item">
+                        <form action="UserServlet" method="POST">
+                            <input type="hidden" name="action" value="viewUserList">
+                            <input type="hidden" name="viewUserType" value="customer">
+                            <input type="submit" class="dropdown-item nav-link" value="Customer">
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <form action="UserServlet" method="POST">
+                             <input type="hidden" name="action" value="viewProfile">
+                             <input type="hidden" name="userType" value="<%= currentUserType.toLowerCase() %>">
+                             <input type="hidden" name="userID" value="<%= currentUserID %>">
+                             <input type="submit" class="dropdown-item nav-link" value="Profile">
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <div aria-labelledby="navbarDropdown">
+                            <form action="BookingServlet" method="POST">
+                                <input type="hidden" name="action" value="viewBookingList">
+                                <input type="submit" class="dropdown-item nav-link" value="Booking List">
+                            </form>
+                        </div>
+                    </li>
+                    <%       
+                        }
+                        else if(currentUserType.equalsIgnoreCase("customer")) {
+                            %>
+                    <li class="nav-item">
+                        <form action="UserServlet" method="POST">
+                             <input type="hidden" name="action" value="viewProfile">
+                             <input type="hidden" name="userType" value="<%= currentUserType.toLowerCase() %>">
+                             <input type="hidden" name="userID" value="<%= currentUserID %>">
+                             <input type="submit" class="dropdown-item nav-link" value="Profile">
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <div aria-labelledby="navbarDropdown">
+                            <form action="BookingServlet" method="POST">
+                                <input type="hidden" name="action" value="viewBookingListForCustomer">
+                                <input type="submit" class="dropdown-item nav-link" value="Booking List">
+                            </form>
+                        </div>
+                    </li>
+                    <%
+                        }
+                            %>
+                    
                     <li class="nav-item">
                         <a class="nav-link" href="${pageContext.servletContext.contextPath}/BookingTableServlet">Booking Table</a>
                     </li>
@@ -59,15 +113,6 @@
             </div>
             <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/ProfileServlet">Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/LoginServlet">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/RegistrationServlet">Register</a>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="${pageContext.servletContext.contextPath}/DocumentationServlet">Documentation</a>
                     </li>

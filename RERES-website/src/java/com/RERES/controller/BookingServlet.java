@@ -8,6 +8,7 @@ package com.RERES.controller;
 import com.RERES.database.Database;
 import com.RERES.database.SQLStatementList;
 import com.RERES.model.Booking;
+import com.RERES.model.Food;
 import com.RERES.model.OrderItem;
 import com.RERES.model.Payment;
 import com.RERES.model.User;
@@ -27,6 +28,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -35,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 public class BookingServlet extends HttpServlet {
 
     private final String ACTION_VIEW_BOOKING_LIST = "viewBookingList";
+    private final String ACTION_VIEW_BOOKING_LIST_FOR_CUSTOMER = "viewBookingListForCustomer";
     private final String ACTION_VIEW_THE_SELECTED_BOOKING = "viewTheSelectedBooking";
     
     final String[] PUBLIC_INFO_LABELS = {
@@ -45,6 +48,7 @@ public class BookingServlet extends HttpServlet {
         "Status",
         "Price",
         "Created",
+        "View",
     };
     
     private static ArrayList<Booking> bookingList;
@@ -70,7 +74,7 @@ public class BookingServlet extends HttpServlet {
             out.println("<title>Servlet BookingServlet</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet BookingServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet BookingServlet by GET method</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -112,6 +116,9 @@ public class BookingServlet extends HttpServlet {
         }
         else if(action.equals(ACTION_VIEW_THE_SELECTED_BOOKING)) {
             processViewTheSelectedBooking(request, response);
+        }
+        else if(action.equals(ACTION_VIEW_BOOKING_LIST_FOR_CUSTOMER)) {
+            processViewBookingListForCustomer(request, response);
         }
     }
 
@@ -160,6 +167,23 @@ public class BookingServlet extends HttpServlet {
         }
     }
     
+    private void processViewBookingListForCustomer(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        HttpSession session = request.getSession();
+        
+        if(session == null) {
+            return;
+        }
+        
+        if(getAllBookingInfoFromDatabaseForCustomer((Integer)session.getAttribute("currentUserID"))) {
+            request.setAttribute("bookingList", bookingList);
+            request.setAttribute("labels", this.PUBLIC_INFO_LABELS);
+            request.setAttribute("labelsLength", this.PUBLIC_INFO_LABELS.length);
+            forwardPage(request, response, MAIN_VIEW_PATH + "/viewBookingListPage.jsp");
+        }
+    }
+  
     private void forwardPage(HttpServletRequest request, HttpServletResponse response,String pagePath)
             throws ServletException, IOException {
         RequestDispatcher dispatcher = request.getRequestDispatcher(pagePath);
@@ -176,10 +200,12 @@ public class BookingServlet extends HttpServlet {
             
             st.setInt(1, selectedBooking.getBookingID());
             st.setInt(2, selectedBooking.getBookingID());
+            st.setInt(3, selectedBooking.getBookingID());
             
             ResultSet result = st.executeQuery();
 
             ArrayList<OrderItem> orderItems = new ArrayList<>();
+            ArrayList<Food> foods = new ArrayList<>();
             
             boolean status = false;
             
@@ -187,15 +213,91 @@ public class BookingServlet extends HttpServlet {
             Booking booking = new Booking();
             User user = new User();
             
+            int count = 1;
+            
             while(result.next()) {
-                payment.setPaymentID(result.getInt("payment_id"));
-                payment.setPaymentStatus(result.getString("payment_status"));
-                payment.setPaymentMethod(result.getString("payment_method"));
-                payment.setTotalPayment(result.getDouble("total_payment"));
-                payment.setDatePaid(result.getDate("date_paid"));
-                payment.setFkBookingID(result.getInt("fk_bookingID"));
-                                
-                booking.setBookingID(result.getInt("fk_bookingID"));
+                
+                if(count == 1) {
+                    int stat = result.getInt("payment_id");
+                
+                    if(stat != 0) {
+                        payment.setPaymentID(result.getInt("payment_id"));
+                        payment.setPaymentStatus(result.getString("payment_status"));
+                        payment.setPaymentMethod(result.getString("payment_method"));
+                        payment.setTotalPayment(result.getDouble("total_payment"));
+                        payment.setDatePaid(result.getDate("date_paid"));
+                        payment.setFkBookingID(result.getInt("fk_bookingID"));
+                    }
+
+                    booking.setBookingID(result.getInt("booking_id"));
+                    booking.setBookingDescription(result.getString("booking_description"));
+                    booking.setBookingDate(result.getDate("booking_date"));
+                    booking.setBookingDuration(result.getInt("booking_duration"));
+                    booking.setBookingStartTime(result.getTime("booking_start_time"));
+                    booking.setBookingEndTime(result.getTime("booking_end_time"));
+                    booking.setBookingStatus(result.getString("booking_status"));
+                    booking.setBookingQuantity(result.getInt("booking_quantity"));
+                    booking.setBookingPrice(result.getDouble("booking_price"));
+                    booking.setBookingDateCreated(result.getTimestamp("booking_date_created"));
+                    booking.setFkUserID(result.getInt("fk_userID"));
+
+                    user.setName(result.getString("name"));
+                    
+                    count++;
+                }
+                
+                int stat2 = result.getInt("order_item_id");
+                
+                if(stat2 != 0) {
+                    OrderItem orderItem = new OrderItem();
+                
+                    orderItem.setOrderItemID(result.getInt("order_item_id"));
+                    orderItem.setItemQuantity(result.getInt("item_quantity"));
+                    orderItem.setTotalPrice(result.getDouble("total_price"));
+                    orderItem.setFkBookingID(result.getInt("fk_bookingID"));
+
+                    orderItems.add(orderItem);
+                    
+                    Food food = new Food();
+                    food.setFoodID(result.getInt("food_id"));
+                    food.setFoodName(result.getString("food_name"));
+                    food.setFoodDescription(result.getString("food_description"));
+                    food.setFoodPrice(result.getDouble("food_price"));
+                    food.setFoodPhoto(result.getString("food_photo"));
+                    
+                    foods.add(food);
+                }
+            }
+            
+            request.setAttribute("selectedBookingPayment", payment);
+            request.setAttribute("selectedBooking", booking);
+            request.setAttribute("selectedBookingUser", user);
+            request.setAttribute("selectedBookingOrderItems", orderItems);
+            request.setAttribute("selectedBookingFoods", foods);
+            
+            return true;
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    
+    private boolean getAllBookingInfoFromDatabaseForCustomer(int userID) {
+        Connection con;
+        bookingList = new ArrayList<>(); 
+        
+        try {
+            con = new Database().getCon();
+            PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_RETRIEVE_ALL_BOOKING_INFORMATION_FOR_A_CUSTOMER);
+            
+            st.setInt(1, userID);
+            
+            ResultSet result = st.executeQuery();
+
+            while(result.next()) {
+                Booking booking = new Booking();
+                
+                booking.setBookingID(result.getInt("booking_id"));
                 booking.setBookingDescription(result.getString("booking_description"));
                 booking.setBookingDate(result.getDate("booking_date"));
                 booking.setBookingDuration(result.getInt("booking_duration"));
@@ -206,29 +308,9 @@ public class BookingServlet extends HttpServlet {
                 booking.setBookingPrice(result.getDouble("booking_price"));
                 booking.setBookingDateCreated(result.getTimestamp("booking_date_created"));
                 booking.setFkUserID(result.getInt("fk_userID"));
-                                                
-                user.setName(result.getString("name"));
                 
-                result.getInt("order_item_id");
-                status = result.wasNull();
-                
-                if(status) {
-                    OrderItem orderItem = new OrderItem();
-                
-                    orderItem.setOrderItemID(result.getInt("order_item_id"));
-                    orderItem.setItemQuantity(result.getInt("item_quantity"));
-                    orderItem.setTotalPrice(result.getDouble("total_price"));
-                    orderItem.setFkBookingID(result.getInt("fk_bookingID"));
-
-                    orderItems.add(orderItem);
-                }
+                bookingList.add(booking);
             }
-            
-            request.setAttribute("selectedBookingPayment", payment);
-            request.setAttribute("selectedBooking", booking);
-            request.setAttribute("selectedBookingUser", user);
-            request.setAttribute("selectedBookingOrderItems", orderItems);
-            
             return true;
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);

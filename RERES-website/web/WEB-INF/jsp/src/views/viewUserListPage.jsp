@@ -20,10 +20,10 @@
         
         <div class="content-container">                
             <div class="container-custom">
-                <div class='table-responsive' id='customer-list'>
-                    <table class='table table-hover table-view-list'>
+                <div class='table-responsive view-user-list-container' id='customer-list' style="padding-top: 50px;">
+                    <table class='table table-hover table-view-list table-striped'>
                         <%  
-                            String currentUserType = (String)session.getAttribute("currentUserType");
+                            // String currentUserType = (String)session.getAttribute("currentUserType");
                             String userType = (String)request.getAttribute("userType");
                             int length = (Integer)request.getAttribute("labelsLength");
                             
@@ -31,7 +31,7 @@
                                 length++;
                             }
                         %>
-                        <thead>
+                        <thead class="thead-dark">
                             <tr>
                                 <th colspan='<c:out value="<%= length %>" />'><h1><c:out value="<%= userType %>" /></h1></th>
                             </tr>
