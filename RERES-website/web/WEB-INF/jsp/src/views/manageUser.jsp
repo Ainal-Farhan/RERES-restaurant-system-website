@@ -17,10 +17,10 @@
             <jsp:useBean id="selectedUser" scope="request" class="com.RERES.model.User" />
         
         <div class="content-container">
-            <div class="container">
-                <form action="UserServlet" method="POST">
+            <div class="container manage-user-container">
+                <form action="UserServlet" method="POST" onsubmit="return performSubmit()">
                     <div class="form-group">
-                        <h1>User Details</h1>
+                        <h1 style="text-align: center">User Details</h1>
                     </div>
                     <%  
                         String path = request.getContextPath();
@@ -34,8 +34,8 @@
                             path += com.RERES.path.Path.PROFILE_PICTURE_CUSTOMER_PATH + "/" + profilePhoto; 
                         }
                     %>
-                    <div class="form-group form-row align-items-center">
-                        <img src='<%= path %>' alt="profile photo" width="200" height="200" style="border-radius: 50%;">
+                    <div class="form-group" style="display:block;margin-right:auto;margin-left:auto;width: 20%;">
+                        <label><img src='<%= path %>' alt="profile photo" width="100%" height="100%" style="border-radius: 50%;"></label>
                     </div>
                     <div class="form-group form-row align-items-center">
                         <div class="col-2">
@@ -121,22 +121,23 @@
                             <label for="UserAddress">Address</label>
                         </div>
                         <div class="col">
-                            <textarea class="form-control" name="user-address" id="UserAddress" cols="30" rows="6" required><jsp:getProperty name="selectedUser" property="address"/></textarea>
+                            <textarea class="form-control" name="user-address" id="UserAddress" cols="30" rows="6" required style="resize:none;"><jsp:getProperty name="selectedUser" property="address"/></textarea>
                         </div>
                     </div>
 
-                    <input type="hidden" name="action" value="updateOrDeleteUser" required>
-                        
                     <div class="form-group form-row align-items-center">
-                        
-                        <button type="button" class="btn btn-success" onclick="changeInputStatus(false)" id="update-btn">Update</button>
-                        
-                        <% if(currentUserType.equalsIgnoreCase("admin")) { %>
-                        <input type="submit" class="btn btn-danger" id="delete-btn" name="delete-button" value="Delete">
+                        <% if((currentUserType.equalsIgnoreCase("staff") && userType.equals("staff")) || (currentUserType.equalsIgnoreCase("customer")) || (currentUserType.equalsIgnoreCase("admin"))) { %>
+                        <input type="hidden" name="action" value="updateOrDeleteUser" required>
+                        <button type="button" class="btn btn-success btn-group-manage-user" onclick="changeInputStatus(false)" id="update-btn">Update</button>
+                        <input type="submit" class="btn btn-success btn-group-manage-user" id="save-btn" name="save-button" value="Save" onclick="updateConfirmation()">
+                        <button type="button" class="btn btn-primary btn-group-manage-user" id="back-btn" onclick="changeInputStatus(true)">Back</button>
                         <% } %>
                         
-                        <input type="submit" class="btn btn-success" id="save-btn" name="save-button" value="Save">
-                        <button type="button" class="btn btn-primary" id="back-btn" onclick="changeInputStatus(true)">Back</button>
+                        <% if(currentUserType.equalsIgnoreCase("admin")) { %>
+                        <input type="submit" class="btn btn-danger btn-group-manage-user" id="delete-btn" name="delete-button" value="Delete" onclick="deleteConfirmation()">
+                        <% } %>
+                        
+                        
                     </div>
                 </form>
             </div>
@@ -167,14 +168,15 @@
                 if(status !== true) {                    
                     document.getElementById("female").disabled = status;
                     document.getElementById("male").disabled = status;
-                    
+                    <% if((currentUserType.equalsIgnoreCase("staff") && userType.equals("staff")) || (currentUserType.equalsIgnoreCase("customer")) || (currentUserType.equalsIgnoreCase("admin"))) { %>
                     document.getElementById("update-btn").style.display="none";
+                    document.getElementById("back-btn").style.display="block";
+                    document.getElementById("save-btn").style.display="block";
+                    <% } %>
                     <% if(currentUserType.equalsIgnoreCase("admin")) { %>
                     document.getElementById("delete-btn").style.display="none";
                     <% } %>
                     
-                    document.getElementById("back-btn").style.display="block";
-                    document.getElementById("save-btn").style.display="block";
                 } else {
                     if(gender === "male") {
                         document.getElementById("male").checked = true;
@@ -186,15 +188,33 @@
                         document.getElementById("female").disabled = false;
                         document.getElementById("male").disabled = true;
                     }
-                    
+                    <% if((currentUserType.equalsIgnoreCase("staff") && userType.equals("staff")) || (currentUserType.equalsIgnoreCase("customer")) || (currentUserType.equalsIgnoreCase("admin"))) { %>
                     document.getElementById("update-btn").style.display="block";
+                    document.getElementById("back-btn").style.display="none";
+                    document.getElementById("save-btn").style.display="none";
+                    <% } %>
                     <% if(currentUserType.equalsIgnoreCase("admin")) { %>
                     document.getElementById("delete-btn").style.display="block";
                     <% } %>
                     
-                    document.getElementById("back-btn").style.display="none";
-                    document.getElementById("save-btn").style.display="none";
                 }
+            }
+            
+            var statusSubmit = false;
+            
+            <%  if(currentUserType.equalsIgnoreCase("admin")) { %>
+                function deleteConfirmation() {
+                    statusSubmit = confirm("Delete user? please be advised as this action in irreversible");
+                }
+                <% } %>
+            <%  if((currentUserType.equalsIgnoreCase("staff") && userType.equals("staff")) || (currentUserType.equalsIgnoreCase("customer")) || (currentUserType.equalsIgnoreCase("admin"))) { %>
+                    function updateConfirmation() {
+                        statusSubmit = confirm("Update Information?");
+                    }
+            <%  } %>
+            
+            function performSubmit() {
+                return statusSubmit;
             }
         </script>
         

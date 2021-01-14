@@ -3,13 +3,13 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: Jan 12, 2021 at 12:32 PM
+-- Generation Time: Jan 14, 2021 at 09:07 AM
 -- Server version: 10.4.17-MariaDB
 -- PHP Version: 8.0.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
-SET time_zone = "+08:00";
+SET time_zone = "+00:00";
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -34,12 +34,20 @@ CREATE TABLE `booking` (
   `booking_duration` int(11) NOT NULL,
   `booking_start_time` time NOT NULL,
   `booking_end_time` time NOT NULL,
-  `booking_status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `booking_status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'none',
   `booking_quantity` int(11) NOT NULL,
   `booking_price` double NOT NULL,
   `booking_date_created` datetime NOT NULL DEFAULT current_timestamp(),
   `fk_userID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `booking`
+--
+
+INSERT INTO `booking` (`booking_id`, `booking_description`, `booking_date`, `booking_duration`, `booking_start_time`, `booking_end_time`, `booking_status`, `booking_quantity`, `booking_price`, `booking_date_created`, `fk_userID`) VALUES
+(1, 'birthday party', '2021-01-05', 3, '12:10:49', '15:10:49', 'success', 10, 120.21, '2021-01-13 08:03:08', 1),
+(2, 'test2', '2021-01-22', 2, '12:00:00', '14:00:00', 'success', 20, 300.5, '2021-01-14 15:37:41', 1);
 
 -- --------------------------------------------------------
 
@@ -54,6 +62,14 @@ CREATE TABLE `food` (
   `food_description` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'none',
   `food_photo` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'food-photo-default.png'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `food`
+--
+
+INSERT INTO `food` (`food_id`, `food_name`, `food_price`, `food_description`, `food_photo`) VALUES
+(1, 'Nasi Kandar', 10, 'Nasi Kandar Penang Special', 'food-photo-default.png'),
+(2, 'Nasi Kerabu', 5.5, 'Nasi Kerabu Special', 'food-photo-default.png');
 
 -- --------------------------------------------------------
 
@@ -83,6 +99,14 @@ CREATE TABLE `orderitem` (
   `fk_foodID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `orderitem`
+--
+
+INSERT INTO `orderitem` (`order_item_id`, `item_quantity`, `total_price`, `fk_bookingID`, `fk_foodID`) VALUES
+(1, 12, 66, 1, 2),
+(2, 12, 120, 1, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -91,12 +115,20 @@ CREATE TABLE `orderitem` (
 
 CREATE TABLE `payment` (
   `payment_id` int(11) NOT NULL,
-  `payment_status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payment_method` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `total_payment` double NOT NULL,
-  `date_paid` date DEFAULT NULL,
+  `payment_status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'none',
+  `payment_method` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'none',
+  `total_payment` double NOT NULL DEFAULT 0,
+  `date_paid` date NOT NULL DEFAULT current_timestamp(),
   `fk_bookingID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `payment`
+--
+
+INSERT INTO `payment` (`payment_id`, `payment_status`, `payment_method`, `total_payment`, `date_paid`, `fk_bookingID`) VALUES
+(2, 'done', 'visa', 300.5, '2021-01-14', 2),
+(3, 'done', 'visa', 306.21, '2021-01-14', 1);
 
 -- --------------------------------------------------------
 
@@ -164,7 +196,7 @@ ALTER TABLE `orderitem`
 --
 ALTER TABLE `payment`
   ADD PRIMARY KEY (`payment_id`),
-  ADD KEY `fk_bookingIDPayment` (`fk_bookingID`);
+  ADD UNIQUE KEY `fk_bookingIDPayment` (`fk_bookingID`) USING BTREE;
 
 --
 -- Indexes for table `user`
@@ -181,13 +213,13 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `food`
 --
 ALTER TABLE `food`
-  MODIFY `food_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `food_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `membership`
@@ -199,19 +231,19 @@ ALTER TABLE `membership`
 -- AUTO_INCREMENT for table `orderitem`
 --
 ALTER TABLE `orderitem`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables

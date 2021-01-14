@@ -18,13 +18,10 @@
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand mx-auto" href="${pageContext.servletContext.contextPath}/index.jsp"><img src="${pageContext.servletContext.contextPath}<% out.println(Path.RERES_LOGO_PATH); %>/RERES-logo.png" width="90" alt="RERES-logo"/></a>                
+            <a class="navbar-brand mx-auto" href="${pageContext.servletContext.contextPath}/index.jsp?currentUserType=admin&currentUserID=1"><img src="${pageContext.servletContext.contextPath}<% out.println(Path.RERES_LOGO_PATH); %>/RERES-logo.png" width="90" alt="RERES-logo"/></a>                
                 
             <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/PaymentServlet">Payment</a>
-                    </li>
                     <%  
                             String currentUserType = (String)session.getAttribute("currentUserType");
                             int currentUserID = (Integer)session.getAttribute("currentUserID");
@@ -117,15 +114,6 @@
             </div>
             <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/ProfileServlet">Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/LoginServlet">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/RegistrationServlet">Register</a>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="${pageContext.servletContext.contextPath}/DocumentationServlet">Documentation</a>
                     </li>

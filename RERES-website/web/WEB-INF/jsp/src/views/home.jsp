@@ -13,7 +13,7 @@
             <%@include file = "../components/homeNavigationBar.jsp" %>
         </header>
         <content>
-            <div class="content-container">
+            <div class="content-container" style="background-image: none;padding-top: 0;">
                 <div class="thumbnail text-center">
                     <img class="img-responive" src="${pageContext.servletContext.contextPath}/assets/img/RERES/home.jpg" alt="home" style="width: 100%"/>
                     <div class="caption">

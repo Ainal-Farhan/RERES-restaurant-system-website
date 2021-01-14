@@ -19,10 +19,9 @@
         </header>
         
         <div class="content-container"> 
-            <img class="img-responive" src="${pageContext.servletContext.contextPath}/assets/img/RERES/booking-1.jpg" alt="home" style="width: 100%"/>
             <div class="booking-list-container">
                 <div class='table-responsive' id='customer-list'>
-                    <table class='table table-hover table-view-list bg-light' style="border-radius:24px;">
+                    <table class='table table-hover table-view-list bg-light table-striped' style="border-radius:24px;">
                         <thead class="thead-dark">
                             <tr>
                                 <th colspan='<c:out value="<%= (Integer)request.getAttribute("labelsLength") %>" />'><h1>Booking List</h1></th>
@@ -49,8 +48,8 @@
                                         <td><c:out value="${booking.bookingDate}" /></td>
                                         <td><c:out value="${booking.bookingStartTime.toString().substring(0, 5)}H" /></td>
                                         <td><c:out value="${booking.bookingDuration}" /></td>
-                                        <td><c:out value="${booking.bookingStatus}" /></td>
-                                        <td><c:out value="${booking.bookingPrice}" /></td>
+                                        <td><c:out value="${booking.bookingStatus.toUpperCase()}" /></td>
+                                        <td><c:out value="RM${booking.bookingPrice}" /></td>
                                         <td><c:out value="${booking.bookingDateCreated.toString().substring(0, 16)}H" /></td>
                                         <td>
                                             <form action="BookingServlet" method="POST">
