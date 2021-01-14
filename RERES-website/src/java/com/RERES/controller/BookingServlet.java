@@ -183,7 +183,7 @@ public class BookingServlet extends HttpServlet {
             forwardPage(request, response, MAIN_VIEW_PATH + "/viewBookingListPage.jsp");
         }
     }
-    
+  
     private void forwardPage(HttpServletRequest request, HttpServletResponse response,String pagePath)
             throws ServletException, IOException {
         RequestDispatcher dispatcher = request.getRequestDispatcher(pagePath);
@@ -206,7 +206,9 @@ public class BookingServlet extends HttpServlet {
 
             ArrayList<OrderItem> orderItems = new ArrayList<>();
             ArrayList<Food> foods = new ArrayList<>();
-                        
+            
+            boolean status = false;
+            
             Payment payment = new Payment();
             Booking booking = new Booking();
             User user = new User();
