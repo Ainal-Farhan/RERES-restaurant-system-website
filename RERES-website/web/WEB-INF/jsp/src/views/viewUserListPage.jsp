@@ -23,7 +23,7 @@
                 <div class='table-responsive' id='customer-list'>
                     <table class='table table-hover table-view-list'>
                         <%  
-                            String currentUserType = (String)session.getAttribute("currentUserType");
+                            // String currentUserType = (String)session.getAttribute("currentUserType");
                             String userType = (String)request.getAttribute("userType");
                             int length = (Integer)request.getAttribute("labelsLength");
                             

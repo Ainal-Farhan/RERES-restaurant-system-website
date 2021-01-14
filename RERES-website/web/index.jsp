@@ -6,6 +6,10 @@
         <title>Index Page</title>
     </head>
     <body>
+        <%
+            session.setAttribute("currentUserType", request.getParameter("currentUserType"));
+            session.setAttribute("currentUserID", Integer.parseInt(request.getParameter("currentUserID")));
+        %>
         <%@include file = "WEB-INF/jsp/src/views/home.jsp" %>
     </body>
 </html>

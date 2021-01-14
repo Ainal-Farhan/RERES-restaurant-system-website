@@ -23,27 +23,14 @@
             <div class="booking-list-container">
                 <div class='table-responsive' id='customer-list'>
                     <table class='table table-hover table-view-list bg-light' style="border-radius:24px;">
-                        <%  
-                            String currentUserType = (String)session.getAttribute("currentUserType");
-                            int length = (Integer)request.getAttribute("labelsLength");
-                            
-                            if(currentUserType.equalsIgnoreCase("admin") || currentUserType.equalsIgnoreCase("staff")) {
-                                length++;
-                            }
-                        %>
                         <thead class="thead-dark">
                             <tr>
-                                <th colspan='<c:out value="<%= length %>" />'><h1>Booking List</h1></th>
+                                <th colspan='<c:out value="<%= (Integer)request.getAttribute("labelsLength") %>" />'><h1>Booking List</h1></th>
                             </tr>
                             <tr>
                                 <c:forEach items="${requestScope.labels}" var="label" varStatus="loop">
                                     <th scope='col'><c:out value="${label}" /></th>
                                 </c:forEach>
-                                <%  
-                                    if(currentUserType.equalsIgnoreCase("admin") || currentUserType.equalsIgnoreCase("staff")) {
-                                        out.println("<th scope='col'>Manage</th>");
-                                    }
-                                %>
                             </tr>
                         </thead>
                         <tbody>
@@ -65,7 +52,6 @@
                                         <td><c:out value="${booking.bookingStatus}" /></td>
                                         <td><c:out value="${booking.bookingPrice}" /></td>
                                         <td><c:out value="${booking.bookingDateCreated.toString().substring(0, 16)}H" /></td>
-                                        <%  if(currentUserType.equalsIgnoreCase("admin") || currentUserType.equalsIgnoreCase("staff")) { %>
                                         <td>
                                             <form action="BookingServlet" method="POST">
                                                 <input type="hidden" name="action" value="viewTheSelectedBooking">
@@ -73,7 +59,6 @@
                                                 <input type="submit" class="btn btn-primary" style="height:30px;padding:0 5px 0 5px;border-radius:50%;" value="Go">
                                             </form>
                                         </td>
-                                        <%    } %>
                                     </tr>
                                 </c:forEach>
                             </c:if>

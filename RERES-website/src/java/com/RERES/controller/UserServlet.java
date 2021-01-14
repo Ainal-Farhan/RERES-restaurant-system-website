@@ -36,6 +36,7 @@ public class UserServlet extends HttpServlet {
 
     private final String ACTION_VIEW_USER_LIST = "viewUserList";
     private final String ACTION_VIEW_A_USER = "ViewAUser";
+    private final String ACTION_VIEW_PROFILE = "viewProfile";
     private final String ACTION_UPDATE_OR_DELETE_A_USER = "updateOrDeleteUser";
     
     private final String USER_TYPE_CUSTOMER = "customer";
@@ -57,42 +58,6 @@ public class UserServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
     }
-    
-    private void setSpecificUserInformation(String userType) throws SQLException {
-        try {
-            users = new ArrayList<>();
-                    
-            Connection con = new Database().getCon();
-            
-            PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_RETRIEVE_ALL_SPECIFIC_USER_INFORMATION);
-            st.setString(1, userType);
-            
-            Logger.getLogger(Database.class.getName()).log(Level.INFO, "GET All Users information with type : " + userType);
-            ResultSet result = st.executeQuery();
-
-            while(result.next()) {
-                User user = new User();
-                
-                user.setUserID(result.getInt("user_id"));
-                user.setUsername(result.getString("username"));
-                user.setPassword(result.getString("password"));
-                user.setUserType(result.getString("user_type"));
-                user.setName(result.getString("name"));
-                user.setAge(result.getInt("age"));
-                user.setBirthDate(result.getDate("birth_date"));
-                user.setEmail(result.getString("email"));
-                user.setAddress(result.getString("address"));
-                user.setGender(result.getString("gender"));
-                user.setPhoneNumber(result.getString("phone_number"));
-                user.setProfilePhoto(result.getString("profile_photo"));   
-                
-                users.add(user);
-            }
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
     
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -132,6 +97,9 @@ public class UserServlet extends HttpServlet {
         else if(action.equals(ACTION_VIEW_A_USER)) {
             processViewAUser(request, response);
         }
+        else if(action.equals(ACTION_VIEW_PROFILE)) {
+            processViewProfile(request, response);
+        }
         else if(action.equals(ACTION_UPDATE_OR_DELETE_A_USER)) {
             try {
                 processUpdateOrDeleteAUser(request, response);
@@ -151,12 +119,43 @@ public class UserServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
     
-    private boolean isStringIsNullOrEmpty(String inputString) {
-        if(inputString == null || inputString.equals("")) {
-            return true;
+    private void setSpecificUserInformation(String userType) throws SQLException {
+        try {
+            users = new ArrayList<>();
+                    
+            Connection con = new Database().getCon();
+            
+            PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_RETRIEVE_ALL_SPECIFIC_USER_INFORMATION);
+            st.setString(1, userType);
+            
+            Logger.getLogger(Database.class.getName()).log(Level.INFO, "GET All Users information with type : " + userType);
+            ResultSet result = st.executeQuery();
+
+            while(result.next()) {
+                User user = new User();
+                
+                user.setUserID(result.getInt("user_id"));
+                user.setUsername(result.getString("username"));
+                user.setPassword(result.getString("password"));
+                user.setUserType(result.getString("user_type"));
+                user.setName(result.getString("name"));
+                user.setAge(result.getInt("age"));
+                user.setBirthDate(result.getDate("birth_date"));
+                user.setEmail(result.getString("email"));
+                user.setAddress(result.getString("address"));
+                user.setGender(result.getString("gender"));
+                user.setPhoneNumber(result.getString("phone_number"));
+                user.setProfilePhoto(result.getString("profile_photo"));   
+                
+                users.add(user);
+            }
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        return false;
+    }
+    
+    private boolean isStringIsNullOrEmpty(String inputString) {
+        return inputString == null || inputString.equals("");
     }
     
     private boolean deleteSelectedUser(int userID) {
@@ -208,18 +207,18 @@ public class UserServlet extends HttpServlet {
             int result = st.executeUpdate();
             
             if(result > 0) {
-                if(users.size() == 1) {
-                    users = new ArrayList<>();
-                }
-                else {
+                
+                user = selectedUser;
+                
+                if(users != null && !users.isEmpty() && users.get(0).getUserType().equals(user.getUserType())) {
                     for(int i = 0; i < users.size(); i++) {
                         if(users.get(i).getUserID() == selectedUser.getUserID()) {
                             users.set(i, selectedUser);
-                            user = selectedUser;
                             break;
                         }
                     }
                 }
+                
                 return true;
             } 
             return false;
@@ -278,6 +277,43 @@ public class UserServlet extends HttpServlet {
         }
     }
     
+    private boolean setCurrentUser(String userType, int userID) {
+        Connection con;
+        try {
+            con = new Database().getCon();
+            PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_RETRIEVE_A_USER_INFORMATION);
+            
+            st.setString(1, userType);
+            st.setInt(2, userID);
+            
+            ResultSet result = st.executeQuery();
+            
+            if(user == null) 
+                user = new User();
+            
+            if(result.next()) {                
+                user.setUserID(result.getInt("user_id"));
+                user.setUsername(result.getString("username"));
+                user.setPassword(result.getString("password"));
+                user.setUserType(result.getString("user_type"));
+                user.setName(result.getString("name"));
+                user.setAge(result.getInt("age"));
+                user.setBirthDate(result.getDate("birth_date"));
+                user.setEmail(result.getString("email"));
+                user.setAddress(result.getString("address"));
+                user.setGender(result.getString("gender"));
+                user.setPhoneNumber(result.getString("phone_number"));
+                user.setProfilePhoto(result.getString("profile_photo")); 
+                
+                return true;
+            } 
+            return false;
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    
     private void processViewAUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String userType = request.getParameter("userType");
@@ -287,7 +323,7 @@ public class UserServlet extends HttpServlet {
             
         }
         else {
-            if(!users.isEmpty() && users != null) {
+            if(users != null && !users.isEmpty()) {
                 if(userType.equalsIgnoreCase(users.get(0).getUserType())) {
                     User selectedUser = new User();
                     
@@ -299,6 +335,26 @@ public class UserServlet extends HttpServlet {
                     }
                     user = selectedUser;
                     goToManageAUserHttpServletRequest(request, response, selectedUser);
+                }
+            }
+        }
+    }
+    
+    private void processViewProfile(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String userType = request.getParameter("userType");
+        int userID = Integer.parseInt(request.getParameter("userID"));
+        
+        if(isStringIsNullOrEmpty(userType) || isStringIsNullOrEmpty(Integer.toString(userID))) {
+            
+        }
+        else {
+            if(user != null && user.getUserType().equals(userType) && user.getUserID() == userID) {
+                goToManageAUserHttpServletRequest(request, response, user);
+            }
+            else {
+                if(setCurrentUser(userType, userID)) {
+                    goToManageAUserHttpServletRequest(request, response, user);
                 }
             }
         }

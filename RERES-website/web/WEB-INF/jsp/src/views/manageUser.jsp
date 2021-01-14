@@ -128,8 +128,12 @@
                     <input type="hidden" name="action" value="updateOrDeleteUser" required>
                         
                     <div class="form-group form-row align-items-center">
+                        
                         <button type="button" class="btn btn-success" onclick="changeInputStatus(false)" id="update-btn">Update</button>
+                        
+                        <% if(currentUserType.equalsIgnoreCase("admin")) { %>
                         <input type="submit" class="btn btn-danger" id="delete-btn" name="delete-button" value="Delete">
+                        <% } %>
                         
                         <input type="submit" class="btn btn-success" id="save-btn" name="save-button" value="Save">
                         <button type="button" class="btn btn-primary" id="back-btn" onclick="changeInputStatus(true)">Back</button>
@@ -165,7 +169,9 @@
                     document.getElementById("male").disabled = status;
                     
                     document.getElementById("update-btn").style.display="none";
+                    <% if(currentUserType.equalsIgnoreCase("admin")) { %>
                     document.getElementById("delete-btn").style.display="none";
+                    <% } %>
                     
                     document.getElementById("back-btn").style.display="block";
                     document.getElementById("save-btn").style.display="block";
@@ -182,7 +188,9 @@
                     }
                     
                     document.getElementById("update-btn").style.display="block";
+                    <% if(currentUserType.equalsIgnoreCase("admin")) { %>
                     document.getElementById("delete-btn").style.display="block";
+                    <% } %>
                     
                     document.getElementById("back-btn").style.display="none";
                     document.getElementById("save-btn").style.display="none";
