@@ -80,7 +80,7 @@
                                                 <input type="hidden" name="action" value="ViewAUser">
                                                 <input type="hidden" name="userType" value="<%= userType %>">
                                                 <input type="hidden" name="userID" value="<c:out value="${user.userID}" />">
-                                                <input type="submit" class="btn btn-primary" style="height:30px;padding:0 5px 0 5px;border-radius:50%;" value="Go">
+                                                <input type="submit" class="btn-custom" style="height:30px;padding:0 5px 0 5px;border-radius:50%;" value="Go">
                                             </form>
                                         </td>
                                         <%    } %>

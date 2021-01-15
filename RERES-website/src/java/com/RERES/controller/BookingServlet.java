@@ -42,6 +42,7 @@ public class BookingServlet extends HttpServlet {
     
     final String[] PUBLIC_INFO_LABELS = {
         "No",
+        "Booking ID",
         "Date",
         "Start Time",
         "Duration",
@@ -206,8 +207,6 @@ public class BookingServlet extends HttpServlet {
 
             ArrayList<OrderItem> orderItems = new ArrayList<>();
             ArrayList<Food> foods = new ArrayList<>();
-            
-            boolean status = false;
             
             Payment payment = new Payment();
             Booking booking = new Booking();

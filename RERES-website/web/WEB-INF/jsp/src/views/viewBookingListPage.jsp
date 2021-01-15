@@ -21,7 +21,7 @@
         <div class="content-container"> 
             <div class="booking-list-container">
                 <div class='table-responsive' id='customer-list'>
-                    <table class='table table-hover table-view-list bg-light table-striped' style="border-radius:24px;">
+                    <table class='table table-hover table-view-list bg-light table-striped' style="border-radius:24px;text-align: center;">
                         <thead class="thead-dark">
                             <tr>
                                 <th colspan='<c:out value="<%= (Integer)request.getAttribute("labelsLength") %>" />'><h1>Booking List</h1></th>
@@ -45,6 +45,7 @@
                                 <c:forEach items="${requestScope.bookingList}" var="booking" varStatus="loop">
                                     <tr>
                                         <th scope='row'><c:out value="${loop.index + 1}" /></th>
+                                        <td><c:out value="${booking.bookingID}" /></td>
                                         <td><c:out value="${booking.bookingDate}" /></td>
                                         <td><c:out value="${booking.bookingStartTime.toString().substring(0, 5)}H" /></td>
                                         <td><c:out value="${booking.bookingDuration}" /></td>
@@ -55,7 +56,7 @@
                                             <form action="BookingServlet" method="POST">
                                                 <input type="hidden" name="action" value="viewTheSelectedBooking">
                                                 <input type="hidden" name="bookingID" value="<c:out value="${booking.bookingID}" />">
-                                                <input type="submit" class="btn btn-primary" style="height:30px;padding:0 5px 0 5px;border-radius:50%;" value="Go">
+                                                <input type="submit" class="btn-custom" value="Go">
                                             </form>
                                         </td>
                                     </tr>
