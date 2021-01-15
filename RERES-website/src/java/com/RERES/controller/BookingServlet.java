@@ -316,43 +316,7 @@ public class BookingServlet extends HttpServlet {
             return false;
         }
     }
-    
-    private boolean getAllBookingInfoFromDatabaseForCustomer(int userID) {
-        Connection con;
-        bookingList = new ArrayList<>(); 
-        
-        try {
-            con = new Database().getCon();
-            PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_RETRIEVE_ALL_BOOKING_INFORMATION_FOR_A_CUSTOMER);
-            
-            st.setInt(1, userID);
-            
-            ResultSet result = st.executeQuery();
-
-            while(result.next()) {
-                Booking booking = new Booking();
-                
-                booking.setBookingID(result.getInt("booking_id"));
-                booking.setBookingDescription(result.getString("booking_description"));
-                booking.setBookingDate(result.getDate("booking_date"));
-                booking.setBookingDuration(result.getInt("booking_duration"));
-                booking.setBookingStartTime(result.getTime("booking_start_time"));
-                booking.setBookingEndTime(result.getTime("booking_end_time"));
-                booking.setBookingStatus(result.getString("booking_status"));
-                booking.setBookingQuantity(result.getInt("booking_quantity"));
-                booking.setBookingPrice(result.getDouble("booking_price"));
-                booking.setBookingDateCreated(result.getTimestamp("booking_date_created"));
-                booking.setFkUserID(result.getInt("fk_userID"));
-                
-                bookingList.add(booking);
-            }
-            return true;
-        } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-    }
-    
+     
     private boolean getAllBookingInfoFromDatabase() {
         Connection con;
         bookingList = new ArrayList<>(); 
