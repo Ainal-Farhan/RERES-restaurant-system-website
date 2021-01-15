@@ -7,8 +7,14 @@
     </head>
     <body>
         <%
-            session.setAttribute("currentUserType", request.getParameter("currentUserType"));
-            session.setAttribute("currentUserID", Integer.parseInt(request.getParameter("currentUserID")));
+            if(request.getParameter("currentUserType") == null || request.getParameter("currentUserType").equals("")) {
+                session.setAttribute("currentUserType", "admin");   
+                session.setAttribute("currentUserID", 1);
+            }
+            else {
+                session.setAttribute("currentUserType", request.getParameter("currentUserType"));
+                session.setAttribute("currentUserID", Integer.parseInt(request.getParameter("currentUserID")));
+            }
         %>
         <%@include file = "WEB-INF/jsp/src/views/home.jsp" %>
     </body>
