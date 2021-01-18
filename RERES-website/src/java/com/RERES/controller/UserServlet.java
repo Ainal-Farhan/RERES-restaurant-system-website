@@ -17,6 +17,7 @@ import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -38,6 +40,9 @@ public class UserServlet extends HttpServlet {
     private final String ACTION_VIEW_A_USER = "ViewAUser";
     private final String ACTION_VIEW_PROFILE = "viewProfile";
     private final String ACTION_UPDATE_OR_DELETE_A_USER = "updateOrDeleteUser";
+    private final String ACTION_REGISTER_USER = "registerUser";
+    private final String ACTION_LOGIN_USER = "authLogin";
+    private final String ACTION_LOGOUT_USER = "logout";
     
     private final String USER_TYPE_CUSTOMER = "customer";
     private final String USER_TYPE_STAFF = "staff";
@@ -81,6 +86,7 @@ public class UserServlet extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws java.text.ParseException
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -107,6 +113,25 @@ public class UserServlet extends HttpServlet {
                 Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        else if(action.equals(ACTION_REGISTER_USER)){
+            try {
+                processRegisterUser(request, response);
+            } catch (ParseException ex) {
+                Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        else if(action.equals(ACTION_LOGIN_USER)){
+            try {
+                processLoginUser(request, response);
+            } catch (ParseException ex) {
+                Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        else if(action.equals(ACTION_LOGOUT_USER)) {
+            HttpSession session = request.getSession();
+            session.invalidate();
+            forwardPage(request, response, Path.HOME_VIEW_PATH);
+        }
     }
 
     /**
@@ -118,6 +143,110 @@ public class UserServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+    
+    protected void processLoginUser(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException, ParseException {
+        if(authenticateUser(request)) {
+            forwardPage(request, response, Path.HOME_VIEW_PATH);
+        }
+        else {
+            
+            forwardPage(request, response, Path.LOGIN_VIEW_PATH);
+        }
+    }
+    
+    private void processRegisterUser(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException, ParseException {
+        if(setUserRegistrationIntoDatabase(request)) {
+            forwardPage(request, response, Path.LOGIN_VIEW_PATH);
+        }
+    }
+    
+    private boolean authenticateUser(HttpServletRequest request)
+            throws ServletException, IOException {
+        try {
+           String usernameOrEmail = request.getParameter("usernameOrEmail");
+           String password = request.getParameter("pwd");
+           
+           Connection con = new Database().getCon();
+           PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_RETRIEVE_USER_AUTHENTICATE);
+           
+           st.setString(1, password);
+           st.setString(2, usernameOrEmail);
+           st.setString(3, usernameOrEmail);
+           
+           ResultSet rs = st.executeQuery();
+           
+           while(rs.next()){
+               HttpSession session = request.getSession();
+               session.setAttribute("currentUserType", rs.getString("user_type"));
+               session.setAttribute("currentUserID", rs.getInt("user_id"));
+               session.setAttribute("isAuthenticated", true);
+               return true;
+           }
+           
+        } catch (SQLException | ClassNotFoundException  ex) {
+            Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+    
+    private boolean setUserRegistrationIntoDatabase(HttpServletRequest request)
+            throws ServletException, IOException {
+        
+        try {
+            String fullname = request.getParameter("fullname");
+            String address = request.getParameter("address");
+            String city = request.getParameter("city");
+            String poscode = request.getParameter("poscode");
+            String state = request.getParameter("state");
+            String fullAddress = address + ", " + city + ", " + poscode + " " + state;
+            String phoneNumber = request.getParameter("phoneNumber");
+            String email = request.getParameter("email");
+            String username = request.getParameter("username");
+            String password = request.getParameter("pwd");
+            String confirmPassword = request.getParameter("confirmPwd");
+            String userType = request.getParameter("userType");
+            String gender = request.getParameter("gender");
+            String date = request.getParameter("birthdate");
+            int age = Integer.parseInt(request.getParameter("age"));
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            Date myDate = formatter.parse(date);
+            java.sql.Date sqlDate = new java.sql.Date(myDate.getTime());
+            
+            Connection con = new Database().getCon();
+            
+            PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_INSERT_REGISTER_USER);
+
+            st.setString(1, username);
+            st.setString(2, password);
+            st.setString(3, userType);
+            st.setString(4, fullname);
+            st.setInt(5, age);
+            st.setDate(6, sqlDate);
+            st.setString(7, email);
+            st.setString(8, fullAddress);
+            st.setString(9, gender);
+            st.setString(10, phoneNumber);
+
+            int count = 0;
+            count = st.executeUpdate();
+
+//            Logger.getLogger(Database.class.getName()).log(Level.INFO, fullname + address + city + poscode + state + phoneNumber + email + username + password + confirmPassword + userType + age + sqlDate + gender + st.toString());
+
+            if(count > 0)
+            {
+                return true;
+            }
+            
+            st.close();
+            
+        } catch (SQLException | ClassNotFoundException | ParseException ex) {
+            Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return false;
+    }
     
     private void setSpecificUserInformation(String userType) throws SQLException {
         try {

@@ -17,7 +17,7 @@
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand mx-auto" href="${pageContext.servletContext.contextPath}/index.jsp?currentUserType=admin&currentUserID=1"><img src="${pageContext.servletContext.contextPath}<% out.println(Path.RERES_LOGO_PATH); %>/RERES-logo.png" width="90" alt="RERES-logo"/></a>                
+            <a class="navbar-brand mx-auto" href="${pageContext.servletContext.contextPath}/index.jsp"><img src="${pageContext.servletContext.contextPath}<% out.println(Path.RERES_LOGO_PATH); %>/RERES-logo.png" width="90" alt="RERES-logo"/></a>                
                 
             <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
                 <ul class="navbar-nav mr-auto">
@@ -121,6 +121,14 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="${pageContext.servletContext.contextPath}/HelpChatServlet">Help Chat</a>
+                    </li>
+                    <li class="nav-item">
+                        <div aria-labelledby="navbarDropdown">
+                            <form action="UserServlet" method="POST">
+                                <input type="hidden" name="action" value="logout">
+                                <input type="submit" class="dropdown-item nav-link" value="Logout">
+                            </form>
+                        </div>
                     </li>
                 </ul>
             </div>
