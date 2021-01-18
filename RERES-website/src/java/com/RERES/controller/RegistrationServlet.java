@@ -5,9 +5,17 @@
  */
 package com.RERES.controller;
 
+import com.RERES.database.Database;
 import com.RERES.path.Path;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,13 +36,23 @@ public class RegistrationServlet extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws java.text.ParseException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ParseException, SQLException, ClassNotFoundException {
         response.setContentType("text/html;charset=UTF-8");
+        
+        String action = request.getParameter("action");
+        
         try (PrintWriter out = response.getWriter()) {
-            RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.REGISTRATION_VIEW_PATH);
-            dispatcher.forward(request, response);
+            if(action.equals("redirectRegister")) {
+                RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.REGISTRATION_VIEW_PATH);
+                dispatcher.forward(request, response);
+            }
+            else if(action.equals("register")) {
+                
+                
+            }
         }
     }
 
@@ -50,7 +68,15 @@ public class RegistrationServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (ParseException ex) {
+            Logger.getLogger(RegistrationServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(RegistrationServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RegistrationServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -64,7 +90,15 @@ public class RegistrationServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (ParseException ex) {
+            Logger.getLogger(RegistrationServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(RegistrationServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RegistrationServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

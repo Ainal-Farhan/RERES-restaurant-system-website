@@ -9,7 +9,6 @@
     </head>
     <body>
         <header>
-            <%@include file = "../components/navigationBar.jsp" %>
             <%@include file = "../components/homeNavigationBar.jsp" %>
         </header>
         
@@ -26,24 +25,24 @@
                                     </div>
 
                                     <div class="card-body">
-                                        <form action="LoginServlet" method="POST">
+                                        <form action="UserServlet" method="POST">
                                             <div class="form-group">
-                                                <label for="name">Full name:</label>
-                                                <input type="text" class="form-control" placeholder="Enter full name" id="name" required>
+                                                <label for="usernameOrEmail">Username/Email:</label>
+                                                <input type="text" class="form-control form-control-lg" placeholder="Enter username" name="usernameOrEmail" id="username" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="pwd">Password:</label>
-                                                <input type="password" class="form-control" placeholder="Enter password" id="pwd" required>
+                                                <input type="password" class="form-control form-control-lg" placeholder="Enter password" name="pwd" id="pwd" required>
                                             </div>
-                                            
-                                            <button type="submit" class="btn btn-danger btn-block btn-lg">Login</button>
+                                            <input type="hidden" name="action" value="authLogin"/>
+                                            <input type="submit" class="btn btn-danger btn-block btn-lg" value="Login"/>
                                             
                                           </form>
                                     </div>
 
                                     <div class="card-footer">
                                         <a href="#">Forgot Password?</a><br/>
-                                        New to RERES? <a href="${pageContext.servletContext.contextPath}/LoginServlet">Register here</a>
+                                        New to RERES? <a href="${pageContext.servletContext.contextPath}/RegistrationServlet?action=redirectRegister">Register here</a>
                                     </div>
                                 </div>
                             </div>

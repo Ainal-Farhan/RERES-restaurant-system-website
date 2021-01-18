@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="com.RERES.path.Path"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -8,20 +9,26 @@
     </head>
     <body>
         <nav class="navbar navbar-expand-sm bg-light navbar-light">
-            <a class="navbar-brand ml-4" href="${pageContext.servletContext.contextPath}/index.jsp?currentUserType=admin&currentUserID=1">
+            <a class="navbar-brand ml-4" href="${pageContext.servletContext.contextPath}/index.jsp">
                 <img src="${pageContext.servletContext.contextPath}/assets/img/RERES/RERES-logo.png" alt="logo" style="width: 90px;">
             </a>
             
             <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
                 <ul class="navbar-nav ml-auto mr-4">
                     <li class="nav-item">
-                      <a class="nav-link" href="${pageContext.servletContext.contextPath}/LoginServlet">
-                          <button class="btn  btn-warning" type="button">Login</button>
+                      <a class="nav-link" href="#">
+                        <form action="LoginServlet" method="POST">
+                            <input type="hidden" name="action" value="redirectLogin">
+                            <input class="btn  btn-warning" type="submit" class="nav-link" value="Login">
+                        </form>
                       </a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" href="${pageContext.servletContext.contextPath}/RegistrationServlet">
-                          <button class="border border-warning btn  btn-light" type="button">Register</button>
+                        <form action="RegistrationServlet" method="POST">
+                            <input type="hidden" name="action" value="redirectRegister">
+                            <input class="border border-warning btn  btn-light" type="submit" class="nav-link" value="Register">
+                        </form>
                       </a>
                     </li>
                 </ul>
