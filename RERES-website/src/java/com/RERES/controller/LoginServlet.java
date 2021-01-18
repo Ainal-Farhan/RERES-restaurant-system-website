@@ -32,10 +32,29 @@ public class LoginServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        
+        String action = request.getParameter("action");
+        String username = request.getParameter("username");
+        String password = request.getParameter("pwd");
+        
         try (PrintWriter out = response.getWriter()) {
-            RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.LOGIN_VIEW_PATH);
-            dispatcher.forward(request, response);
+            
+            if(action.equals("redirectLogin")) {
+                RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.LOGIN_VIEW_PATH);
+                dispatcher.forward(request, response);
+            }
+            else if(action.equals("authLogin")) {
+                if(username.equals("hasan")) {
+                    RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.PROFILE_VIEW_PATH);
+                    dispatcher.forward(request, response);
+                }
+                else {
+                    RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.REGISTRATION_VIEW_PATH);
+                    dispatcher.forward(request, response);
+                }
+            }
         }
+            
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
