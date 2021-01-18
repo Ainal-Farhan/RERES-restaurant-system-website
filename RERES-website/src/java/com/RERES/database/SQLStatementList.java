@@ -25,11 +25,13 @@ public interface SQLStatementList {
     String SQL_STATEMENT_RETRIEVE_ALL_BOOKING_INFORMATION = "SELECT * FROM `booking`;";
     String SQL_STATEMENT_RETRIEVE_ALL_BOOKING_INFORMATION_FOR_A_CUSTOMER = "SELECT * FROM `booking` WHERE `fk_userID` = ?;";
     String SQL_STATEMENT_RETRIEVE_PAYMENT_INFORMATION_WITH_BOOKING_ID = "SELECT * FROM `payment` WHERE `fk_bookingID` =?;";
+    String SQL_STATEMENT_RETRIEVE_USER_AUTHENTICATE = "SELECT * FROM `user` WHERE `password` = ? AND `username` = ? OR `email` = ?;";
     
     // List of INSERT instruction
     String SQL_STATEMENT_INSERT_SUCCESSFULLY_PAY_FOR_A_BOOKING = "INSERT INTO `payment` "
             + "(`payment_status`, `payment_method`, `total_payment`, `fk_bookingID`) "
             + "VALUES ('done', ?, ?, ?)";
+    String SQL_STATEMENT_INSERT_REGISTER_USER = "INSERT INTO User(username, password, user_type, name, age, birth_date, email, address, gender, phone_number) VALUES(?,?,?,?,?,?,?,?,?,?)";
     
     // List of UPDATE instruction
     String SQL_STATEMENT_UPDATE_A_USER_INFORMATION = "UPDATE `user` SET `name`=?,`age`=?,`birth_date`=?,`email`=?,`address`=?,`gender`=?,`phone_number`=?,`profile_photo`=? WHERE `user`.`user_id`=?;";

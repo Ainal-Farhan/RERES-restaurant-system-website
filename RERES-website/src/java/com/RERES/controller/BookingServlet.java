@@ -316,7 +316,7 @@ public class BookingServlet extends HttpServlet {
             return false;
         }
     }
-    
+     
     private boolean getAllBookingInfoFromDatabase() {
         Connection con;
         bookingList = new ArrayList<>(); 

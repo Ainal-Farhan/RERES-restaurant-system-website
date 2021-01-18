@@ -9,7 +9,6 @@
     </head>
     <body>
         <header>
-            <%@include file = "../components/navigationBar.jsp" %>
             <%@include file = "../components/homeNavigationBar.jsp" %>
         </header>
         
@@ -20,50 +19,78 @@
                     <div class="caption">
                         <div class="container-sm">
                             <div class="d-flex justify-content-center mb-3">
-                                <div class="card" style="width:600px">
+                                <div class="card" style="width:900px">
                                     <div class="card-header">
-                                        <h3>Registration</h3>
+                                        <h3>Register Here</h3>
                                     </div>
 
                                     <div class="card-body">
-                                        <form action="RegistrationServlet" method="POST">
-                                            <div class="form-group">
-                                                <label for="name">Full name:</label>
-                                                <input type="text" class="form-control" placeholder="Enter full name" id="name" required>
+                                        <form action="UserServlet" method="POST">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="form-group">
+                                                        <!--<label for="name">Full name:</label>-->
+                                                        <input type="text" class="form-control form-control-lg" placeholder="Enter full name" name="fullname" id="name" required>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <!--<label for="phoneNumber">Phone number:</label>-->
+                                                        <input type="text" class="form-control form-control-lg" placeholder="Enter phone number" name="phoneNumber" id="phoneNumber" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <!--<label for="email">Email address:</label>-->
+                                                        <input type="email" class="form-control form-control-lg" placeholder="Enter email" name="email" id="email" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <!--<label for="username">Username:</label>-->
+                                                        <input type="text" class="form-control form-control-lg" placeholder="Enter username" name="username" id="username" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <!--<label for="pwd">Password:</label>-->
+                                                        <input type="password" class="form-control form-control-lg" placeholder="Enter password" name="pwd" id="pwd" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <!--<label for="confirmPwd">Confirm password:</label>-->
+                                                        <input type="password" class="form-control form-control-lg" placeholder="Confirm password" name="confirmPwd" id="confirmPwd" required>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col">
+                                                    <div class="form-group">
+                                                        <!--<label for="address">Address:</label>-->
+                                                        <input type="text" class="form-control form-control-lg" placeholder="Enter address" name="address" id="address">
+                                                        <input type="text" class="form-control form-control-lg" placeholder="Enter city" name="city" id="city">
+                                                        <input type="text" class="form-control form-control-lg" placeholder="Enter poscode" name="poscode" id="poscode">
+                                                        <input type="text" class="form-control form-control-lg" placeholder="Enter state" name="state" id="state">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="number" class="form-control form-control-lg" placeholder="Enter your age" name="age" min="1">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="date" class="form-control form-control-lg" placeholder="Enter you date of birth" name="birthdate">
+                                                    </div>
+                                                    <div class="form-check-inline form-control-lg">
+                                                        <label class="form-check-label">
+                                                            <input type="radio" class="form-check-input" name="gender" value="male">Male
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check-inline form-control-lg">
+                                                        <label class="form-check-label">
+                                                          <input type="radio" class="form-check-input" name="gender" value="female">Female
+                                                        </label>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="address">Address:</label>
-                                                <input type="text" class="form-control" placeholder="Enter address" id="address">
-                                                <input type="text" class="form-control" placeholder="Enter city" id="city">
-                                                <input type="text" class="form-control" placeholder="Enter poscode" id="poscode">
-                                                <input type="text" class="form-control" placeholder="Enter state" id="state">
+                                            <div class="mt-3">
+                                            <input type="hidden" name="userType" value="customer">
+                                            <input type="hidden" name="action" value="registerUser">
+                                            <input type="submit" class="btn btn-danger btn-block btn-lg" value="Register"/>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="phoneNumber">Phone number:</label>
-                                                <input type="text" class="form-control" placeholder="Enter phone number" id="phoneNumber" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="email">Email address:</label>
-                                                <input type="email" class="form-control" placeholder="Enter email" id="email" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="userName">Username:</label>
-                                                <input type="text" class="form-control" placeholder="Enter username" id="userName" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="pwd">Password:</label>
-                                                <input type="password" class="form-control" placeholder="Enter password" id="pwd" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="confirmPwd">Confirm password:</label>
-                                                <input type="password" class="form-control" placeholder="Confirm password" id="confirmPwd" required>
-                                            </div>
-                                            <button type="submit" class="btn btn-danger btn-block btn-lg">Register</button>
                                           </form>
                                     </div>
 
                                     <div class="card-footer">
-                                        Already registered? <a href="${pageContext.servletContext.contextPath}/LoginServlet">Login here</a>
+                                        Already registered? <a href="${pageContext.servletContext.contextPath}/LoginServlet?action=redirectLogin">Login here</a>
                                     </div>
                                 </div>
                             </div>
