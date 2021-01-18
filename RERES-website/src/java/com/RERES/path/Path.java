@@ -1,10 +1,12 @@
 package com.RERES.path;
 
+import java.io.Serializable;
+
 /*
 * This where all of path required by the servlet to their respective web page being stored
 */
 
-public interface Path {
+public interface Path extends Serializable {
     String MAIN_PATH_ASSETS = "/assets";
     String MAIN_PATH_JSP = "/WEB-INF";
     
@@ -16,7 +18,7 @@ public interface Path {
     String MANAGE_BOOKING_VIEW_PATH = MAIN_VIEW_PATH + "/manageBooking.jsp";
     String MANAGE_USER_VIEW_PATH = MAIN_VIEW_PATH + "/manageUser.jsp";
     String PAYMENT_FORM_VIEW_PATH = MAIN_VIEW_PATH + "/paymentForm.jsp";
-    String VIEW_USER_LIST_VIEW_PATH = MAIN_VIEW_PATH + "/viewUserList.jsp";
+    String USER_SERVLET_VIEW_PATH = MAIN_VIEW_PATH;
     String LOGIN_VIEW_PATH = MAIN_VIEW_PATH + "/login.jsp";
     String PROFILE_VIEW_PATH = MAIN_VIEW_PATH + "/profile.jsp";
     String REGISTRATION_VIEW_PATH = MAIN_VIEW_PATH + "/registration.jsp";
@@ -45,4 +47,5 @@ public interface Path {
     String PROFILE_PICTURE_STAFF_PATH = MAIN_PATH_IMAGE + "/profile/staff";
     //--------------------------------------------------------------------------
 
+    
 }

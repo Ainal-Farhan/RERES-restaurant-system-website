@@ -1,5 +1,7 @@
-content .content-container{
+.content-container{
     min-height: 100vh;
+    padding-top: 30px;
+    background-image: url("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.teN8fOeOseUho-VmWSHg0AHaFj%26pid%3DApi&f=1");
 }
 
 .container-custom {
