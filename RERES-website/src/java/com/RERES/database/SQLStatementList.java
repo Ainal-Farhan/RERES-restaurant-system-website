@@ -10,15 +10,17 @@ public interface SQLStatementList {
     String SQL_STATEMENT_RETRIEVE_ALL_USERS_INFORMATION = "SELECT * FROM User;";
     String SQL_STATEMENT_RETRIEVE_ALL_SPECIFIC_USER_INFORMATION = "SELECT * FROM User WHERE user_type=?;";
     String SQL_STATEMENT_RETRIEVE_A_USER_INFORMATION = "SELECT * FROM User WHERE user_type=? AND user_id=?;";
-    String SQL_STATEMENT_RETRIEVE_ALL_BOOKING_WITH_PAYMENT_ORDER_AND_CUSTOMER_NAME_INFORMATION_BY_BOOKING_ID = "SELECT " +
+    String SQL_STATEMENT_RETRIEVE_ALL_BOOKING_WITH_PAYMENT_ORDER_TABLE_AND_CUSTOMER_NAME_INFORMATION_BY_BOOKING_ID = "SELECT " +
         "   `payment`.`payment_id`, `payment`.`payment_status`, `payment`.`payment_method`, `payment`.`total_payment`, `payment`.`date_paid`, `payment`.`fk_bookingID`, " +
-        "   `booking`.`booking_id`, `booking`.`booking_description`, `booking`.`booking_date`, `booking`.`booking_duration`, `booking`.`booking_start_time`, `booking`.`booking_end_time`, `booking`.`booking_status`, `booking`.`booking_quantity`, `booking`.`booking_price`, `booking`.`booking_date_created`, `booking`.`fk_userID`, " +
+        "   `booking`.`booking_id`, `booking`.`booking_description`, `booking`.`booking_date`, `booking`.`time_slot`, `booking`.`time_code`, `booking`.`booking_status`, `booking`.`booking_quantity`, `booking`.`booking_price`, `booking`.`booking_date_created`, `booking`.`fk_userID`, `booking`.`fk_bookingTableID`, " +
         "   `user`.`name`, " +
         "   `orderitem`.`order_item_id`, `orderitem`.`item_quantity`, `orderitem`.`total_price`, `orderitem`.`fk_foodID`, " +
+        "   `bookingtable`.`bookingTable_id`, `bookingtable`.`bookingTable_status`, `bookingtable`.`bookingTable_code`, `bookingtable`.`bookingTable_capacity`, " +
         "   `food`.`food_id`, `food`.`food_name`, `food`.`food_price`,`food`.`food_description`, `food`.`food_photo` " +
         "FROM `booking` " +
         "LEFT JOIN `payment` ON `payment`.`fk_bookingID` = ? " +
         "INNER JOIN `user` ON `booking`.`fk_userID` = `user`.`user_id` AND `user`.`user_type`='customer' " +
+        "INNER JOIN `bookingtable` ON `booking`.`fk_bookingTableID` = `bookingtable`.`bookingTable_id`" +
         "LEFT JOIN `orderitem` ON `payment`.`fk_bookingID` = `orderitem`.`fk_bookingID` AND `orderitem`.`fk_bookingID` = ? " +
         "LEFT JOIN `food` ON `food`.`food_id` = `orderitem`.`fk_foodID`" +
         "WHERE `booking`.`booking_id` = ?";

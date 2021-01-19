@@ -8,12 +8,14 @@ package com.RERES.controller;
 import com.RERES.database.Database;
 import com.RERES.database.SQLStatementList;
 import com.RERES.model.Booking;
+import com.RERES.model.BookingTable;
 import com.RERES.model.Food;
 import com.RERES.model.OrderItem;
 import com.RERES.model.Payment;
 import com.RERES.model.User;
 import com.RERES.path.Path;
 import static com.RERES.path.Path.MAIN_VIEW_PATH;
+import com.RERES.view.View;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -23,7 +25,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -39,17 +40,20 @@ public class BookingServlet extends HttpServlet {
     private final String ACTION_VIEW_BOOKING_LIST = "viewBookingList";
     private final String ACTION_VIEW_BOOKING_LIST_FOR_CUSTOMER = "viewBookingListForCustomer";
     private final String ACTION_VIEW_THE_SELECTED_BOOKING = "viewTheSelectedBooking";
+    private final String ACTION_CANCEL_SELECTED_BOOKING = "cancelSelectedBooking";
+    private final String ACTION_REFUND_SELECTED_BOOKING = "refundSelectedBooking";
+    private final String ACTION_ABSENT_SELECTED_BOOKING = "absentSelectedBooking";
+    private final String ACTION_PRESENT_SELECTED_BOOKING = "presentSelectedBooking";
     
     final String[] PUBLIC_INFO_LABELS = {
         "No",
         "Booking ID",
         "Date",
-        "Start Time",
-        "Duration",
+        "Time Slot",
         "Status",
         "Price",
         "Created",
-        "View",
+        "View"
     };
     
     private static ArrayList<Booking> bookingList;
@@ -121,6 +125,18 @@ public class BookingServlet extends HttpServlet {
         else if(action.equals(ACTION_VIEW_BOOKING_LIST_FOR_CUSTOMER)) {
             processViewBookingListForCustomer(request, response);
         }
+        else if(action.equals(ACTION_CANCEL_SELECTED_BOOKING)) {
+            processChangeBookingStatus(request, response, "cancelled");
+        }
+        else if(action.equals(ACTION_REFUND_SELECTED_BOOKING)) {
+            processChangeBookingStatus(request, response, "refunded");
+        }
+        else if(action.equals(ACTION_ABSENT_SELECTED_BOOKING)) {
+            processChangeBookingStatus(request, response, "absent");
+        }
+        else if(action.equals(ACTION_PRESENT_SELECTED_BOOKING)) {
+            processChangeBookingStatus(request, response, "present");
+        }
     }
 
     /**
@@ -137,24 +153,38 @@ public class BookingServlet extends HttpServlet {
         return inputString == null || inputString.equals("");
     }
     
+    private void processChangeBookingStatus(HttpServletRequest request, HttpServletResponse response, String status)
+            throws ServletException, IOException {
+        int bookingID = Integer.parseInt(request.getParameter("bookingID"));
+        if(changeTheSelectedBookingStatus(status, bookingID)) {
+            View.setOverlayStatusMessage(request, response, "Successfully change booking status to " + status.toUpperCase());
+        }
+        else {
+            View.setOverlayStatusMessage(request, response, "Failed change booking status to " + status.toUpperCase());
+        }
+        processViewTheSelectedBooking(request, response);
+    }
+    
     private void processViewTheSelectedBooking(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int selectedBookingID = Integer.parseInt(request.getParameter("bookingID"));
-        selectedBooking = new Booking();
         
-        if(!bookingList.isEmpty() && bookingList != null) {
-            for(int i = 0; i < bookingList.size(); i++) {
-                if(bookingList.get(i).getBookingID() == selectedBookingID) {
-                    selectedBooking = bookingList.get(i);
-                    break;
-                }
-            }
+        if(selectedBooking == null) {
+            int selectedBookingID = Integer.parseInt(request.getParameter("bookingID"));
+            selectedBooking = new Booking();
             
-            if(selectedBooking != null) {
-                if(getAndSetRequiredInfoFromDatabaseForSelectedBooking(request)) {
-                    forwardPage(request, response, Path.MAIN_VIEW_PATH + "/manageBooking.jsp");
+            if(!bookingList.isEmpty() && bookingList != null) {
+                for(int i = 0; i < bookingList.size(); i++) {
+                    if(bookingList.get(i).getBookingID() == selectedBookingID) {
+                        selectedBooking = bookingList.get(i);
+                        break;
+                    }
                 }
+                
             }
+        } 
+        
+        if(selectedBooking != null && getAndSetRequiredInfoFromDatabaseForSelectedBooking(request)) {
+            View.includePage(request, response, Path.MAIN_VIEW_PATH + "/manageBooking.jsp");
         }
     }
     
@@ -164,7 +194,7 @@ public class BookingServlet extends HttpServlet {
             request.setAttribute("bookingList", bookingList);
             request.setAttribute("labels", this.PUBLIC_INFO_LABELS);
             request.setAttribute("labelsLength", this.PUBLIC_INFO_LABELS.length);
-            forwardPage(request, response, MAIN_VIEW_PATH + "/viewBookingListPage.jsp");
+            View.forwardPage(request, response, MAIN_VIEW_PATH + "/viewBookingListPage.jsp");
         }
     }
     
@@ -181,14 +211,41 @@ public class BookingServlet extends HttpServlet {
             request.setAttribute("bookingList", bookingList);
             request.setAttribute("labels", this.PUBLIC_INFO_LABELS);
             request.setAttribute("labelsLength", this.PUBLIC_INFO_LABELS.length);
-            forwardPage(request, response, MAIN_VIEW_PATH + "/viewBookingListPage.jsp");
+            View.forwardPage(request, response, MAIN_VIEW_PATH + "/viewBookingListPage.jsp");
         }
     }
-  
-    private void forwardPage(HttpServletRequest request, HttpServletResponse response,String pagePath)
-            throws ServletException, IOException {
-        RequestDispatcher dispatcher = request.getRequestDispatcher(pagePath);
-        dispatcher.forward(request, response);
+    
+    private boolean changeTheSelectedBookingStatus(String status, int bookingID)
+        throws ServletException, IOException {
+        Connection con;
+        
+        try {
+            con = new Database().getCon();
+            PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_UPDATE_THE_BOOKING_STATUS);
+            
+            st.setString(1, status);
+            st.setInt(2, bookingID);
+            
+            int result = st.executeUpdate();
+            
+            if(result > 0) {
+                if(!bookingList.isEmpty() && bookingList != null) {
+                    for(int i = 0; i < bookingList.size(); i++) {
+                        if(bookingList.get(i).getBookingID() == bookingID) {
+                            selectedBooking = bookingList.get(i);
+                            selectedBooking.setBookingStatus(status);
+                            bookingList.set(i, selectedBooking);
+                            break;
+                        }
+                    }
+                }
+                return true;
+            }
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return false;
     }
     
     private boolean getAndSetRequiredInfoFromDatabaseForSelectedBooking(HttpServletRequest request)
@@ -197,7 +254,7 @@ public class BookingServlet extends HttpServlet {
         
         try {
             con = new Database().getCon();
-            PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_RETRIEVE_ALL_BOOKING_WITH_PAYMENT_ORDER_AND_CUSTOMER_NAME_INFORMATION_BY_BOOKING_ID);
+            PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_RETRIEVE_ALL_BOOKING_WITH_PAYMENT_ORDER_TABLE_AND_CUSTOMER_NAME_INFORMATION_BY_BOOKING_ID);
             
             st.setInt(1, selectedBooking.getBookingID());
             st.setInt(2, selectedBooking.getBookingID());
@@ -210,6 +267,7 @@ public class BookingServlet extends HttpServlet {
             
             Payment payment = new Payment();
             Booking booking = new Booking();
+            BookingTable bookingTable = new BookingTable();
             User user = new User();
             
             int count = 1;
@@ -231,16 +289,21 @@ public class BookingServlet extends HttpServlet {
                     booking.setBookingID(result.getInt("booking_id"));
                     booking.setBookingDescription(result.getString("booking_description"));
                     booking.setBookingDate(result.getDate("booking_date"));
-                    booking.setBookingDuration(result.getInt("booking_duration"));
-                    booking.setBookingStartTime(result.getTime("booking_start_time"));
-                    booking.setBookingEndTime(result.getTime("booking_end_time"));
+                    booking.setTimeCode(result.getInt("time_code"));
+                    booking.setTimeSlot(result.getString("time_slot"));
                     booking.setBookingStatus(result.getString("booking_status"));
                     booking.setBookingQuantity(result.getInt("booking_quantity"));
                     booking.setBookingPrice(result.getDouble("booking_price"));
                     booking.setBookingDateCreated(result.getTimestamp("booking_date_created"));
                     booking.setFkUserID(result.getInt("fk_userID"));
+                    booking.setFkBookingTableID(result.getInt("fk_bookingTableID"));
 
                     user.setName(result.getString("name"));
+                    
+                    bookingTable.setBookingTableID(result.getInt("bookingTable_id"));
+                    bookingTable.setBookingTableStatus(result.getString("bookingTable_status"));
+                    bookingTable.setBookingTableCode(result.getInt("bookingTable_code"));
+                    bookingTable.setBookingTableCapacity(result.getInt("bookingTable_capacity"));
                     
                     count++;
                 }
@@ -271,6 +334,7 @@ public class BookingServlet extends HttpServlet {
             request.setAttribute("selectedBookingPayment", payment);
             request.setAttribute("selectedBooking", booking);
             request.setAttribute("selectedBookingUser", user);
+            request.setAttribute("selectedBookingTable", bookingTable);
             request.setAttribute("selectedBookingOrderItems", orderItems);
             request.setAttribute("selectedBookingFoods", foods);
             
@@ -299,14 +363,14 @@ public class BookingServlet extends HttpServlet {
                 booking.setBookingID(result.getInt("booking_id"));
                 booking.setBookingDescription(result.getString("booking_description"));
                 booking.setBookingDate(result.getDate("booking_date"));
-                booking.setBookingDuration(result.getInt("booking_duration"));
-                booking.setBookingStartTime(result.getTime("booking_start_time"));
-                booking.setBookingEndTime(result.getTime("booking_end_time"));
+                booking.setTimeCode(result.getInt("time_code"));
+                booking.setTimeSlot(result.getString("time_slot"));
                 booking.setBookingStatus(result.getString("booking_status"));
                 booking.setBookingQuantity(result.getInt("booking_quantity"));
                 booking.setBookingPrice(result.getDouble("booking_price"));
                 booking.setBookingDateCreated(result.getTimestamp("booking_date_created"));
                 booking.setFkUserID(result.getInt("fk_userID"));
+                booking.setFkBookingTableID(result.getInt("fk_bookingTableID"));
                 
                 bookingList.add(booking);
             }
@@ -333,14 +397,14 @@ public class BookingServlet extends HttpServlet {
                 booking.setBookingID(result.getInt("booking_id"));
                 booking.setBookingDescription(result.getString("booking_description"));
                 booking.setBookingDate(result.getDate("booking_date"));
-                booking.setBookingDuration(result.getInt("booking_duration"));
-                booking.setBookingStartTime(result.getTime("booking_start_time"));
-                booking.setBookingEndTime(result.getTime("booking_end_time"));
+                booking.setTimeCode(result.getInt("time_code"));
+                booking.setTimeSlot(result.getString("time_slot"));
                 booking.setBookingStatus(result.getString("booking_status"));
                 booking.setBookingQuantity(result.getInt("booking_quantity"));
                 booking.setBookingPrice(result.getDouble("booking_price"));
                 booking.setBookingDateCreated(result.getTimestamp("booking_date_created"));
                 booking.setFkUserID(result.getInt("fk_userID"));
+                booking.setFkBookingTableID(result.getInt("fk_bookingTableID"));
                 
                 bookingList.add(booking);
             }
