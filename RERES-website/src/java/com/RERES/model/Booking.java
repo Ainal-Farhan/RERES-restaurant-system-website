@@ -7,7 +7,6 @@ package com.RERES.model;
 
 import java.io.Serializable;
 import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 
 /**
@@ -18,16 +17,40 @@ public class Booking implements Serializable {
     private int bookingID;
     private String bookingDescription;
     private Date bookingDate;
-    private int bookingDuration;
-    private Time bookingStartTime;
-    private Time bookingEndTime;
+    private int timeCode;
+    private String timeSlot;
     private String bookingStatus;
     private int bookingQuantity;
     private double bookingPrice;
     private Timestamp bookingDateCreated;
     private int fkUserID;
+    private int fkBookingTableID;
 
-    public Booking() {}    
+    public Booking() {}  
+    
+    public int getFkBookingTableID() {
+        return fkBookingTableID;
+    }
+
+    public void setFkBookingTableID(int fkBookingTableID) {
+        this.fkBookingTableID = fkBookingTableID;
+    }
+
+    public int getTimeCode() {
+        return timeCode;
+    }
+
+    public void setTimeCode(int timeCode) {
+        this.timeCode = timeCode;
+    }
+
+    public String getTimeSlot() {
+        return timeSlot;
+    }
+
+    public void setTimeSlot(String timeSlot) {
+        this.timeSlot = timeSlot;
+    }
     
     public int getBookingID() {
         return bookingID;
@@ -51,30 +74,6 @@ public class Booking implements Serializable {
 
     public void setBookingDate(Date bookingDate) {
         this.bookingDate = bookingDate;
-    }
-
-    public int getBookingDuration() {
-        return bookingDuration;
-    }
-
-    public void setBookingDuration(int bookingDuration) {
-        this.bookingDuration = bookingDuration;
-    }
-
-    public Time getBookingStartTime() {
-        return bookingStartTime;
-    }
-
-    public void setBookingStartTime(Time bookingStartTime) {
-        this.bookingStartTime = bookingStartTime;
-    }
-
-    public Time getBookingEndTime() {
-        return bookingEndTime;
-    }
-
-    public void setBookingEndTime(Time bookingEndTime) {
-        this.bookingEndTime = bookingEndTime;
     }
 
     public String getBookingStatus() {
