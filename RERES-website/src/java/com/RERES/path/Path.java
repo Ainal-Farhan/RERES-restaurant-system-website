@@ -36,6 +36,7 @@ public interface Path extends Serializable {
     
     // Path for components
     String COMPONENT_PROGRESS_BAR_PATH = MAIN_COMPONENT_PATH + "/progressBar.jsp";
+    String COMPONENT_PROCESS_STATUS_OVERLAY_PATH = MAIN_COMPONENT_PATH + "/processStatusOverlay.jsp";
     //--------------------------------------------------------------------------
     
     // Main path for assets img

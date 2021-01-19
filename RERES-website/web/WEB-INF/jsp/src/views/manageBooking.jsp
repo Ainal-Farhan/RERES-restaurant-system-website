@@ -1,3 +1,5 @@
+<%@page import="java.time.Period"%>
+<%@page import="java.time.LocalDate"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="com.RERES.model.Food"%>
 <%@page import="com.RERES.model.OrderItem"%>
@@ -21,6 +23,7 @@
             <jsp:useBean id="selectedBookingPayment" class="com.RERES.model.Payment" scope="request" />
             <jsp:useBean id="selectedBooking" class="com.RERES.model.Booking" scope="request" />
             <jsp:useBean id="selectedBookingUser" class="com.RERES.model.User" scope="request" />
+            <jsp:useBean id="selectedBookingTable" class="com.RERES.model.BookingTable" scope="request" />
             <%  
                 ArrayList<OrderItem> orderItems = (ArrayList<OrderItem>)request.getAttribute("selectedBookingOrderItems");
                 ArrayList<Food> foods = (ArrayList<Food>)request.getAttribute("selectedBookingFoods");
@@ -68,21 +71,94 @@
                             <tr>
                                 <th>Date</th>
                                 <td><jsp:getProperty name="selectedBooking" property="bookingDate"/></td>
-                                <th>Duration</th>
-                                <td><%= selectedBooking.getBookingDuration() + " H" %></td>
+                                <th>Time Slot</th>
+                                <td><%= selectedBooking.getTimeSlot() %></td>
                             </tr>
                             <tr>
-                                <th>Start Time</th>
-                                <td><%= selectedBooking.getBookingStartTime().toString().substring(0, 5) + "H" %></td>
-                                <th>End Time</th>
-                                <td><%= selectedBooking.getBookingEndTime().toString().substring(0, 5) + "H" %></td>
+                                <th>Table Number</th>
+                                <td><jsp:getProperty name="selectedBookingTable" property="bookingTableCode"/></td>
+                                <th>Table Capacity</th>
+                                <td><jsp:getProperty name="selectedBookingTable" property="bookingTableCapacity"/></td>
                             </tr>
                             <tr>
                                 <th>Payment Status</th>
                                 <td style="color:<%= selectedBookingPayment.getPaymentStatus().toUpperCase().equals("DONE")? "green" : "red" %>;font-weight:bolder;"><%= selectedBookingPayment.getPaymentStatus().toUpperCase() %></td>
                                 <th>Booking Status</th>
-                                <td style="color:<%= selectedBooking.getBookingStatus().toUpperCase().equals("SUCCESS")? "green" : "red" %>;font-weight:bolder;"><%= selectedBooking.getBookingStatus().toUpperCase() %></td>
+                                <td style="color:<%= selectedBooking.getBookingStatus().toUpperCase().equals("SUCCESS") || selectedBooking.getBookingStatus().toUpperCase().equals("PRESENT")? "green" : "red" %>;font-weight:bolder;"><%= selectedBooking.getBookingStatus().toUpperCase() %></td>
                             </tr>
+                            <%  if(selectedBookingPayment.getPaymentStatus().equalsIgnoreCase("done")) { %>
+                            <tr>
+                                <%
+                                    // calculate difference
+                                    long days = Period.between(LocalDate.now(), LocalDate.parse(selectedBooking.getBookingDate().toString())).getDays();
+                                %>
+                                
+                                <%  if(selectedBooking.getBookingStatus().equalsIgnoreCase("success")) { %>
+                                    <%  if(days == 0) { %>
+                                    <th>Action</th>
+                                    <td style="text-align:right">
+                                        <form action="BookingServlet" method="POST">
+                                            <input type="hidden" name="action" value="absentSelectedBooking">
+                                            <input type="hidden" name="bookingID" value="<%= selectedBooking.getBookingID() %>">
+                                            <input type="submit" class="btn-custom" value="Absent">
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form action="BookingServlet" method="POST">
+                                            <input type="hidden" name="action" value="presentSelectedBooking">
+                                            <input type="hidden" name="bookingID" value="<%= selectedBooking.getBookingID() %>">
+                                            <input type="submit" class="btn-custom" value="Present">
+                                        </form>
+                                    </td>
+                                    <td>Today is the booked date</td>
+                                    <%  } else if(days > 0) {%>
+                                    <th>Action</th>
+                                    <td>
+                                        <form action="BookingServlet" method="POST">
+                                            <input type="hidden" name="action" value="cancelSelectedBooking">
+                                            <input type="hidden" name="bookingID" value="<%= selectedBooking.getBookingID() %>">
+                                            <input type="submit" class="btn-custom" value="Cancel Booking">
+                                        </form>
+                                    </td>
+                                    <td colspan="2">You May Cancel Booking at least 1 day before the booking date</td>
+                                    <%  } else { %>
+                                    <th>Message</th>
+                                    <td colspan="3">Cannot Cancel Booking</td>
+                                    <%  } %>
+                                <%  } else if(selectedBooking.getBookingStatus().equalsIgnoreCase("cancelled")) { %>
+                                    <th>Action</th>
+                                    <td>
+                                        <form action="BookingServlet" method="POST">
+                                            <input type="hidden" name="action" value="refundSelectedBooking">
+                                            <input type="hidden" name="bookingID" value="<%= selectedBooking.getBookingID() %>">
+                                            <input type="submit" class="btn-custom" value="Refund Booking">
+                                        </form>
+                                    </td>
+                                    <td colspan="2">You May Refund Booking a the latest 3 days after the booking date</td>
+                                <%  } else if(selectedBooking.getBookingStatus().equalsIgnoreCase("refunded")) { %>
+                                    <th>Message</th>
+                                    <td colspan="3">Already Refunded</td>
+                                <%  } else if(selectedBooking.getBookingStatus().equalsIgnoreCase("absent")) { %>
+                                    <%  if(days >= -3 && days < 0) {%>
+                                    <th>Action</th>
+                                    <td>
+                                        <form action="BookingServlet" method="POST">
+                                            <input type="hidden" name="action" value="refundSelectedBooking">
+                                            <input type="hidden" name="bookingID" value="<%= selectedBooking.getBookingID() %>">
+                                            <input type="submit" class="btn-custom" value="Refund Booking (80%)">
+                                        </form>
+                                    </td>
+                                    <td colspan="2">You May Refund Booking (RM<%= String.format("%.2f", selectedBooking.getBookingPrice() * 0.8) %>) within 3 days after the booking date</td>
+                                    <%  } else { %>
+                                    <th>Message</th>
+                                    <td colspan="3">Refund Booking can only be done within three days after the booked date</td>
+                                    <%  } %>
+                                <%  } else if(selectedBooking.getBookingStatus().equalsIgnoreCase("present")) { %>
+                                    <th>Message</th>
+                                    <td colspan="3">Thank you for coming</td>
+                                <%  } %>
+                            </tr>
+                            <%  } %>
                         </tbody>
                     </table>
                 </div>

@@ -1,3 +1,5 @@
+<%@page import="java.time.Period"%>
+<%@page import="java.time.LocalDate"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 <%@page import="java.util.ArrayList"%>
@@ -41,26 +43,27 @@
                                 </tr>
                             </c:if>
 
+                                <% ArrayList<Booking> bookingList = (ArrayList<Booking>)request.getAttribute("bookingList"); %>
+                            
                             <c:if test = "${numberOfBooking > 0}">                                            
-                                <c:forEach items="${requestScope.bookingList}" var="booking" varStatus="loop">
+                                <%  for(int i = 0; i < bookingList.size(); i++) { %>
                                     <tr>
-                                        <th scope='row'><c:out value="${loop.index + 1}" /></th>
-                                        <td><c:out value="${booking.bookingID}" /></td>
-                                        <td><c:out value="${booking.bookingDate}" /></td>
-                                        <td><c:out value="${booking.bookingStartTime.toString().substring(0, 5)}H" /></td>
-                                        <td><c:out value="${booking.bookingDuration}" /></td>
-                                        <td><c:out value="${booking.bookingStatus.toUpperCase()}" /></td>
-                                        <td><c:out value="RM${booking.bookingPrice}" /></td>
-                                        <td><c:out value="${booking.bookingDateCreated.toString().substring(0, 16)}H" /></td>
+                                        <th scope='row'><%= i + 1 %></th>
+                                        <td><%= bookingList.get(i).getBookingID() %></td>
+                                        <td><%= bookingList.get(i).getBookingDate() %></td>
+                                        <td><%= bookingList.get(i).getTimeSlot() %></td>
+                                        <td><%= bookingList.get(i).getBookingStatus().toUpperCase() %> </td>
+                                        <td><%= "RM" + String.format("%.2f", bookingList.get(i).getBookingPrice())  %></td>
+                                        <td><%= bookingList.get(i).getBookingDateCreated().toString().substring(0, 16)+ "H" %></td>
                                         <td>
                                             <form action="BookingServlet" method="POST">
                                                 <input type="hidden" name="action" value="viewTheSelectedBooking">
-                                                <input type="hidden" name="bookingID" value="<c:out value="${booking.bookingID}" />">
+                                                <input type="hidden" name="bookingID" value="<%= bookingList.get(i).getBookingID() %>">
                                                 <input type="submit" class="btn-custom" value="Go">
                                             </form>
                                         </td>
                                     </tr>
-                                </c:forEach>
+                                <%  } %>
                             </c:if>
                         </tbody>
                     </table>
