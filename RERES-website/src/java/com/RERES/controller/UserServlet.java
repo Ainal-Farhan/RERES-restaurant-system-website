@@ -9,6 +9,7 @@ import com.RERES.database.Database;
 import com.RERES.database.SQLStatementList;
 import com.RERES.model.User;
 import com.RERES.path.Path;
+import com.RERES.view.View;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -23,7 +24,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -130,7 +130,7 @@ public class UserServlet extends HttpServlet {
         else if(action.equals(ACTION_LOGOUT_USER)) {
             HttpSession session = request.getSession();
             session.invalidate();
-            forwardPage(request, response, Path.HOME_VIEW_PATH);
+            View.forwardPage(request, response, Path.HOME_VIEW_PATH);
         }
     }
 
@@ -147,18 +147,18 @@ public class UserServlet extends HttpServlet {
     protected void processLoginUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException {
         if(authenticateUser(request)) {
-            forwardPage(request, response, Path.HOME_VIEW_PATH);
+            View.forwardPage(request, response, Path.HOME_VIEW_PATH);
         }
         else {
             
-            forwardPage(request, response, Path.LOGIN_VIEW_PATH);
+            View.forwardPage(request, response, Path.LOGIN_VIEW_PATH);
         }
     }
     
     private void processRegisterUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException {
         if(setUserRegistrationIntoDatabase(request)) {
-            forwardPage(request, response, Path.LOGIN_VIEW_PATH);
+            View.forwardPage(request, response, Path.LOGIN_VIEW_PATH);
         }
     }
     
@@ -229,8 +229,7 @@ public class UserServlet extends HttpServlet {
             st.setString(9, gender);
             st.setString(10, phoneNumber);
 
-            int count = 0;
-            count = st.executeUpdate();
+            int count = st.executeUpdate();
 
 //            Logger.getLogger(Database.class.getName()).log(Level.INFO, fullname + address + city + poscode + state + phoneNumber + email + username + password + confirmPassword + userType + age + sqlDate + gender + st.toString());
 
@@ -310,11 +309,10 @@ public class UserServlet extends HttpServlet {
                 }
                 return true;
             } 
-            return false;
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
         }
+        return false;
     }
     
     private boolean updateSelectedUser(User selectedUser) {
@@ -350,17 +348,10 @@ public class UserServlet extends HttpServlet {
                 
                 return true;
             } 
-            return false;
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
         }
-    }
-    
-    private void forwardPage(HttpServletRequest request, HttpServletResponse response,String pagePath)
-            throws ServletException, IOException {
-        RequestDispatcher dispatcher = request.getRequestDispatcher(pagePath);
-        dispatcher.forward(request, response);
+        return false;
     }
     
     private void processUpdateOrDeleteAUser(HttpServletRequest request, HttpServletResponse response)
@@ -373,9 +364,11 @@ public class UserServlet extends HttpServlet {
         }
         else if(!isStringIsNullOrEmpty(delete) && isStringIsNullOrEmpty(save) && delete.equalsIgnoreCase("delete")) {
             if(deleteSelectedUser(user.getUserID())) {
+                View.setOverlayStatusMessage(request, response, "Successfully Deleting the User Information");
                 goToViewUserList(request, response, user.getUserType());
             }else {
-                forwardPage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
+                View.setOverlayStatusMessage(request, response, "Failed Deleting the User Information");
+                View.forwardPage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
             }
         }
         else if(!isStringIsNullOrEmpty(save) && isStringIsNullOrEmpty(delete) && save.equalsIgnoreCase("save")) {
@@ -384,19 +377,16 @@ public class UserServlet extends HttpServlet {
             
             selectedUser.setName(request.getParameter("name"));
             selectedUser.setAge(Integer.parseInt(request.getParameter("user-age")));
-            
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            Date parsed = format.parse(request.getParameter("user-birth-date"));
-            java.sql.Date updatedBirthDate = new java.sql.Date(parsed.getTime());
-            
-            selectedUser.setBirthDate(updatedBirthDate);
-            
-            selectedUser.setGender(request.getParameter("gender"));
             selectedUser.setEmail(request.getParameter("user-email"));
             selectedUser.setPhoneNumber(request.getParameter("user-phone-no"));
             selectedUser.setAddress(request.getParameter("user-address"));
             
             if(updateSelectedUser(selectedUser)) {
+                View.setOverlayStatusMessage(request, response, "Successfully Updating the User Information");
+                goToManageAUserHttpServletRequest(request, response, selectedUser);
+            } 
+            else {
+                View.setOverlayStatusMessage(request, response, "Failed Updating the User Information");
                 goToManageAUserHttpServletRequest(request, response, selectedUser);
             }
         }
@@ -522,7 +512,7 @@ public class UserServlet extends HttpServlet {
         request.setAttribute("userType", userType.toUpperCase());
         request.setAttribute("labelsLength", this.PUBLIC_INFO_LABELS.length);
         
-        forwardPage(request, response, Path.USER_SERVLET_VIEW_PATH + "/viewUserListPage.jsp");
+        View.includePage(request, response, Path.USER_SERVLET_VIEW_PATH + "/viewUserListPage.jsp");
     }
     
     private void goToManageAUserHttpServletRequest(HttpServletRequest request, HttpServletResponse response, User selectedUser)
@@ -532,7 +522,6 @@ public class UserServlet extends HttpServlet {
         request.setAttribute("selectedUserType", selectedUser.getUserType());
         request.setAttribute("selectedUserProfilePhoto", selectedUser.getProfilePhoto());
         
-        forwardPage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
+        View.includePage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
     }
-    
 }

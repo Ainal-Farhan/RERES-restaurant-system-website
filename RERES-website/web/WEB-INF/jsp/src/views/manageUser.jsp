@@ -1,3 +1,5 @@
+<%@page import="java.time.Period"%>
+<%@page import="java.time.LocalDate"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -60,20 +62,23 @@
                             <label class="form-control-plaint-text"><jsp:getProperty name="selectedUser" property="username"/></label>
                         </div>
                     </div>
-
+                        <%
+                            int currentAge = Period.between(LocalDate.parse(selectedUser.getBirthDate().toString()), LocalDate.now()).getYears();
+                        %>
                     <div class="form-group form-row align-items-center">
                         <div class="col-2">
                             <label for="UserAge">Age</label>
                         </div>
                         <div class="col">
-                            <input type="number" class="form-control" name="user-age" id="UserAge" min="1" value="<jsp:getProperty name="selectedUser" property="age"/>" required>
+                            <label class="form-control-plaint-text"><%= currentAge %></label>
+                            <input type="hidden" class="form-control" name="user-age" value="<%= currentAge %>">
                         </div>
 
                         <div class="col-2">
                             <label for="UserBirthDate">Birth Date</label>
                         </div>
                         <div class="col">
-                            <input type="date" class="form-control" name="user-birth-date" id="UserBirthDate" value="<jsp:getProperty name="selectedUser" property="birthDate"/>" required>
+                            <label class="form-control-plaint-text"><jsp:getProperty name="selectedUser" property="birthDate"/></label>
                         </div>
                     </div>
 
@@ -89,14 +94,7 @@
                             <label for="UserGender">Gender</label>
                         </div>
                         <div class="col">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="gender" id="male" value="male" >
-                                <label class="form-check-label" for="male">Male</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="gender" id="female" value="female">
-                                <label class="form-check-label" for="female">Female</label>
-                            </div>
+                            <label class="form-control-plaint-text"><jsp:getProperty name="selectedUser" property="gender"/></label>
                         </div>
                     </div>
 
@@ -144,30 +142,14 @@
         </div>
                         
         <script>
-            var gender = "<jsp:getProperty name="selectedUser" property="gender"/>";
             changeInputStatus(true);
-            
-            if(gender === "male") {
-                document.getElementById("male").checked = true;
-                document.getElementById("male").disabled = false;
-                document.getElementById("female").disabled = true;
-            }
-            else if(gender === "female") {
-                document.getElementById("female").checked = true;
-                document.getElementById("female").disabled = false;
-                document.getElementById("male").disabled = true;
-            }
             
             function changeInputStatus(status) {
                 document.getElementById("Name").readOnly = status;
-                document.getElementById("UserAge").readOnly = status;
-                document.getElementById("UserBirthDate").readOnly = status;
                 document.getElementById("UserEmail").readOnly = status;
                 document.getElementById("UserPhoneNo").readOnly = status;
                 document.getElementById("UserAddress").readOnly = status;
                 if(status !== true) {                    
-                    document.getElementById("female").disabled = status;
-                    document.getElementById("male").disabled = status;
                     <% if((currentUserType.equalsIgnoreCase("staff") && userType.equals("staff")) || (currentUserType.equalsIgnoreCase("customer")) || (currentUserType.equalsIgnoreCase("admin"))) { %>
                     document.getElementById("update-btn").style.display="none";
                     document.getElementById("back-btn").style.display="block";
@@ -178,16 +160,6 @@
                     <% } %>
                     
                 } else {
-                    if(gender === "male") {
-                        document.getElementById("male").checked = true;
-                        document.getElementById("male").disabled = false;
-                        document.getElementById("female").disabled = true;
-                    }
-                    else if(gender === "female") {
-                        document.getElementById("female").checked = true;
-                        document.getElementById("female").disabled = false;
-                        document.getElementById("male").disabled = true;
-                    }
                     <% if((currentUserType.equalsIgnoreCase("staff") && userType.equals("staff")) || (currentUserType.equalsIgnoreCase("customer")) || (currentUserType.equalsIgnoreCase("admin"))) { %>
                     document.getElementById("update-btn").style.display="block";
                     document.getElementById("back-btn").style.display="none";
