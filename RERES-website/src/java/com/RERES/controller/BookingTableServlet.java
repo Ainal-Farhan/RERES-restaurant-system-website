@@ -35,6 +35,14 @@ public class BookingTableServlet extends HttpServlet {
     private final String ACTION_VIEW_BOOKING_TABLE = "viewBookingTable";
     private final String ACTION_CHECK_AVAILABILITY = "checkAvailability";
     private final String ACTION_MAKE_RESERVATION = "makeReserve";
+    
+    private static java.sql.Date bookDate;
+    private static int timeCode;
+    private static String timeSlot;
+    private static int bookQuantity;
+    private static double bookPrice;
+    private static String checkMessage;
+    private static String checkNoTableMessage;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -79,17 +87,14 @@ public class BookingTableServlet extends HttpServlet {
             throws ServletException, IOException {
         
         String action = request.getParameter("action");
-        HttpSession session = request.getSession();
         
         if(isStringIsNullOrEmpty(action)) {
             
         }
         else if(action.equals(ACTION_VIEW_BOOKING_TABLE)) {
-            deleteBookingTableSession(session);
             forwardPage(request, response, Path.BOOKING_TABLE_VIEW_PATH);
         }
         else if(action.equals(ACTION_CHECK_AVAILABILITY)) {
-            deleteBookingTableSession(session);
             processCheckTable(request, response);
         }
         else if(action.equals(ACTION_MAKE_RESERVATION)) {
@@ -136,19 +141,8 @@ public class BookingTableServlet extends HttpServlet {
         
         try {
             ArrayList<BookingTable> bookingTableList;
-            HttpSession session = request.getSession();
             
-            String date = request.getParameter("bookDate");
-            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            Date myDate = formatter.parse(date);
-            java.sql.Date bookDate = new java.sql.Date(myDate.getTime());
-            int timeCode = Integer.parseInt(request.getParameter("timeCode"));
-            int bookQuantity = Integer.parseInt(request.getParameter("bookQuantity"));
-            double bookPrice = Double.parseDouble(request.getParameter("bookQuantity")) * 15.00;
-            String checkMessage = "Available table for " + bookQuantity + " person(s)" + " on " + bookDate + " at " + timePicker(request.getParameter("timeCode"));
-            String checkNoTableMessage = "Sorry no available table for " + bookQuantity + " person(s)" + " on " + bookDate + " at " + timePicker(request.getParameter("timeCode"));
-            
-            Logger.getLogger(Database.class.getName()).log(Level.INFO, bookDate.toString() + timeCode + bookQuantity + bookPrice);
+            setStaticAttributes(request);
             
             Connection con = new Database().getCon();
             PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_RETRIEVE_BOOKING_LIST_AND_TABLE_LIST);
@@ -177,22 +171,25 @@ public class BookingTableServlet extends HttpServlet {
                 //Logger.getLogger(Database.class.getName()).log(Level.INFO, rs.getString("time_slot") + "inside while rs next");
             }
             
-            session.setAttribute("isCheck", true);
+            request.setAttribute("isCheck", true);
             if(bookingTableList.isEmpty()){
-                session.setAttribute("displayMessage", checkNoTableMessage);
+                request.setAttribute("displayMessage", checkNoTableMessage);
             }
             else {
-                session.setAttribute("displayMessage", checkMessage);
+                request.setAttribute("displayMessage", checkMessage);
             }
-            session.setAttribute("bookDate", date);
-            session.setAttribute("timeCode", request.getParameter("timeCode"));
-            session.setAttribute("bookQuantity", request.getParameter("bookQuantity"));
-            session.setAttribute("btlist", bookingTableList);
-            session.setAttribute("bookPrice", bookPrice);
+            
+            request.setAttribute("selectedDate", bookDate);
+            request.setAttribute("bookDate", bookDate);
+            request.setAttribute("timeCode", timeCode);
+            request.setAttribute("bookQuantity", bookQuantity);
+            request.setAttribute("timeSlot", timeSlot);
+            request.setAttribute("btlist", bookingTableList);
+            request.setAttribute("bookPrice", bookPrice);
             
             return true;
             
-        } catch (ParseException | SQLException | ClassNotFoundException ex) {
+        } catch (ParseException | SQLException | ClassNotFoundException | ServletException | IOException ex) {
             Logger.getLogger(BookingTableServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
@@ -203,17 +200,11 @@ public class BookingTableServlet extends HttpServlet {
         try {
             HttpSession session = request.getSession();
             
-            String date = (String) session.getAttribute("bookDate");
-            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            Date myDate = formatter.parse(date);
-            java.sql.Date bookDate = new java.sql.Date(myDate.getTime());
-            int timeCode = Integer.parseInt((String) session.getAttribute("timeCode"));
-            String timeSlot = timePicker((String) session.getAttribute("timeCode"));
-            int bookQuantity = Integer.parseInt((String) session.getAttribute("bookQuantity"));
+            if(isStaticAttributesIsNull()) return false;
+            
             int tableCode = Integer.parseInt(request.getParameter("tableCode"));
             String bookDesc = request.getParameter("bookDescription");
             int userId = (Integer)session.getAttribute("currentUserID");
-            double bookPrice = (Double)session.getAttribute("bookPrice");
             
             Logger.getLogger(Database.class.getName()).log(Level.INFO, bookDate.toString() + timeCode + timeSlot + tableCode + bookDesc + userId + bookQuantity + bookPrice);
             
@@ -224,21 +215,63 @@ public class BookingTableServlet extends HttpServlet {
             st.setDate(2, bookDate);
             st.setString(3, timeSlot);
             st.setInt(4, timeCode);
-            st.setString(5, "present");
-            st.setInt(6, bookQuantity);
-            st.setDouble(7, bookPrice);
-            st.setInt(8, userId);
-            st.setInt(9, tableCode);
+            st.setInt(5, bookQuantity);
+            st.setDouble(6, bookPrice);
+            st.setInt(7, userId);
+            st.setInt(8, tableCode);
             
-            int executeUpdate = st.executeUpdate();
-            if(executeUpdate > 0)
-                return true;
+            // Statement to retrieve booking_id
+            PreparedStatement st2 = con.prepareStatement(SQLStatementList.SQL_STATEMENT_RETRIEVE_BOOKING_INFO);
+            st2.setInt(1, timeCode);
+            st2.setDate(2, bookDate);
+            st2.setInt(3, tableCode);
+            
+            // Statement to update the selected table status to unavailable
+            PreparedStatement st3 = con.prepareStatement(SQLStatementList.SQL_STATEMENT_UPDATE_BOOKING_TABLE_STATUS);
+            st3.setString(1, "unavailable");
+            st3.setInt(2, tableCode);
+                    
+            if(st.executeUpdate() > 0) {
+                ResultSet result2 = st2.executeQuery();
+                
+                if(result2.next()) {
+                    // Statement to insert the payment info
+                    PreparedStatement st4 = con.prepareStatement(SQLStatementList.SQL_STATEMENT_INSERT_PAYMENT_INFO);
+                    st4.setInt(1, result2.getInt("booking_id"));
+                    
+                    if(st3.executeUpdate() > 0 && st4.executeUpdate() > 0) {
+                        return true;
+                    }
+                    
+                } 
+            }
             
             
-        } catch (ParseException | SQLException | ClassNotFoundException ex) {
+        } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(BookingTableServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
+    }
+    
+    private boolean isStaticAttributesIsNull() {
+        return bookDate == null || timeCode == 0 || bookQuantity == 0;
+    }
+    
+    private void setStaticAttributes(HttpServletRequest request)
+        throws ServletException, IOException, ParseException {
+        
+        String date = request.getParameter("bookDate");
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date myDate = formatter.parse(date);
+        bookDate = new java.sql.Date(myDate.getTime());
+        timeCode = Integer.parseInt(request.getParameter("timeCode"));
+        timeSlot = timePicker(request.getParameter("timeCode"));
+        bookQuantity = Integer.parseInt(request.getParameter("bookQuantity"));
+        bookPrice = bookQuantity * 15.00;
+        checkMessage = "Available table for " + bookQuantity + " person(s)" + " on " + bookDate + " at " + timePicker(request.getParameter("timeCode"));
+        checkNoTableMessage = "Sorry no available table for " + bookQuantity + " person(s)" + " on " + bookDate + " at " + timePicker(request.getParameter("timeCode"));
+        
+        System.out.println(bookDate.toString() + timeCode + bookQuantity + bookPrice);
     }
     
     private ArrayList<BookingTable> getTablebookingList() {
@@ -329,15 +362,5 @@ public class BookingTableServlet extends HttpServlet {
         else
             return 0;
     }
-
-    private void deleteBookingTableSession(HttpSession session) {
-        session.setAttribute("isCheck", false);
-        session.setAttribute("bookDate", null);
-        session.setAttribute("timeCode", null);
-        session.setAttribute("bookQuantity", null);
-        session.setAttribute("btlist", null);
-        session.setAttribute("bookPrice", null);
-//        session.setAttribute("displayMessage", null);
-}
 
 }
