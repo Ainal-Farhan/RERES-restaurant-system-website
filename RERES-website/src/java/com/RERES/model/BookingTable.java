@@ -19,6 +19,13 @@ public class BookingTable implements Serializable {
     
     public BookingTable(){}
 
+    public BookingTable(int bookingTableID, String bookingTableStatus, int bookingTableCode, int bookingTableCapacity) {
+        this.bookingTableID = bookingTableID;
+        this.bookingTableStatus = bookingTableStatus;
+        this.bookingTableCode = bookingTableCode;
+        this.bookingTableCapacity = bookingTableCapacity;
+    }
+
     public int getBookingTableID() {
         return bookingTableID;
     }

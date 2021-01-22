@@ -104,7 +104,12 @@
                             %>
                     
                     <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/BookingTableServlet">Booking Table</a>
+                        <div aria-labelledby="navbarDropdown">
+                            <form action="BookingTableServlet" method="POST">
+                                <input type="hidden" name="action" value="viewBookingTable">
+                                <input type="submit" class="dropdown-item nav-link" value="Booking Table">
+                            </form>
+                        </div>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="${pageContext.servletContext.contextPath}/OrderFoodServlet">Order Food</a>

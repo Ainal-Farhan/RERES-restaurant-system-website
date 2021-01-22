@@ -28,12 +28,21 @@ public interface SQLStatementList {
     String SQL_STATEMENT_RETRIEVE_ALL_BOOKING_INFORMATION_FOR_A_CUSTOMER = "SELECT * FROM `booking` WHERE `fk_userID` = ?;";
     String SQL_STATEMENT_RETRIEVE_PAYMENT_INFORMATION_WITH_BOOKING_ID = "SELECT * FROM `payment` WHERE `fk_bookingID` =?;";
     String SQL_STATEMENT_RETRIEVE_USER_AUTHENTICATE = "SELECT * FROM `user` WHERE `password` = ? AND `username` = ? OR `email` = ?;";
+    String SQL_STATEMENT_RETRIEVE_BOOKING_LIST_AND_TABLE_LIST = "SELECT `booking`.`booking_id`, `booking`.`booking_date`, `booking`.`time_slot`, `booking`.`time_code`, `booking`.`booking_quantity`, `booking`.`fk_bookingTableID`, " + 
+            "`bookingTable`.`bookingTable_id`, `bookingTable`.`bookingTable_code`, `bookingTable`.`bookingTable_status`, `bookingTable`.`bookingTable_capacity` " +
+            "FROM `booking` " +
+            "LEFT JOIN `bookingTable` ON `booking`.`fk_bookingTableID` = `bookingTable`.`bookingTable_id` " +
+            "WHERE `booking`.`booking_date` = ? AND `booking`.`time_code` = ?;";
+    String SQL_STATEMENT_RETRIEVE_TABLE_LIST = "SELECT * FROM `bookingtable`";
     
     // List of INSERT instruction
     String SQL_STATEMENT_INSERT_SUCCESSFULLY_PAY_FOR_A_BOOKING = "INSERT INTO `payment` "
             + "(`payment_status`, `payment_method`, `total_payment`, `fk_bookingID`) "
             + "VALUES ('done', ?, ?, ?)";
     String SQL_STATEMENT_INSERT_REGISTER_USER = "INSERT INTO User(username, password, user_type, name, age, birth_date, email, address, gender, phone_number) VALUES(?,?,?,?,?,?,?,?,?,?)";
+    String SQL_STATEMENT_INSERT_BOOKING_FOOD_LATER = "INSERT INTO `booking` " 
+            + "(`booking_description`, `booking_date`, `time_slot`, `time_code`, `booking_status`, `booking_quantity`, `booking_price`, `fk_userID`, `fk_bookingTableID`) " 
+            +"VALUES (?,?,?,?,?,?,?,?,?)";
     
     // List of UPDATE instruction
     String SQL_STATEMENT_UPDATE_A_USER_INFORMATION = "UPDATE `user` SET `name`=?,`age`=?,`birth_date`=?,`email`=?,`address`=?,`gender`=?,`phone_number`=?,`profile_photo`=? WHERE `user`.`user_id`=?;";

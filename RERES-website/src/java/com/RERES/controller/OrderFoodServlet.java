@@ -5,9 +5,12 @@
  */
 package com.RERES.controller;
 
+import com.RERES.database.Database;
 import com.RERES.path.Path;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -33,8 +36,13 @@ public class OrderFoodServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.ORDER_FOOD_VIEW_PATH);
-            dispatcher.forward(request, response);
+            String desc = request.getParameter("bookDescription");
+            int tableNumber = Integer.parseInt(request.getParameter("tableNumber"));
+//            String
+            Logger.getLogger(Database.class.getName()).log(Level.INFO, desc + tableNumber);
+            out.println(desc + tableNumber);
+//            RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.ORDER_FOOD_VIEW_PATH);
+//            dispatcher.forward(request, response);
         }
     }
 
