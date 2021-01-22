@@ -3,5 +3,7 @@
 }
 
 .topForm {
-    padding: 50px 100px 10px 100px;
+    padding-right: 100px;
+    padding-left: 100px;
+    padding-top: 20px;
 }

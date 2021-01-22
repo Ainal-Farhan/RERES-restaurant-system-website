@@ -9,12 +9,16 @@
     <body>
         <header>
             <%@include file = "../components/navigationBar.jsp" %>
-        </header>
+        </header>s
         
         <content>
             <div class="content-container">
                 <h1>Order Food Page</h1>
             </div>
+            <form action="OrderFoodServlet" method="POST">
+                <input type="hidden" name="action" value="test">
+                <input type="submit" value="test">
+            </form>
         </content>
         
         <footer>
