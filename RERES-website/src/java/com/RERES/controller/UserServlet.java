@@ -93,6 +93,8 @@ public class UserServlet extends HttpServlet {
             throws ServletException, IOException {
         
         String action = request.getParameter("action");
+        HttpSession session = request.getSession();
+        
         
         if(isStringIsNullOrEmpty(action)) {
             
@@ -101,12 +103,29 @@ public class UserServlet extends HttpServlet {
             processViewUserList(request, response);
         }
         else if(action.equals(ACTION_VIEW_A_USER)) {
+            
+            if(request.getParameter("userType").equalsIgnoreCase("staff") && ((String)session.getAttribute("currentUserType")).equalsIgnoreCase("admin")) request.setAttribute("selectedPage", "staffListPage");
+            else if(request.getParameter("userType").equalsIgnoreCase("customer") && ((String)session.getAttribute("currentUserType")).equalsIgnoreCase("admin")) request.setAttribute("selectedPage", "customersListPage");
+            else request.setAttribute("selectedPage", "profilePage");
+                
             processViewAUser(request, response);
         }
         else if(action.equals(ACTION_VIEW_PROFILE)) {
+            String currentUserType = (String)session.getAttribute("currentUserType");
+            
+            if(currentUserType.equalsIgnoreCase("admin") && request.getParameter("userType").equalsIgnoreCase("staff")) request.setAttribute("selectedPage", "staffListPage");
+            else if(currentUserType.equalsIgnoreCase("admin") && request.getParameter("userType").equalsIgnoreCase("customer")) request.setAttribute("selectedPage", "customersListPage");
+            else request.setAttribute("selectedPage", "profilePage");
+            
             processViewProfile(request, response);
         }
         else if(action.equals(ACTION_UPDATE_OR_DELETE_A_USER)) {
+            
+            String currentUserType = (String)session.getAttribute("currentUserType");
+            if(currentUserType.equalsIgnoreCase("admin") && user.getUserType().equalsIgnoreCase("staff")) request.setAttribute("selectedPage", "staffListPage");
+            else if(currentUserType.equalsIgnoreCase("admin") && user.getUserType().equalsIgnoreCase("customer")) request.setAttribute("selectedPage", "customersListPage");
+            else request.setAttribute("selectedPage", "profilePage");
+            
             try {
                 processUpdateOrDeleteAUser(request, response);
             } catch (ParseException ex) {
@@ -128,8 +147,8 @@ public class UserServlet extends HttpServlet {
             }
         }
         else if(action.equals(ACTION_LOGOUT_USER)) {
-            HttpSession session = request.getSession();
             session.invalidate();
+            request.setAttribute("selectedPage", "homePage");
             View.forwardPage(request, response, Path.HOME_VIEW_PATH);
         }
     }
@@ -147,10 +166,11 @@ public class UserServlet extends HttpServlet {
     protected void processLoginUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException {
         if(authenticateUser(request)) {
+            request.setAttribute("selectedPage", "homePage");
             View.forwardPage(request, response, Path.HOME_VIEW_PATH);
         }
         else {
-            
+            request.setAttribute("selectedPage", "loginPage");
             View.forwardPage(request, response, Path.LOGIN_VIEW_PATH);
         }
     }
@@ -158,6 +178,7 @@ public class UserServlet extends HttpServlet {
     private void processRegisterUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException {
         if(setUserRegistrationIntoDatabase(request)) {
+            request.setAttribute("selectedPage", "loginPage");
             View.forwardPage(request, response, Path.LOGIN_VIEW_PATH);
         }
     }
@@ -364,11 +385,19 @@ public class UserServlet extends HttpServlet {
         }
         else if(!isStringIsNullOrEmpty(delete) && isStringIsNullOrEmpty(save) && delete.equalsIgnoreCase("delete")) {
             if(deleteSelectedUser(user.getUserID())) {
-                View.setOverlayStatusMessage(request, response, "Successfully Deleting the User Information");
-                goToViewUserList(request, response, user.getUserType());
+                String[] nameLabels = {"viewUserType"};
+                String[] valueLabels = {user.getUserType()};
+                
+                View.setOverlayStatusMessage(request, response, ACTION_VIEW_USER_LIST, "Successfully Deleting the User Information", "UserServlet", nameLabels, valueLabels);
+                setAttributesForViewUserList(request, response, user.getUserType());
+                View.includePage(request, response, Path.USER_SERVLET_VIEW_PATH + "/viewUserListPage.jsp");
             }else {
-                View.setOverlayStatusMessage(request, response, "Failed Deleting the User Information");
-                View.forwardPage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
+                String[] nameLabels = {"userType", "userID"};
+                String[] valueLabels = {user.getUserType(), Integer.toString(user.getUserID())};
+                
+                View.setOverlayStatusMessage(request, response, ACTION_VIEW_A_USER, "Failed Deleting the User Information", "UserServlet", nameLabels, valueLabels);
+                setAttributesForManageAUser(request, response, user);
+                View.includePage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
             }
         }
         else if(!isStringIsNullOrEmpty(save) && isStringIsNullOrEmpty(delete) && save.equalsIgnoreCase("save")) {
@@ -381,13 +410,18 @@ public class UserServlet extends HttpServlet {
             selectedUser.setPhoneNumber(request.getParameter("user-phone-no"));
             selectedUser.setAddress(request.getParameter("user-address"));
             
+            String[] nameLabels = {"userType", "userID"};
+            String[] valueLabels = {selectedUser.getUserType(), Integer.toString(selectedUser.getUserID())};
+            
             if(updateSelectedUser(selectedUser)) {
-                View.setOverlayStatusMessage(request, response, "Successfully Updating the User Information");
-                goToManageAUserHttpServletRequest(request, response, selectedUser);
+                View.setOverlayStatusMessage(request, response, ACTION_VIEW_A_USER, "Successfully Updating the User Information", "UserServlet", nameLabels, valueLabels);
+                setAttributesForManageAUser(request, response, selectedUser);
+                View.includePage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
             } 
             else {
-                View.setOverlayStatusMessage(request, response, "Failed Updating the User Information");
-                goToManageAUserHttpServletRequest(request, response, selectedUser);
+                View.setOverlayStatusMessage(request, response, ACTION_VIEW_A_USER, "Failed Updating the User Information", "UserServlet", nameLabels, valueLabels);
+                setAttributesForManageAUser(request, response, selectedUser);
+                View.includePage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
             }
         }
         else {
@@ -453,9 +487,14 @@ public class UserServlet extends HttpServlet {
                         }
                     }
                     user = selectedUser;
-                    goToManageAUserHttpServletRequest(request, response, selectedUser);
                 }
             }
+            else {
+                setCurrentUser(userType, userID);
+            }
+                        
+            setAttributesForManageAUser(request, response, user);
+            View.forwardPage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
         }
     }
     
@@ -469,13 +508,14 @@ public class UserServlet extends HttpServlet {
         }
         else {
             if(user != null && user.getUserType().equals(userType) && user.getUserID() == userID) {
-                goToManageAUserHttpServletRequest(request, response, user);
+                setAttributesForManageAUser(request, response, user);
             }
             else {
                 if(setCurrentUser(userType, userID)) {
-                    goToManageAUserHttpServletRequest(request, response, user);
+                    setAttributesForManageAUser(request, response, user);
                 }
             }
+            View.forwardPage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
         }
     }
     
@@ -487,41 +527,43 @@ public class UserServlet extends HttpServlet {
 
         }
         else if(viewUserType.equals(USER_TYPE_CUSTOMER)) {
+            
+            request.setAttribute("selectedPage", "customersListPage");
             try {
                 setSpecificUserInformation(USER_TYPE_CUSTOMER);
-                goToViewUserList(request, response, USER_TYPE_CUSTOMER);
+                setAttributesForViewUserList(request, response, USER_TYPE_CUSTOMER);
+                View.forwardPage(request, response, Path.USER_SERVLET_VIEW_PATH + "/viewUserListPage.jsp");
             } catch (SQLException ex) {
                 Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         else if(viewUserType.equals(USER_TYPE_STAFF)) {
+            
+            request.setAttribute("selectedPage", "staffListPage");
             try {
                 setSpecificUserInformation(USER_TYPE_STAFF);
-                goToViewUserList(request, response, USER_TYPE_STAFF);
+                setAttributesForViewUserList(request, response, USER_TYPE_STAFF);
+                View.forwardPage(request, response, Path.USER_SERVLET_VIEW_PATH + "/viewUserListPage.jsp");
             } catch (SQLException ex) {
                 Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
     
-    private void goToViewUserList(HttpServletRequest request, HttpServletResponse response, String userType)
+    private void setAttributesForViewUserList(HttpServletRequest request, HttpServletResponse response, String userType)
             throws ServletException, IOException {
         
         request.setAttribute("users", users);
         request.setAttribute("labels", this.PUBLIC_INFO_LABELS);
         request.setAttribute("userType", userType.toUpperCase());
         request.setAttribute("labelsLength", this.PUBLIC_INFO_LABELS.length);
-        
-        View.includePage(request, response, Path.USER_SERVLET_VIEW_PATH + "/viewUserListPage.jsp");
     }
     
-    private void goToManageAUserHttpServletRequest(HttpServletRequest request, HttpServletResponse response, User selectedUser)
+    private void setAttributesForManageAUser(HttpServletRequest request, HttpServletResponse response, User selectedUser)
             throws ServletException, IOException {
         
         request.setAttribute("selectedUser", selectedUser);
         request.setAttribute("selectedUserType", selectedUser.getUserType());
         request.setAttribute("selectedUserProfilePhoto", selectedUser.getProfilePhoto());
-        
-        View.includePage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
     }
 }

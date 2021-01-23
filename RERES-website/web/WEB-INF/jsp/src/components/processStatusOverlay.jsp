@@ -1,16 +1,12 @@
-<%-- 
-    Document   : processStatusOverlay
-    Created on : Jan 19, 2021, 10:44:26 AM
-    Author     : ainal farhan
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         
-        <% String message = (String)request.getAttribute("displayMessage"); %>
+        <% String message = (String)request.getAttribute("processMessage"); %>
+        <% String action = (String)request.getAttribute("action"); %>
+        <% String servletName = (String)request.getAttribute("servletName"); %>
         
         <style>
             #overlay {
@@ -42,20 +38,26 @@
     </head>
     
     <body>
-        <div id="overlay">
-            <div class="ovelay-content">
-                <div class="card-body">
-                    <p class="card-text"><%= message %></p>
-                    <button type="button" class="btn btn-primary" onclick="off()">Okay</button>
+        <form action="<%= servletName %>" method="POST">
+            <div id="overlay">
+                <div class="ovelay-content">
+                    <div class="card-body">
+                        <p class="card-text"><%= message %></p>
+                        <input type="hidden" name="action" value="<%= action %>">
+                        <%  if(request.getAttribute("nameLabels") != null && request.getAttribute("valueLabels") != null) { %>
+                            <%
+                                String[] nameLabels = (String[])request.getAttribute("nameLabels");
+                                String[] valueLabels = (String[])request.getAttribute("valueLabels");
+                                
+                                for(int i = 0; i < nameLabels.length; i++) {
+                                    %><input type="hidden" name="<%= nameLabels[i] %>" value="<%= valueLabels[i] %>"><%
+                                }
+                            %>
+                        <%  } %>
+                        <input type="submit" class="btn btn-primary" value="Okay">
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <script>
-            function off() {
-                document.getElementById("overlay").style.display = "none";
-            }
-        </script>
+        </form>
     </body>
 </html>
-

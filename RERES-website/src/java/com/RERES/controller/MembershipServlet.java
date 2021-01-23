@@ -33,6 +33,8 @@ public class MembershipServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
+            
+            request.setAttribute("selectedPage", "membershipPage");
             RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.MEMBERSHIP_VIEW_PATH);
             dispatcher.forward(request, response);
         }
