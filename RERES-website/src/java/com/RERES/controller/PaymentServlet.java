@@ -82,9 +82,11 @@ public class PaymentServlet extends HttpServlet {
             
         }
         else if(action.equals(ACTION_VIEW_PAYMENT_FORM)) {
+            request.setAttribute("selectedPage", "bookingTablePage");
             processViewPaymentForm(request, response);
         }
         else if(action.equals(ACTION_PAY)) {
+            request.setAttribute("selectedPage", "bookingTablePage");
             processPay(request, response);
         }
     }

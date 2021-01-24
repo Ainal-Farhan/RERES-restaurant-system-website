@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author PC
  */
-public class DocumentationServlet extends HttpServlet {
+public class FAQServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -33,7 +33,9 @@ public class DocumentationServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.DOCUMENTATION_VIEW_PATH);
+            
+            request.setAttribute("selectedPage", "FAQPage");
+            RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.FAQ_VIEW_PATH);
             dispatcher.forward(request, response);
         }
     }
