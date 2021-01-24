@@ -111,7 +111,7 @@
                                         </form>
                                     </td>
                                     <td>Today is the booked date</td>
-                                    <%  } else if(days > 2) {%>
+                                    <%  } else if(days > 1) {%>
                                     <th>Action</th>
                                     <td>
                                         <form action="BookingServlet" method="POST">
@@ -139,7 +139,7 @@
                                     <th>Message</th>
                                     <td colspan="3">Already Refunded</td>
                                 <%  } else if(selectedBooking.getBookingStatus().equalsIgnoreCase("absent")) { %>
-                                    <%  if(days <= 3 && days >= 0) {%>
+                                    <%  if(days >= -3 && days <= 0) {%>
                                     <th>Action</th>
                                     <td>
                                         <form action="BookingServlet" method="POST">
@@ -151,7 +151,7 @@
                                     <td colspan="2">You May Refund Booking (RM<%= String.format("%.2f", selectedBooking.getBookingPrice() * 0.8) %>) within 3 days after the booking date</td>
                                     <%  } else { %>
                                     <th>Message</th>
-                                    <td colspan="3"><%= days %>Refund Booking can only be done within three days after the booked date</td>
+                                    <td colspan="3"><%= days * -1 %> days have been passed. Refund Booking can only be done within three days after the booked date</td>
                                     <%  } %>
                                 <%  } else if(selectedBooking.getBookingStatus().equalsIgnoreCase("present")) { %>
                                     <th>Message</th>

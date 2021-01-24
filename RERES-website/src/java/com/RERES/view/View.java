@@ -17,10 +17,17 @@ import javax.servlet.http.HttpServletResponse;
  * @author ainal farhan
  */
 public class View {
-    public static void setOverlayStatusMessage(HttpServletRequest request, HttpServletResponse response, String displayMessage)
+    public static void setOverlayStatusMessage(HttpServletRequest request, HttpServletResponse response, String action, String processMessage, String servletName, String[] nameLabels, String[] valueLabels)
             throws ServletException, IOException {
         
-        request.setAttribute("displayMessage", displayMessage);
+        request.setAttribute("action", action);
+        request.setAttribute("processMessage", processMessage);
+        request.setAttribute("servletName", servletName);
+        
+        if(nameLabels != null && valueLabels != null) {
+            request.setAttribute("nameLabels", nameLabels);
+            request.setAttribute("valueLabels", valueLabels);
+        }
         
         includePage(request, response, Path.COMPONENT_PROCESS_STATUS_OVERLAY_PATH);
     }

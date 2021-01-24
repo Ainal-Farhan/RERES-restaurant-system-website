@@ -117,24 +117,31 @@ public class BookingServlet extends HttpServlet {
             
         }
         else if(action.equals(ACTION_VIEW_BOOKING_LIST)) {
+            request.setAttribute("selectedPage", "bookingListPage");
             processViewBookingList(request, response);
         }
         else if(action.equals(ACTION_VIEW_THE_SELECTED_BOOKING)) {
+            request.setAttribute("selectedPage", "bookingListPage");
             processViewTheSelectedBooking(request, response);
         }
         else if(action.equals(ACTION_VIEW_BOOKING_LIST_FOR_CUSTOMER)) {
+            request.setAttribute("selectedPage", "bookingListPage");
             processViewBookingListForCustomer(request, response);
         }
         else if(action.equals(ACTION_CANCEL_SELECTED_BOOKING)) {
+            request.setAttribute("selectedPage", "bookingListPage");
             processChangeBookingStatus(request, response, "cancelled");
         }
         else if(action.equals(ACTION_REFUND_SELECTED_BOOKING)) {
+            request.setAttribute("selectedPage", "bookingListPage");
             processChangeBookingStatus(request, response, "refunded");
         }
         else if(action.equals(ACTION_ABSENT_SELECTED_BOOKING)) {
+            request.setAttribute("selectedPage", "bookingListPage");
             processChangeBookingStatus(request, response, "absent");
         }
         else if(action.equals(ACTION_PRESENT_SELECTED_BOOKING)) {
+            request.setAttribute("selectedPage", "bookingListPage");
             processChangeBookingStatus(request, response, "present");
         }
     }
@@ -156,20 +163,32 @@ public class BookingServlet extends HttpServlet {
     private void processChangeBookingStatus(HttpServletRequest request, HttpServletResponse response, String status)
             throws ServletException, IOException {
         int bookingID = Integer.parseInt(request.getParameter("bookingID"));
+        
+        String[] nameLabels = {"bookingID"};
+        String[] valueLabels = {Integer.toString(bookingID)};
+        String message = "";
+        
         if(changeTheSelectedBookingStatus(status, bookingID)) {
-            View.setOverlayStatusMessage(request, response, "Successfully change booking status to " + status.toUpperCase());
+            message = "Successfully change booking status to " + status.toUpperCase();    
         }
         else {
-            View.setOverlayStatusMessage(request, response, "Failed change booking status to " + status.toUpperCase());
+            message = "Failed change booking status to " + status.toUpperCase();
         }
-        processViewTheSelectedBooking(request, response);
+        
+        View.setOverlayStatusMessage(request, response, ACTION_VIEW_THE_SELECTED_BOOKING, message, "BookingServlet", nameLabels, valueLabels);
+        setAttributesForSelectedBooking(request, response);
+        if(selectedBooking != null && getAndSetRequiredInfoFromDatabaseForSelectedBooking(request)) {
+            View.includePage(request, response, Path.MAIN_VIEW_PATH + "/manageBooking.jsp");
+        }
+        
     }
     
-    private void processViewTheSelectedBooking(HttpServletRequest request, HttpServletResponse response)
+    private void setAttributesForSelectedBooking(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        int selectedBookingID = Integer.parseInt(request.getParameter("bookingID"));
         
-        if(selectedBooking == null) {
-            int selectedBookingID = Integer.parseInt(request.getParameter("bookingID"));
+        if(selectedBooking == null || selectedBooking.getBookingID() != selectedBookingID) {
+            
             selectedBooking = new Booking();
             
             if(!bookingList.isEmpty() && bookingList != null) {
@@ -182,9 +201,15 @@ public class BookingServlet extends HttpServlet {
                 
             }
         } 
+    }
+    
+    private void processViewTheSelectedBooking(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        setAttributesForSelectedBooking(request, response);
         
         if(selectedBooking != null && getAndSetRequiredInfoFromDatabaseForSelectedBooking(request)) {
-            View.includePage(request, response, Path.MAIN_VIEW_PATH + "/manageBooking.jsp");
+            View.forwardPage(request, response, Path.MAIN_VIEW_PATH + "/manageBooking.jsp");
         }
     }
     

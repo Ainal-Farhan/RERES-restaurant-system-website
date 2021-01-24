@@ -33,6 +33,8 @@ public class HelpChatServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
+            
+            request.setAttribute("selectedPage", "helpChatPage");
             RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.HELP_CHAT_VIEW_PATH);
             dispatcher.forward(request, response);
         }

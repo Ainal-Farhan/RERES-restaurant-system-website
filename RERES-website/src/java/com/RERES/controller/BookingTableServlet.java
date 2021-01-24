@@ -92,9 +92,11 @@ public class BookingTableServlet extends HttpServlet {
             
         }
         else if(action.equals(ACTION_VIEW_BOOKING_TABLE)) {
+            request.setAttribute("selectedPage", "bookingTablePage");
             forwardPage(request, response, Path.BOOKING_TABLE_VIEW_PATH);
         }
         else if(action.equals(ACTION_CHECK_AVAILABILITY)) {
+            request.setAttribute("selectedPage", "bookingTablePage");
             processCheckTable(request, response);
         }
         else if(action.equals(ACTION_MAKE_RESERVATION)) {

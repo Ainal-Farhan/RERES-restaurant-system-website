@@ -35,12 +35,13 @@ public interface SQLStatementList {
             "WHERE `booking`.`booking_date` = ? AND `booking`.`time_code` = ?;";
     String SQL_STATEMENT_RETRIEVE_TABLE_LIST = "SELECT * FROM `bookingtable`";
     String SQL_STATEMENT_RETRIEVE_BOOKING_INFO = "SELECT `booking_id` FROM `booking` WHERE `time_code` = ? AND booking_date = ? AND fk_bookingTableID = ? ";
+    String SQL_STATEMENT_RETRIEVE_SPECIFIC_MEMBERSHIP_INFORMATION = "SELECT * FROM `membership` WHERE `fk_UserID` = ?";
     
     // List of INSERT instruction
     String SQL_STATEMENT_INSERT_SUCCESSFULLY_PAY_FOR_A_BOOKING = "INSERT INTO `payment` "
             + "(`payment_status`, `payment_method`, `total_payment`, `fk_bookingID`) "
             + "VALUES ('done', ?, ?, ?)";
-    String SQL_STATEMENT_INSERT_REGISTER_USER = "INSERT INTO User(username, password, user_type, name, age, birth_date, email, address, gender, phone_number) VALUES(?,?,?,?,?,?,?,?,?,?)";
+    String SQL_STATEMENT_INSERT_REGISTER_USER = "INSERT INTO User(username, password, user_type, name, age, birth_date, email, address, gender, phone_number, profile_photo) VALUES(?,?,?,?,?,?,?,?,?,?, ?)";
     String SQL_STATEMENT_INSERT_BOOKING_FOOD_LATER = "INSERT INTO `booking` " 
             + "(`booking_description`, `booking_date`, `time_slot`, `time_code`, `booking_quantity`, `booking_price`, `fk_userID`, `fk_bookingTableID`) " 
             +"VALUES (?,?,?,?,?,?,?,?)";
@@ -51,6 +52,8 @@ public interface SQLStatementList {
     String SQL_STATEMENT_UPDATE_A_PAYMENT_INFORMATION = "UPDATE `payment` SET `payment_status` = ?, `payment_method` = ?, `total_payment` = ?, `date_paid` = ? WHERE `payment`.`fk_bookingID` = ?";
     String SQL_STATEMENT_UPDATE_THE_BOOKING_STATUS = "UPDATE `booking` SET `booking_status` = ? WHERE `booking`.`booking_id` = ?";
     String SQL_STATEMENT_UPDATE_BOOKING_TABLE_STATUS = "UPDATE `bookingtable` SET `bookingTable_status`= ?  WHERE  `bookingTable_id` = ?;";
+    String SQL_STATEMENT_UPDATE_MEMBERSHIP_STATUS = "UPDATE `membership` SET `member_status` = ? WHERE `member_id` = ?";
+    String SQL_STATEMENT_UPDATE_USER_PROFILE_PICTURE = "UPDATE `user` SET `profile_photo` = ? WHERE `user_id` = ?";
     
     // List of DELETE instruction
     String SQL_STATEMENT_DELETE_A_USER_INFORMATION = "DELETE FROM `user` WHERE `user`.`user_id` = ?;";
