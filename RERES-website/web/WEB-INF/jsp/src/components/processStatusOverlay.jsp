@@ -38,26 +38,26 @@
     </head>
     
     <body>
-        <form action="<%= servletName %>" method="POST">
             <div id="overlay">
                 <div class="ovelay-content">
                     <div class="card-body">
                         <p class="card-text"><%= message %></p>
-                        <input type="hidden" name="action" value="<%= action %>">
-                        <%  if(request.getAttribute("nameLabels") != null && request.getAttribute("valueLabels") != null) { %>
-                            <%
-                                String[] nameLabels = (String[])request.getAttribute("nameLabels");
-                                String[] valueLabels = (String[])request.getAttribute("valueLabels");
-                                
-                                for(int i = 0; i < nameLabels.length; i++) {
-                                    %><input type="hidden" name="<%= nameLabels[i] %>" value="<%= valueLabels[i] %>"><%
-                                }
-                            %>
-                        <%  } %>
-                        <input type="submit" class="btn btn-primary" value="Okay">
+                        <form action="<%= servletName %>" method="POST">
+                            <input type="hidden" name="action" value="<%= action %>">
+                            <%  if(request.getAttribute("nameLabels") != null && request.getAttribute("valueLabels") != null) { %>
+                                <%
+                                    String[] nameLabels = (String[])request.getAttribute("nameLabels");
+                                    String[] valueLabels = (String[])request.getAttribute("valueLabels");
+
+                                    for(int i = 0; i < nameLabels.length; i++) {
+                                        %><input type="hidden" name="<%= nameLabels[i] %>" value="<%= valueLabels[i] %>"><%
+                                    }
+                                %>
+                            <%  } %>
+                            <input type="submit" class="btn btn-primary" value="Okay">
+                        </form>
                     </div>
                 </div>
             </div>
-        </form>
     </body>
 </html>

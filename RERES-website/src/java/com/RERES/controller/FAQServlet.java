@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author PC
  */
-public class DocumentationServlet extends HttpServlet {
+public class FAQServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,7 +35,7 @@ public class DocumentationServlet extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             
             request.setAttribute("selectedPage", "FAQPage");
-            RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.DOCUMENTATION_VIEW_PATH);
+            RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.FAQ_VIEW_PATH);
             dispatcher.forward(request, response);
         }
     }

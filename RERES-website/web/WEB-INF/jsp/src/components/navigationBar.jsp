@@ -322,10 +322,15 @@
                         }
                             %>
                     <li class="nav-item <%= FAQActive %>">
-                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/DocumentationServlet"><i class="far fa-copy"></i>FAQ</a>
+                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/FAQServlet"><i class="far fa-copy"></i>FAQ</a>
                     </li>
                     <li class="nav-item <%= membershipActive %>">
-                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/MembershipServlet"><i class="fas fa-user-friends"></i>MEMBERSHIP</a>
+                        <form action="MembershipServlet" method="POST" name="membership_view">
+                            <div onClick="document.forms['membership_view'].submit();">
+                                <input type="hidden" name="action" value="viewMembershipPage">
+                                <a class="nav-link" href="javascript:void(0);"><i class="fas fa-user-friends"></i>MEMBERSHIP</a>
+                            </div>
+                        </form>
                     </li>
                     <li class="nav-item <%= helpChatActive %>">
                         <a class="nav-link" href="${pageContext.servletContext.contextPath}/HelpChatServlet"><i class="fas fa-hands-helping"></i>HELP CHAT</a>
