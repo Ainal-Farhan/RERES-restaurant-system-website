@@ -9,10 +9,14 @@ import com.RERES.database.Database;
 import com.RERES.database.SQLStatementList;
 import com.RERES.model.User;
 import com.RERES.path.Path;
+import com.RERES.utility.ImageUtility;
 import com.RERES.view.View;
+import java.io.ByteArrayOutputStream;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.util.Date;
 import java.sql.PreparedStatement;
@@ -22,6 +26,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -43,6 +48,10 @@ public class UserServlet extends HttpServlet {
     private final String ACTION_REGISTER_USER = "registerUser";
     private final String ACTION_LOGIN_USER = "authLogin";
     private final String ACTION_LOGOUT_USER = "logout";
+    private final String ACTION_VIEW_HOME_PAGE_AUTHENTICATED = "viewHomePageAuthenticated";
+    private final String ACTION_UPDATE_USER_PROFILE_PICTURE = "updateUserProfilePicture";
+    
+    private final String ACTION_GET_SELECTED_USER_PROFILE_PICTURE = "getSelectedUserProfilePicture";
     
     private final String USER_TYPE_CUSTOMER = "customer";
     private final String USER_TYPE_STAFF = "staff";
@@ -57,12 +66,6 @@ public class UserServlet extends HttpServlet {
         "Email",
         "Profile Picture",
     };
-
-    
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-    }
     
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -76,7 +79,15 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String action = request.getParameter("action");
+        
+        if(action == null) {
+            
+        }
+        else if(action.equals(ACTION_GET_SELECTED_USER_PROFILE_PICTURE)) {           
+            if(user != null) ImageUtility.displaySelectedImage(response, user.getProfilePhoto());
+            else ImageUtility.displaySelectedImage(response, "");
+        }
     }
 
     /**
@@ -93,20 +104,88 @@ public class UserServlet extends HttpServlet {
             throws ServletException, IOException {
         
         String action = request.getParameter("action");
+        HttpSession session = request.getSession();
+        
         
         if(isStringIsNullOrEmpty(action)) {
             
+        }
+        else if(action.equals(ACTION_VIEW_HOME_PAGE_AUTHENTICATED)) {
+            View.forwardPage(request, response, Path.HOME_VIEW_PATH);
         }
         else if(action.equals(ACTION_VIEW_USER_LIST)) {
             processViewUserList(request, response);
         }
         else if(action.equals(ACTION_VIEW_A_USER)) {
+            
+            if(request.getParameter("userType").equalsIgnoreCase("staff") && ((String)session.getAttribute("currentUserType")).equalsIgnoreCase("admin")) request.setAttribute("selectedPage", "staffListPage");
+            else if(request.getParameter("userType").equalsIgnoreCase("customer") && ((String)session.getAttribute("currentUserType")).equalsIgnoreCase("admin")) request.setAttribute("selectedPage", "customersListPage");
+            else request.setAttribute("selectedPage", "profilePage");
+                
             processViewAUser(request, response);
         }
+        else if(action.equals(ACTION_UPDATE_USER_PROFILE_PICTURE)) {
+            if(((String)session.getAttribute("currentUserType")).equalsIgnoreCase("admin") && user.getUserType().equalsIgnoreCase("staff")) request.setAttribute("selectedPage", "staffListPage");
+            else if(((String)session.getAttribute("currentUserType")).equalsIgnoreCase("admin") && user.getUserType().equalsIgnoreCase("customer")) request.setAttribute("selectedPage", "customersListPage");
+            else request.setAttribute("selectedPage", "profilePage");
+            
+            String uploadButton = request.getParameter("upload-btn");
+            String defaultButton = request.getParameter("default-btn");
+            
+            byte[] translatedImage = null;
+            String fileName = "";
+            String uploadedImage = ImageUtility.USER_DEFAULT_PROFILE_PICTURE;
+                            
+            if(uploadButton != null) {
+                uploadedImage = request.getParameter("uploadedBase64Image");
+                translatedImage = ImageUtility.translateBase64ImageToBytes(uploadedImage);
+                fileName = request.getParameter("uploadedFileName");
+            }
+            else if(defaultButton != null) {
+                translatedImage = ImageUtility.translateBase64ImageToBytes(ImageUtility.USER_DEFAULT_PROFILE_PICTURE);
+                fileName = "default picture";
+            }
+            
+            String message;
+            
+            if(uploadButton != null || defaultButton != null) {
+                
+                if(updateSelectedUserProfilePictureIntoDatabase(translatedImage, uploadedImage)) {
+                    message = "Successfully update the profile picture with " + fileName;
+                }
+                else {
+                    message = "Failed to update the profile picture with " + fileName;
+                }
+            }
+            else {
+                message = "Bugs happened during updating profile picture";
+            }
+            
+            String[] nameLabels = {"userType", "userID"};
+            String[] valueLabels = {user.getUserType(), Integer.toString(user.getUserID())};
+
+            View.setOverlayStatusMessage(request, response, ACTION_VIEW_A_USER, message, "UserServlet", nameLabels, valueLabels);
+
+            setAttributesForManageAUser(request, response, user);
+            
+            View.includePage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
+        }
         else if(action.equals(ACTION_VIEW_PROFILE)) {
+            String currentUserType = (String)session.getAttribute("currentUserType");
+            
+            if(currentUserType.equalsIgnoreCase("admin") && request.getParameter("userType").equalsIgnoreCase("staff")) request.setAttribute("selectedPage", "staffListPage");
+            else if(currentUserType.equalsIgnoreCase("admin") && request.getParameter("userType").equalsIgnoreCase("customer")) request.setAttribute("selectedPage", "customersListPage");
+            else request.setAttribute("selectedPage", "profilePage");
+            
             processViewProfile(request, response);
         }
         else if(action.equals(ACTION_UPDATE_OR_DELETE_A_USER)) {
+            
+            String currentUserType = (String)session.getAttribute("currentUserType");
+            if(currentUserType.equalsIgnoreCase("admin") && user.getUserType().equalsIgnoreCase("staff")) request.setAttribute("selectedPage", "staffListPage");
+            else if(currentUserType.equalsIgnoreCase("admin") && user.getUserType().equalsIgnoreCase("customer")) request.setAttribute("selectedPage", "customersListPage");
+            else request.setAttribute("selectedPage", "profilePage");
+            
             try {
                 processUpdateOrDeleteAUser(request, response);
             } catch (ParseException ex) {
@@ -128,8 +207,8 @@ public class UserServlet extends HttpServlet {
             }
         }
         else if(action.equals(ACTION_LOGOUT_USER)) {
-            HttpSession session = request.getSession();
             session.invalidate();
+            request.setAttribute("selectedPage", "homePage");
             View.forwardPage(request, response, Path.HOME_VIEW_PATH);
         }
     }
@@ -147,10 +226,14 @@ public class UserServlet extends HttpServlet {
     protected void processLoginUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException {
         if(authenticateUser(request)) {
-            View.forwardPage(request, response, Path.HOME_VIEW_PATH);
+            request.setAttribute("selectedPage", "homePage");
+            
+            View.setOverlayStatusMessage(request, response, ACTION_VIEW_HOME_PAGE_AUTHENTICATED, "Successfully Login", "UserServlet", null, null);
+            
+            View.includePage(request, response, Path.HOME_VIEW_PATH);
         }
         else {
-            
+            request.setAttribute("selectedPage", "loginPage");
             View.forwardPage(request, response, Path.LOGIN_VIEW_PATH);
         }
     }
@@ -158,6 +241,7 @@ public class UserServlet extends HttpServlet {
     private void processRegisterUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException {
         if(setUserRegistrationIntoDatabase(request)) {
+            request.setAttribute("selectedPage", "loginPage");
             View.forwardPage(request, response, Path.LOGIN_VIEW_PATH);
         }
     }
@@ -190,6 +274,23 @@ public class UserServlet extends HttpServlet {
         }
         return false;
     }
+    
+    private Blob getDefaultImageInBlob(Connection con) 
+            throws ServletException, IOException, ClassNotFoundException {
+            Blob imageBlob = null;
+
+            try {
+                byte[] fileContent;
+                fileContent = java.util.Base64.getDecoder().decode(ImageUtility.USER_DEFAULT_PROFILE_PICTURE);
+                imageBlob = con.createBlob();
+                imageBlob.setBytes(1, fileContent);
+            } 
+            catch(SQLException ex) {
+                Logger.getLogger(UserServlet.class.getName()).log(Level.INFO, ex.getMessage());
+            }
+
+            return imageBlob;
+        }
     
     private boolean setUserRegistrationIntoDatabase(HttpServletRequest request)
             throws ServletException, IOException {
@@ -228,10 +329,11 @@ public class UserServlet extends HttpServlet {
             st.setString(8, fullAddress);
             st.setString(9, gender);
             st.setString(10, phoneNumber);
+            st.setBlob(11, getDefaultImageInBlob(con));
 
             int count = st.executeUpdate();
 
-//            Logger.getLogger(Database.class.getName()).log(Level.INFO, fullname + address + city + poscode + state + phoneNumber + email + username + password + confirmPassword + userType + age + sqlDate + gender + st.toString());
+            System.out.println(fullname + address + city + poscode + state + phoneNumber + email + username + password + confirmPassword + userType + age + sqlDate + gender + st.toString());
 
             if(count > 0)
             {
@@ -247,7 +349,41 @@ public class UserServlet extends HttpServlet {
         return false;
     }
     
-    private void setSpecificUserInformation(String userType) throws SQLException {
+    private boolean updateSelectedUserProfilePictureIntoDatabase(byte[] imageBytes, String base64Image) {
+        try {
+            Connection connection = new Database().getCon();
+            
+            Blob imageBlob = connection.createBlob();
+            imageBlob.setBytes(1, imageBytes);
+
+            PreparedStatement statement = connection.prepareStatement(SQLStatementList.SQL_STATEMENT_UPDATE_USER_PROFILE_PICTURE);
+
+            statement.setBlob(1, imageBlob);
+            statement.setInt(2, user.getUserID());
+
+            if(statement.executeUpdate() > 0) {
+                user.setProfilePhoto(base64Image);
+                
+                if(users != null && !users.isEmpty()) {
+                    for(int i = 0; i < users.size(); i++) {
+                        if(users.get(i).getUserID() == user.getUserID()) {
+                            users.set(i, user);
+                            break;
+                        }
+                    }
+                }
+                connection = null;
+                return true;
+            }
+            connection = null;
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return false;
+    }
+    
+    private void setAllUsersInformationWithSelectedType(String userType) throws SQLException, IOException {
         try {
             users = new ArrayList<>();
                     
@@ -256,26 +392,42 @@ public class UserServlet extends HttpServlet {
             PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_RETRIEVE_ALL_SPECIFIC_USER_INFORMATION);
             st.setString(1, userType);
             
-            Logger.getLogger(Database.class.getName()).log(Level.INFO, "GET All Users information with type : " + userType);
+            System.out.println("GET All Users information with type : " + userType);
             ResultSet result = st.executeQuery();
 
             while(result.next()) {
-                User user = new User();
+                User tempUser = new User();
                 
-                user.setUserID(result.getInt("user_id"));
-                user.setUsername(result.getString("username"));
-                user.setPassword(result.getString("password"));
-                user.setUserType(result.getString("user_type"));
-                user.setName(result.getString("name"));
-                user.setAge(result.getInt("age"));
-                user.setBirthDate(result.getDate("birth_date"));
-                user.setEmail(result.getString("email"));
-                user.setAddress(result.getString("address"));
-                user.setGender(result.getString("gender"));
-                user.setPhoneNumber(result.getString("phone_number"));
-                user.setProfilePhoto(result.getString("profile_photo"));   
+                tempUser.setUserID(result.getInt("user_id"));
+                tempUser.setUsername(result.getString("username"));
+                tempUser.setPassword(result.getString("password"));
+                tempUser.setUserType(result.getString("user_type"));
+                tempUser.setName(result.getString("name"));
+                tempUser.setAge(result.getInt("age"));
+                tempUser.setBirthDate(result.getDate("birth_date"));
+                tempUser.setEmail(result.getString("email"));
+                tempUser.setAddress(result.getString("address"));
+                tempUser.setGender(result.getString("gender"));
+                tempUser.setPhoneNumber(result.getString("phone_number"));
                 
-                users.add(user);
+                Blob blob = result.getBlob("profile_photo");
+                 
+                ByteArrayOutputStream outputStream;
+                String base64Image;
+                try (InputStream inputStream = blob.getBinaryStream()) {
+                    outputStream = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[4096];
+                    int bytesRead = -1;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {                  
+                        outputStream.write(buffer, 0, bytesRead);
+                    }   byte[] imageBytes = outputStream.toByteArray();
+                    base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                }
+                outputStream.close();
+                
+                tempUser.setProfilePhoto(base64Image);   
+                
+                users.add(tempUser);
             }
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
@@ -364,11 +516,19 @@ public class UserServlet extends HttpServlet {
         }
         else if(!isStringIsNullOrEmpty(delete) && isStringIsNullOrEmpty(save) && delete.equalsIgnoreCase("delete")) {
             if(deleteSelectedUser(user.getUserID())) {
-                View.setOverlayStatusMessage(request, response, "Successfully Deleting the User Information");
-                goToViewUserList(request, response, user.getUserType());
+                String[] nameLabels = {"viewUserType"};
+                String[] valueLabels = {user.getUserType()};
+                
+                View.setOverlayStatusMessage(request, response, ACTION_VIEW_USER_LIST, "Successfully Deleting the User Information", "UserServlet", nameLabels, valueLabels);
+                setAttributesForViewUserList(request, response, user.getUserType());
+                View.includePage(request, response, Path.USER_SERVLET_VIEW_PATH + "/viewUserListPage.jsp");
             }else {
-                View.setOverlayStatusMessage(request, response, "Failed Deleting the User Information");
-                View.forwardPage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
+                String[] nameLabels = {"userType", "userID"};
+                String[] valueLabels = {user.getUserType(), Integer.toString(user.getUserID())};
+                
+                View.setOverlayStatusMessage(request, response, ACTION_VIEW_A_USER, "Failed Deleting the User Information", "UserServlet", nameLabels, valueLabels);
+                setAttributesForManageAUser(request, response, user);
+                View.includePage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
             }
         }
         else if(!isStringIsNullOrEmpty(save) && isStringIsNullOrEmpty(delete) && save.equalsIgnoreCase("save")) {
@@ -381,13 +541,18 @@ public class UserServlet extends HttpServlet {
             selectedUser.setPhoneNumber(request.getParameter("user-phone-no"));
             selectedUser.setAddress(request.getParameter("user-address"));
             
+            String[] nameLabels = {"userType", "userID"};
+            String[] valueLabels = {selectedUser.getUserType(), Integer.toString(selectedUser.getUserID())};
+            
             if(updateSelectedUser(selectedUser)) {
-                View.setOverlayStatusMessage(request, response, "Successfully Updating the User Information");
-                goToManageAUserHttpServletRequest(request, response, selectedUser);
+                View.setOverlayStatusMessage(request, response, ACTION_VIEW_A_USER, "Successfully Updating the User Information", "UserServlet", nameLabels, valueLabels);
+                setAttributesForManageAUser(request, response, selectedUser);
+                View.includePage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
             } 
             else {
-                View.setOverlayStatusMessage(request, response, "Failed Updating the User Information");
-                goToManageAUserHttpServletRequest(request, response, selectedUser);
+                View.setOverlayStatusMessage(request, response, ACTION_VIEW_A_USER, "Failed Updating the User Information", "UserServlet", nameLabels, valueLabels);
+                setAttributesForManageAUser(request, response, selectedUser);
+                View.includePage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
             }
         }
         else {
@@ -396,7 +561,7 @@ public class UserServlet extends HttpServlet {
         }
     }
     
-    private boolean setCurrentUser(String userType, int userID) {
+    private boolean setCurrentUser(String userType, int userID) throws IOException {
         Connection con;
         try {
             con = new Database().getCon();
@@ -422,7 +587,23 @@ public class UserServlet extends HttpServlet {
                 user.setAddress(result.getString("address"));
                 user.setGender(result.getString("gender"));
                 user.setPhoneNumber(result.getString("phone_number"));
-                user.setProfilePhoto(result.getString("profile_photo")); 
+                
+                Blob blob = result.getBlob("profile_photo");
+                 
+                ByteArrayOutputStream outputStream;
+                String base64Image;
+                try (InputStream inputStream = blob.getBinaryStream()) {
+                    outputStream = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[4096];
+                    int bytesRead = -1;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {                  
+                        outputStream.write(buffer, 0, bytesRead);
+                    }   byte[] imageBytes = outputStream.toByteArray();
+                    base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                }
+                outputStream.close();
+                
+                user.setProfilePhoto(base64Image); 
                 
                 return true;
             } 
@@ -453,9 +634,14 @@ public class UserServlet extends HttpServlet {
                         }
                     }
                     user = selectedUser;
-                    goToManageAUserHttpServletRequest(request, response, selectedUser);
                 }
             }
+            else {
+                setCurrentUser(userType, userID);
+            }
+                        
+            setAttributesForManageAUser(request, response, user);
+            View.forwardPage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
         }
     }
     
@@ -469,13 +655,15 @@ public class UserServlet extends HttpServlet {
         }
         else {
             if(user != null && user.getUserType().equals(userType) && user.getUserID() == userID) {
-                goToManageAUserHttpServletRequest(request, response, user);
+                setAttributesForManageAUser(request, response, user);
             }
             else {
+                user = new User();
                 if(setCurrentUser(userType, userID)) {
-                    goToManageAUserHttpServletRequest(request, response, user);
+                    setAttributesForManageAUser(request, response, user);
                 }
             }
+            View.forwardPage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
         }
     }
     
@@ -487,41 +675,43 @@ public class UserServlet extends HttpServlet {
 
         }
         else if(viewUserType.equals(USER_TYPE_CUSTOMER)) {
+            
+            request.setAttribute("selectedPage", "customersListPage");
             try {
-                setSpecificUserInformation(USER_TYPE_CUSTOMER);
-                goToViewUserList(request, response, USER_TYPE_CUSTOMER);
+                setAllUsersInformationWithSelectedType(USER_TYPE_CUSTOMER);
+                setAttributesForViewUserList(request, response, USER_TYPE_CUSTOMER);
+                View.forwardPage(request, response, Path.USER_SERVLET_VIEW_PATH + "/viewUserListPage.jsp");
             } catch (SQLException ex) {
                 Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         else if(viewUserType.equals(USER_TYPE_STAFF)) {
+            
+            request.setAttribute("selectedPage", "staffListPage");
             try {
-                setSpecificUserInformation(USER_TYPE_STAFF);
-                goToViewUserList(request, response, USER_TYPE_STAFF);
+                setAllUsersInformationWithSelectedType(USER_TYPE_STAFF);
+                setAttributesForViewUserList(request, response, USER_TYPE_STAFF);
+                View.forwardPage(request, response, Path.USER_SERVLET_VIEW_PATH + "/viewUserListPage.jsp");
             } catch (SQLException ex) {
                 Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
     
-    private void goToViewUserList(HttpServletRequest request, HttpServletResponse response, String userType)
+    private void setAttributesForViewUserList(HttpServletRequest request, HttpServletResponse response, String userType)
             throws ServletException, IOException {
         
         request.setAttribute("users", users);
         request.setAttribute("labels", this.PUBLIC_INFO_LABELS);
         request.setAttribute("userType", userType.toUpperCase());
         request.setAttribute("labelsLength", this.PUBLIC_INFO_LABELS.length);
-        
-        View.includePage(request, response, Path.USER_SERVLET_VIEW_PATH + "/viewUserListPage.jsp");
     }
     
-    private void goToManageAUserHttpServletRequest(HttpServletRequest request, HttpServletResponse response, User selectedUser)
+    private void setAttributesForManageAUser(HttpServletRequest request, HttpServletResponse response, User selectedUser)
             throws ServletException, IOException {
         
         request.setAttribute("selectedUser", selectedUser);
         request.setAttribute("selectedUserType", selectedUser.getUserType());
         request.setAttribute("selectedUserProfilePhoto", selectedUser.getProfilePhoto());
-        
-        View.includePage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
     }
 }

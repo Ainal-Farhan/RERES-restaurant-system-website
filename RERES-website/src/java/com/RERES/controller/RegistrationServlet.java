@@ -5,15 +5,11 @@
  */
 package com.RERES.controller;
 
-import com.RERES.database.Database;
 import com.RERES.path.Path;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.Date;
-import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
@@ -46,6 +42,7 @@ public class RegistrationServlet extends HttpServlet {
         
         try (PrintWriter out = response.getWriter()) {
             if(action.equals("redirectRegister")) {
+                request.setAttribute("selectedPage", "registrationPage");
                 RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.REGISTRATION_VIEW_PATH);
                 dispatcher.forward(request, response);
             }

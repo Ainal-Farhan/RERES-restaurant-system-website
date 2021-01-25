@@ -14,7 +14,7 @@ import java.io.Serializable;
 public class Membership implements Serializable {
     private int memberID;
     private String memberName;
-    private String voucherRedeem;
+    private int successBookingMade;
     private String memberStatus;
     private int fkUserID;
     
@@ -36,12 +36,12 @@ public class Membership implements Serializable {
         this.memberName = memberName;
     }
 
-    public String getVoucherRedeem() {
-        return voucherRedeem;
+    public int getSuccessBookingMade() {
+        return successBookingMade;
     }
 
-    public void setVoucherRedeem(String voucherRedeem) {
-        this.voucherRedeem = voucherRedeem;
+    public void setSuccessBookingMade(int successBookingMade) {
+        this.successBookingMade = successBookingMade;
     }
 
     public String getMemberStatus() {

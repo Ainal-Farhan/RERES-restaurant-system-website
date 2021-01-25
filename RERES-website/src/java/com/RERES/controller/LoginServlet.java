@@ -40,15 +40,18 @@ public class LoginServlet extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             
             if(action.equals("redirectLogin")) {
+                request.setAttribute("selectedPage", "loginPage");
                 RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.LOGIN_VIEW_PATH);
                 dispatcher.forward(request, response);
             }
             else if(action.equals("authLogin")) {
                 if(username.equals("hasan")) {
+                    request.setAttribute("selectedPage", "profilePage");
                     RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.PROFILE_VIEW_PATH);
                     dispatcher.forward(request, response);
                 }
                 else {
+                request.setAttribute("selectedPage", "registrationPage");
                     RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.REGISTRATION_VIEW_PATH);
                     dispatcher.forward(request, response);
                 }
