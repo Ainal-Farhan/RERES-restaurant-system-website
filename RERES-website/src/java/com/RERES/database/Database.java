@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 public class Database {
     //final String DATABASE_URL = "jdbc:mysql://johnny.heliohost.org:3306/ainalfa_RERES-db?useTimeZone=true&serverTimezone=UTC&autoReconnect=true&useSSL=false";
-    final String DATABASE_URL = "jdbc:mysql://localhost:3307/reres-db?useTimeZone=true&serverTimezone=UTC&autoReconnect=true&useSSL=false";
+    final String DATABASE_URL = "jdbc:mysql://localhost:3306/reres-db?useTimeZone=true&serverTimezone=UTC&autoReconnect=true&useSSL=false";
     
     private static Connection con = null;
     
