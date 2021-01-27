@@ -8,6 +8,7 @@ package com.RERES.controller;
 import com.RERES.database.Database;
 import com.RERES.database.SQLStatementList;
 import com.RERES.path.Path;
+import com.RERES.view.View;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -62,6 +63,7 @@ public class PaymentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
         processRequest(request, response);
     }
 
@@ -76,6 +78,7 @@ public class PaymentServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
         String action = request.getParameter("action");
         
         if(isStringIsNullOrEmpty(action)) {
@@ -120,18 +123,25 @@ public class PaymentServlet extends HttpServlet {
         double paidAmount = Double.parseDouble(request.getParameter("total-payment"));
         int bookingID = Integer.parseInt(request.getParameter("bookingID"));
         
+        String message = "";
+        
         if(isStringIsNullOrEmpty(payMethod)) {
             
         }
         else {
             if(updateBookingAndPaymentStatusInTheDatabase(payMethod, paidAmount, bookingID)) {
-                request.setAttribute("PayStatus", "success");
+                message = String.format("Successfully paid RM%.2f", paidAmount);
+                
             }
             else {
-                request.setAttribute("PayStatus", "failed");
+                message = String.format("Failed to pay RM%.2f for the booking", paidAmount);
             }
             
-            forwardPage(request, response, Path.MAIN_VIEW_PATH + "/viewPaidStatus.jsp");
+            String[] nameLabels = {"bookingID"};
+            String[] valueLabels = {Integer.toString(bookingID)};
+            
+            View.setOverlayStatusMessage(request, response, "viewPaymentHistory", message, "BookingServlet", nameLabels, valueLabels);
+            View.includePage(request, response, Path.HOME_VIEW_PATH);
         }
         
     }

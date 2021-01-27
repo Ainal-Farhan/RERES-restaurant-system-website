@@ -16,14 +16,16 @@ public interface SQLStatementList {
         "   `user`.`name`, " +
         "   `orderitem`.`order_item_id`, `orderitem`.`item_quantity`, `orderitem`.`total_price`, `orderitem`.`fk_foodID`, " +
         "   `bookingtable`.`bookingTable_id`, `bookingtable`.`bookingTable_status`, `bookingtable`.`bookingTable_code`, `bookingtable`.`bookingTable_capacity`, " +
-        "   `food`.`food_id`, `food`.`food_name`, `food`.`food_price`,`food`.`food_description`, `food`.`food_photo` " +
+        "   `food`.`food_id`, `food`.`food_name`, `food`.`food_price`,`food`.`food_description`, `food`.`food_photo`, " +
+        "   `refund`.`refund_id`, `refund`.`refund_price`, `refund`.`refund_description`,`refund`.`refund_status`, `refund`.`refund_date`, `refund`.`fk_bookingID` " +
         "FROM `booking` " +
         "LEFT JOIN `payment` ON `payment`.`fk_bookingID` = ? " +
         "INNER JOIN `user` ON `booking`.`fk_userID` = `user`.`user_id` AND `user`.`user_type`='customer' " +
         "INNER JOIN `bookingtable` ON `booking`.`fk_bookingTableID` = `bookingtable`.`bookingTable_id`" +
         "LEFT JOIN `orderitem` ON `payment`.`fk_bookingID` = `orderitem`.`fk_bookingID` AND `orderitem`.`fk_bookingID` = ? " +
-        "LEFT JOIN `food` ON `food`.`food_id` = `orderitem`.`fk_foodID`" +
-        "WHERE `booking`.`booking_id` = ?";
+        "LEFT JOIN `food` ON `food`.`food_id` = `orderitem`.`fk_foodID` " +
+        "LEFT JOIN `refund` ON `refund`.`fk_bookingID` = ? " +
+        "WHERE `booking`.`booking_id` = ?;";
     String SQL_STATEMENT_RETRIEVE_ALL_BOOKING_INFORMATION = "SELECT * FROM `booking`;";
     String SQL_STATEMENT_RETRIEVE_ALL_BOOKING_INFORMATION_FOR_A_CUSTOMER = "SELECT * FROM `booking` WHERE `fk_userID` = ?;";
     String SQL_STATEMENT_RETRIEVE_PAYMENT_INFORMATION_WITH_BOOKING_ID = "SELECT * FROM `payment` WHERE `fk_bookingID` =?;";
@@ -50,6 +52,7 @@ public interface SQLStatementList {
     String SQL_STATEMENT_INSERT_PAYMENT_INFO = "INSERT INTO `payment`(`fk_bookingID`) VALUES (?);";
     String SQL_STATEMENT_INSERT_ORDER_ITEM = "INSERT  INTO `orderitem`(`item_quantity`, `total_price`, `fk_bookingID`, `fk_foodID`) " 
             +"VALUES(?, ?, ?, ?)";
+    String SQL_STATEMENT_INSERT_REFUND_INFO = "INSERT INTO `refund`(`refund_price`, `refund_description`, `refund_status`, `fk_bookingID`) VALUES (?,?,?,?);";
     
     // List of UPDATE instruction
     String SQL_STATEMENT_UPDATE_A_USER_INFORMATION = "UPDATE `user` SET `name`=?,`age`=?,`birth_date`=?,`email`=?,`address`=?,`gender`=?,`phone_number`=?,`profile_photo`=? WHERE `user`.`user_id`=?;";

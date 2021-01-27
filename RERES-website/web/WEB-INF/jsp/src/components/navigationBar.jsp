@@ -4,7 +4,6 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Navigation Bar</title>
         
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
         <style><%@include file="../../../css/style/navigationBar.css"%></style>
@@ -22,6 +21,10 @@
                 margin-right: 10px;
             }
             /*----------multi-level-accordian-menu------------*/
+            nav {
+                z-index: 1;
+            }
+            
             .navbar-logo{
                 padding: 15px;
                 color: #fff;
@@ -210,15 +213,17 @@
     </head>
     <body>
         <%
-            String homeActive = "nav-item-custom";
-            String staffActive = "nav-item-custom";
-            String customersActive = "nav-item-custom";
-            String bookingTableActive = "nav-item-custom";
-            String bookingListActive = "nav-item-custom";
-            String profileActive = "nav-item-custom";
-            String FAQActive = "nav-item-custom";
-            String membershipActive = "nav-item-custom";
-            String helpChatActive = "nav-item-custom";
+            final String mainStyle = "nav-item-custom";
+            String homeActive = mainStyle;
+            String staffActive = mainStyle;
+            String customersActive = mainStyle;
+            String bookingTableActive = mainStyle;
+            String bookingListActive = mainStyle;
+            String profileActive = mainStyle;
+            String FAQActive = mainStyle;
+            String membershipActive = mainStyle;
+            String helpChatActive = mainStyle;
+            String manageFoodActive = mainStyle;
             
             if(request.getAttribute("selectedPage") != null) {
                 String selectedPage = (String)request.getAttribute("selectedPage");
@@ -232,6 +237,7 @@
                 else if(selectedPage.equals("membershipPage")) membershipActive = "active";
                 else if(selectedPage.equals("helpChatPage")) helpChatActive = "active";
                 else if(selectedPage.equals("homePage")) homeActive = "active";
+                else if(selectedPage.equals("manageFoodPage")) manageFoodActive = "active";
             }
         %>
         <nav class="navbar navbar-expand-lg navbar-mainbg">
@@ -275,6 +281,15 @@
                                 <input type="hidden" name="action" value="viewUserList">
                                 <input type="hidden" name="viewUserType" value="customer">
                                 <a class="nav-link" href="javascript:void(0);"><i class="fas fa-users"></i>CUSTOMERS</a>
+                            </div>
+                        </form>
+                    </li>
+                    
+                    <li class="nav-item <%= manageFoodActive %>">
+                        <form action="ManageFoodServlet" method="POST" name="manage_menu_list">
+                            <div onClick="document.forms['manage_menu_list'].submit();">
+                                <input type="hidden" name="action" value="viewListOfMenu">
+                                <a class="nav-link" href="javascript:void(0);"><i class="fas fa-utensils"></i>MANAGE MENU</a>
                             </div>
                         </form>
                     </li>

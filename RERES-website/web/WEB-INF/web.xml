@@ -60,6 +60,10 @@
         <servlet-name>BookingServlet</servlet-name>
         <servlet-class>com.RERES.controller.BookingServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ManageFoodServlet</servlet-name>
+        <servlet-class>com.RERES.controller.ManageFoodServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ManageBookingServlet</servlet-name>
         <url-pattern>/ManageBookingServlet</url-pattern>
@@ -112,9 +116,13 @@
         <servlet-name>BookingServlet</servlet-name>
         <url-pattern>/BookingServlet</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ManageFoodServlet</servlet-name>
+        <url-pattern>/ManageFoodServlet</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
-            30
+            60
         </session-timeout>
     </session-config>
 </web-app>

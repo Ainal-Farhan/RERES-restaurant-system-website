@@ -12,6 +12,7 @@ import com.RERES.model.BookingTable;
 import com.RERES.model.Food;
 import com.RERES.model.OrderItem;
 import com.RERES.model.Payment;
+import com.RERES.model.Refund;
 import com.RERES.model.User;
 import com.RERES.path.Path;
 import static com.RERES.path.Path.MAIN_VIEW_PATH;
@@ -44,6 +45,11 @@ public class BookingServlet extends HttpServlet {
     private final String ACTION_REFUND_SELECTED_BOOKING = "refundSelectedBooking";
     private final String ACTION_ABSENT_SELECTED_BOOKING = "absentSelectedBooking";
     private final String ACTION_PRESENT_SELECTED_BOOKING = "presentSelectedBooking";
+    private final String ACTION_VIEW_BOOKING_DETAILS = "viewBookingDetails";
+    private final String ACTION_VIEW_ORDER_DETAILS = "viewOrderDetails";
+    private final String ACTION_VIEW_AMOUNT_SUMMARY = "viewAmountSummary";
+    private final String ACTION_VIEW_PAYMENT_HISTORY = "viewPaymentHistory";
+    private final String ACTION_VIEW_REFUND_DETAILS = "viewRefundDetails";
     
     final String[] PUBLIC_INFO_LABELS = {
         "No",
@@ -97,6 +103,8 @@ public class BookingServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
+        
         processRequest(request, response);
     }
 
@@ -111,6 +119,8 @@ public class BookingServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
+        
         String action = request.getParameter("action");
         
         if(isStringIsNullOrEmpty(action)) {
@@ -122,7 +132,33 @@ public class BookingServlet extends HttpServlet {
         }
         else if(action.equals(ACTION_VIEW_THE_SELECTED_BOOKING)) {
             request.setAttribute("selectedPage", "bookingListPage");
-            processViewTheSelectedBooking(request, response);
+            request.setAttribute("selectedManageBookingPage", "bookingDetailsPage");
+            processViewTheSelectedBooking(request, response, "bookingDetails.jsp");
+        }
+        else if(action.equals(ACTION_VIEW_BOOKING_DETAILS)) {
+            request.setAttribute("selectedManageBookingPage", "bookingDetailsPage");
+            request.setAttribute("selectedPage", "bookingListPage");
+            processViewTheSelectedBooking(request, response, "bookingDetails.jsp");
+        }
+        else if(action.equals(ACTION_VIEW_ORDER_DETAILS)) {
+            request.setAttribute("selectedManageBookingPage", "orderDetailsPage");
+            request.setAttribute("selectedPage", "bookingListPage");
+            processViewTheSelectedBooking(request, response, "orderDetails.jsp");
+        }
+        else if(action.equals(ACTION_VIEW_AMOUNT_SUMMARY)) {
+            request.setAttribute("selectedManageBookingPage", "amountSummaryPage");
+            request.setAttribute("selectedPage", "bookingListPage");
+            processViewTheSelectedBooking(request, response, "amountSummary.jsp");
+        }
+        else if(action.equals(ACTION_VIEW_REFUND_DETAILS)) {
+            request.setAttribute("selectedManageBookingPage", "refundDetailsPage");
+            request.setAttribute("selectedPage", "bookingListPage");
+            processViewTheSelectedBooking(request, response, "refundDetails.jsp");
+        }
+        else if(action.equals(ACTION_VIEW_PAYMENT_HISTORY)) {
+            request.setAttribute("selectedManageBookingPage", "paymentHistoryPage");
+            request.setAttribute("selectedPage", "bookingListPage");
+            processViewTheSelectedBooking(request, response, "paymentHistory.jsp");
         }
         else if(action.equals(ACTION_VIEW_BOOKING_LIST_FOR_CUSTOMER)) {
             request.setAttribute("selectedPage", "bookingListPage");
@@ -133,7 +169,7 @@ public class BookingServlet extends HttpServlet {
             processChangeBookingStatus(request, response, "cancelled");
         }
         else if(action.equals(ACTION_REFUND_SELECTED_BOOKING)) {
-            request.setAttribute("selectedPage", "bookingListPage");
+            request.setAttribute("selectedPage", "bookingListPage");            
             processChangeBookingStatus(request, response, "refunded");
         }
         else if(action.equals(ACTION_ABSENT_SELECTED_BOOKING)) {
@@ -168,7 +204,19 @@ public class BookingServlet extends HttpServlet {
         String[] valueLabels = {Integer.toString(bookingID)};
         String message = "";
         
-        if(changeTheSelectedBookingStatus(status, bookingID)) {
+        if(status.equalsIgnoreCase("refunded")) {
+            if(addRefundInfoIntoDatabase(request, response)) {
+                if(changeTheSelectedBookingStatus(status, bookingID)) {
+                    message = "Successfully refund the booking.";    
+                }
+                else {
+                    message = "Failed change booking status to " + status.toUpperCase();
+                }
+            } else {
+                message = "Failed to refund the booking.";
+            }
+        }
+        else if(changeTheSelectedBookingStatus(status, bookingID)) {
             message = "Successfully change booking status to " + status.toUpperCase();    
         }
         else {
@@ -178,7 +226,7 @@ public class BookingServlet extends HttpServlet {
         View.setOverlayStatusMessage(request, response, ACTION_VIEW_THE_SELECTED_BOOKING, message, "BookingServlet", nameLabels, valueLabels);
         setAttributesForSelectedBooking(request, response);
         if(selectedBooking != null && getAndSetRequiredInfoFromDatabaseForSelectedBooking(request)) {
-            View.includePage(request, response, Path.MAIN_VIEW_PATH + "/manageBooking.jsp");
+            View.includePage(request, response, Path.MAIN_VIEW_PATH + "/manageBooking/bookingDetails.jsp");
         }
         
     }
@@ -190,26 +238,26 @@ public class BookingServlet extends HttpServlet {
         if(selectedBooking == null || selectedBooking.getBookingID() != selectedBookingID) {
             
             selectedBooking = new Booking();
+            selectedBooking.setBookingID(selectedBookingID);
             
-            if(!bookingList.isEmpty() && bookingList != null) {
+            if(bookingList != null && !bookingList.isEmpty()) {
                 for(int i = 0; i < bookingList.size(); i++) {
                     if(bookingList.get(i).getBookingID() == selectedBookingID) {
                         selectedBooking = bookingList.get(i);
                         break;
                     }
                 }
-                
             }
         } 
     }
     
-    private void processViewTheSelectedBooking(HttpServletRequest request, HttpServletResponse response)
+    private void processViewTheSelectedBooking(HttpServletRequest request, HttpServletResponse response, String fileName)
             throws ServletException, IOException {
         
         setAttributesForSelectedBooking(request, response);
         
         if(selectedBooking != null && getAndSetRequiredInfoFromDatabaseForSelectedBooking(request)) {
-            View.forwardPage(request, response, Path.MAIN_VIEW_PATH + "/manageBooking.jsp");
+            View.forwardPage(request, response, Path.MAIN_VIEW_PATH + "/manageBooking/" + fileName);
         }
     }
     
@@ -240,12 +288,50 @@ public class BookingServlet extends HttpServlet {
         }
     }
     
+    /**
+     * totalRefund - the total refund for the customer
+     * description - the description for the refund
+     * status - status of the refund 
+     **** - PARTIAL REFUND - the customer failed to attend for the booking that had been made 
+     **** - TOTAL REFUND - the customer get the full refund
+    */
+    private boolean addRefundInfoIntoDatabase(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
+        
+        Connection con;
+        
+        try {
+            double totalRefund = Double.parseDouble(request.getParameter("totalRefund"));
+            String description = request.getParameter("refundDescription");
+            String status = request.getParameter("refundStatus");
+            int bookingID = Integer.parseInt(request.getParameter("bookingID"));
+
+            con = new Database().getCon();
+            
+            PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_INSERT_REFUND_INFO);
+            
+            st.setDouble(1, totalRefund);
+            st.setString(2, description);
+            st.setString(3, status);
+            st.setInt(4, bookingID);
+            
+            int result = st.executeUpdate();
+            
+            return result > 0;
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return false;
+    }
+    
     private boolean changeTheSelectedBookingStatus(String status, int bookingID)
         throws ServletException, IOException {
         Connection con;
         
         try {
             con = new Database().getCon();
+            
             PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_UPDATE_THE_BOOKING_STATUS);
             
             st.setString(1, status);
@@ -284,6 +370,7 @@ public class BookingServlet extends HttpServlet {
             st.setInt(1, selectedBooking.getBookingID());
             st.setInt(2, selectedBooking.getBookingID());
             st.setInt(3, selectedBooking.getBookingID());
+            st.setInt(4, selectedBooking.getBookingID());
             
             ResultSet result = st.executeQuery();
 
@@ -294,6 +381,7 @@ public class BookingServlet extends HttpServlet {
             Booking booking = new Booking();
             BookingTable bookingTable = new BookingTable();
             User user = new User();
+            Refund refund = new Refund();
             
             int count = 1;
             
@@ -330,6 +418,17 @@ public class BookingServlet extends HttpServlet {
                     bookingTable.setBookingTableCode(result.getInt("bookingTable_code"));
                     bookingTable.setBookingTableCapacity(result.getInt("bookingTable_capacity"));
                     
+                    result.getInt("refund_id");
+                    
+                    if(!result.wasNull()) {
+                        refund.setRefundID(result.getInt("refund_id"));
+                        refund.setRefundStatus(result.getString("refund_status"));
+                        refund.setRefundDescription(result.getString("refund_description"));
+                        refund.setRefundPrice(result.getDouble("refund_price"));
+                        refund.setRefundDate(result.getDate("refund_date"));
+                        refund.setFkBookingID(result.getInt("fk_bookingID"));
+                    }
+                    
                     count++;
                 }
                 
@@ -354,6 +453,10 @@ public class BookingServlet extends HttpServlet {
                     
                     foods.add(food);
                 }
+            }
+            
+            if(refund.getRefundID() > 0) {
+                request.setAttribute("selectedBookingRefund", refund);
             }
             
             request.setAttribute("selectedBookingPayment", payment);

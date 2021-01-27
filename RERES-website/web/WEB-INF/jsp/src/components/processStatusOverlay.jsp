@@ -38,26 +38,30 @@
     </head>
     
     <body>
-            <div id="overlay">
-                <div class="ovelay-content">
-                    <div class="card-body">
-                        <p class="card-text"><%= message %></p>
-                        <form action="<%= servletName %>" method="POST">
-                            <input type="hidden" name="action" value="<%= action %>">
-                            <%  if(request.getAttribute("nameLabels") != null && request.getAttribute("valueLabels") != null) { %>
-                                <%
-                                    String[] nameLabels = (String[])request.getAttribute("nameLabels");
-                                    String[] valueLabels = (String[])request.getAttribute("valueLabels");
+        <div id="overlay">
+            <div class="ovelay-content">
+                <div class="card-body">
+                    <p class="card-text"><%= message %></p>
+                    <%  if(!action.equalsIgnoreCase("none") && !servletName.equalsIgnoreCase("none")) { %>
+                    <form action="<%= servletName %>" method="POST">
+                        <input type="hidden" name="action" value="<%= action %>">
+                        <%  if(request.getAttribute("nameLabels") != null && request.getAttribute("valueLabels") != null) { %>
+                            <%
+                                String[] nameLabels = (String[])request.getAttribute("nameLabels");
+                                String[] valueLabels = (String[])request.getAttribute("valueLabels");
 
-                                    for(int i = 0; i < nameLabels.length; i++) {
-                                        %><input type="hidden" name="<%= nameLabels[i] %>" value="<%= valueLabels[i] %>"><%
-                                    }
-                                %>
-                            <%  } %>
-                            <input type="submit" class="btn btn-primary" value="Okay">
-                        </form>
-                    </div>
+                                for(int i = 0; i < nameLabels.length; i++) {
+                                    %><input type="hidden" name="<%= nameLabels[i] %>" value="<%= valueLabels[i] %>"><%
+                                }
+                            %>
+                        <%  } %>
+                        <input type="submit" class="btn btn-primary" value="Okay">
+                    </form>
+                    <%  } else { %>
+                    <a class="btn btn-primary" href="${pageContext.servletContext.contextPath}/index.jsp" >Okay</a>
+                    <%  } %>
                 </div>
             </div>
+        </div>
     </body>
 </html>

@@ -7,7 +7,7 @@
         <style><%@include file="../../../css/style/global.css"%></style>
         <style><%@include file="../../../css/style/home.css"%></style>
     </head>
-    <body>
+    <body>        
         <header>
             <% if(session.getAttribute("isAuthenticated") != null && (Boolean)session.getAttribute("isAuthenticated")){ %>
                 
