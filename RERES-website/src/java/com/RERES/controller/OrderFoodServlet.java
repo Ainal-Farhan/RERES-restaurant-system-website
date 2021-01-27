@@ -98,7 +98,7 @@ public class OrderFoodServlet extends HttpServlet {
             forwardPage(request, response, Path.ORDER_FOOD_VIEW_PATH);
         }
         else if(action.equals(ADD_FOOD_TO_CART)) {
-            foodInCartList.add(addFoodToCart(request));
+            addFoodToCart(request);
             totalFoodPrice = calculateTotalPrice(foodInCartList);
             request.setAttribute("foodInCartList", foodInCartList);
             request.setAttribute("totalPrice", totalFoodPrice);
@@ -179,7 +179,7 @@ public class OrderFoodServlet extends HttpServlet {
         }
     }
 
-    private Food addFoodToCart(HttpServletRequest request) {
+    private void addFoodToCart(HttpServletRequest request) {
         Food foodInCart;
         int foodID = Integer.parseInt(request.getParameter("foodID"));
         String foodName = request.getParameter("foodName");
@@ -189,8 +189,18 @@ public class OrderFoodServlet extends HttpServlet {
         
         foodInCart = new Food(foodID, foodName, totalPrice, foodQuantity);
         
+        if(foodInCartList.isEmpty())
+            foodInCartList.add(foodInCart);
+        else {
+            for(int i = 0; i<foodInCartList.size(); i++) {
+                if(foodInCart.getFoodID() == foodInCartList.get(i).getFoodID()) {
+                    foodInCartList.get(i).setFoodQuantity(foodQuantity + foodInCartList.get(i).getFoodQuantity());
+                    foodInCartList.get(i).setFoodPrice(foodInCartList.get(i).getFoodQuantity()*foodPrice);
+                }
+            }
+        }
+        
         Logger.getLogger(Database.class.getName()).log(Level.INFO, "INFO" + foodID + " " + foodName + " " + foodPrice + " " +  foodQuantity + " " + totalPrice);
-        return foodInCart;
     }
 
     private boolean setFoodOrderIntoDatabase(HttpServletRequest request, int selectedBookingID) {
@@ -220,7 +230,6 @@ public class OrderFoodServlet extends HttpServlet {
         }
         return false;
     }
-
 
     private void deleteFoodInCartList(HttpServletRequest request) {
         int indexOfFood = Integer.parseInt(request.getParameter("indexOfFood"));
