@@ -7,7 +7,7 @@
         <style><%@include file="../../../css/style/global.css"%></style>
         <style><%@include file="../../../css/style/registration.css"%></style>
     </head>
-    <body>
+    <body>        
         <header>
             <%@include file = "../components/homeNavigationBar.jsp" %>
         </header>

@@ -6,13 +6,9 @@
 package com.RERES.controller;
 
 import com.RERES.path.Path;
+import com.RERES.view.View;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.*;
-import java.text.ParseException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,10 +16,11 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author PC
+ * @author ainal farhan
  */
-public class RegistrationServlet extends HttpServlet {
-
+public class ManageFoodServlet extends HttpServlet {
+    private static final String ACTION_VIEW_LIST_OF_MENU = "viewListOfMenu";
+            
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -32,25 +29,10 @@ public class RegistrationServlet extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
-     * @throws java.text.ParseException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, ParseException, SQLException, ClassNotFoundException {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
-        String action = request.getParameter("action");
-        
-        try (PrintWriter out = response.getWriter()) {
-            if(action.equals("redirectRegister")) {
-                request.setAttribute("selectedPage", "registrationPage");
-                RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.REGISTRATION_VIEW_PATH);
-                dispatcher.forward(request, response);
-            }
-            else if(action.equals("register")) {
-                
-                
-            }
-        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -65,16 +47,7 @@ public class RegistrationServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
-        try {
-            processRequest(request, response);
-        } catch (ParseException ex) {
-            Logger.getLogger(RegistrationServlet.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(RegistrationServlet.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(RegistrationServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        processRequest(request, response);
     }
 
     /**
@@ -88,15 +61,15 @@ public class RegistrationServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
-        try {
-            processRequest(request, response);
-        } catch (ParseException ex) {
-            Logger.getLogger(RegistrationServlet.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(RegistrationServlet.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(RegistrationServlet.class.getName()).log(Level.SEVERE, null, ex);
+        
+        String action = request.getParameter("action");
+        
+        if(action == null) {
+            
+        }
+        else if(action.equals(ACTION_VIEW_LIST_OF_MENU)) {
+            request.setAttribute("selectedPage", "manageFoodPage");
+            View.forwardPage(request, response, Path.MENU_LIST_VIEW_PATH);
         }
     }
 

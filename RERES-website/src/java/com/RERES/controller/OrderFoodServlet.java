@@ -9,13 +9,12 @@ import com.RERES.database.Database;
 import com.RERES.path.Path;
 import com.RERES.model.Food;
 import com.RERES.database.SQLStatementList;
+import com.RERES.view.View;
 import java.sql.*;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -34,11 +33,14 @@ public class OrderFoodServlet extends HttpServlet {
     private final String CANCEL_ORDER_FOOD = "cancelOrderFood";
     private final String CONFIRM_ORDER_FOOD = "confirmOrderFood";
 
-    private static ArrayList<Food> foodInCartList = new ArrayList<Food>();
+    private static ArrayList<Food> foodInCartList = new ArrayList<>();
     private static double totalFoodPrice;
     private static int bookingID;
     private static int timeCode;
     private static String foodCategory;
+    
+    // get the bookingPrice from the Booking Servlet via request.getParameter()
+    private static double bookingPrice = .0;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -65,6 +67,7 @@ public class OrderFoodServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
         processRequest(request, response);
     }
 
@@ -80,12 +83,16 @@ public class OrderFoodServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
         String action = request.getParameter("action");
         
         if(isStringIsNullOrEmpty(action)) {
             
         }
         else if(action.equals(VIEW_ORDER_FOOD)) {
+            // This is where the bookingPrice was initialized
+            bookingPrice = Double.parseDouble(request.getParameter("bookingPrice"));
+            
             foodInCartList.removeAll(foodInCartList);
             getFoodList(request);
             forwardPage(request, response, Path.ORDER_FOOD_VIEW_PATH);
@@ -109,11 +116,33 @@ public class OrderFoodServlet extends HttpServlet {
             forwardPage(request, response, Path.ORDER_FOOD_VIEW_PATH);
         }
         else if(action.equals(CONFIRM_ORDER_FOOD)) {
-            if(setFoodOrderIntoDatabase(request))
-                forwardPage(request, response, "BookingServlet?action=viewBookingListForCustomer");
+            HttpSession session = request.getSession(false);
+            int selectedBookingID = (Integer) session.getAttribute("bookingID");    
+            
+            if(setFoodOrderIntoDatabase(request, selectedBookingID)) {
+                double payAmount = .0;
+                
+                // Calculate total Amount need to be paid
+                payAmount = foodInCartList.stream().map((f) -> f.getFoodPrice()).reduce(payAmount, (accumulator, _item) -> accumulator + _item);
+                payAmount += bookingPrice;
+                
+                String[] nameLabels = {"payAmount", "payName", "bookingID"};
+                String[] valueLabels = {Double.toString(payAmount), "" ,Integer.toString(selectedBookingID)};
+                
+                View.setOverlayStatusMessage(request, response, "viewPaymentForm", "Please Pay Now, Your orders would not be processed if you did not pay for it", "PaymentServlet", nameLabels, valueLabels);
+                
+                View.includePage(request, response, Path.HOME_VIEW_PATH);
+            }
         }
         else if(action.equals(CANCEL_ORDER_FOOD)) {
-            forwardPage(request, response, "BookingServlet?action=viewBookingListForCustomer");
+            HttpSession session = request.getSession(false);
+            int selectedBookingID = (Integer) session.getAttribute("bookingID");
+            
+            String[] nameLabels = {"bookingID"};
+            String[] valueLabels = {Integer.toString(selectedBookingID)};
+            
+            View.setOverlayStatusMessage(request, response, "viewTheSelectedBooking", "You have cancelled the food order", "BookingServlet", nameLabels, valueLabels);
+            View.includePage(request, response, Path.HOME_VIEW_PATH);
         }
     }
 
@@ -127,9 +156,10 @@ public class OrderFoodServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
     
+    
     private void getFoodList(HttpServletRequest request) {
         try {
-            ArrayList<Food> foodList = new ArrayList<Food>();
+            ArrayList<Food> foodList = new ArrayList<>();
             HttpSession session = request.getSession();
             timeCode = (Integer) session.getAttribute("timeCode");
             foodCategory = categoryPicker();
@@ -163,23 +193,23 @@ public class OrderFoodServlet extends HttpServlet {
         return foodInCart;
     }
 
-    private boolean setFoodOrderIntoDatabase(HttpServletRequest request) {
+    private boolean setFoodOrderIntoDatabase(HttpServletRequest request, int selectedBookingID) {
         try {
-            HttpSession session = request.getSession();
+            
             int insertStatus = 0;
-            bookingID = (Integer) session.getAttribute("bookingID");
+            
             Connection con = new Database().getCon();
             PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_INSERT_ORDER_ITEM);
             
             for(Food f: foodInCartList) {
                 st.setInt(1, f.getFoodQuantity());
                 st.setDouble(2, f.getFoodPrice());
-                st.setInt(3, bookingID);
+                st.setInt(3, selectedBookingID);
                 st.setInt(4, f.getFoodID());
                 
                 insertStatus += st.executeUpdate();
                 
-                Logger.getLogger(Database.class.getName()).log(Level.INFO, "INFO" + " " + bookingID + " " + f.getFoodQuantity() + " " + totalFoodPrice + " " + f.getFoodID() );
+                Logger.getLogger(Database.class.getName()).log(Level.INFO, "INFO" + " " + selectedBookingID + " " + f.getFoodQuantity() + " " + totalFoodPrice + " " + f.getFoodID() );
             }
             Logger.getLogger(Database.class.getName()).log(Level.INFO, "INFO" + " " + insertStatus + " " + foodInCartList.size());
             st.close();
@@ -209,8 +239,7 @@ public class OrderFoodServlet extends HttpServlet {
     
     private void forwardPage(HttpServletRequest request, HttpServletResponse response,String pagePath)
             throws ServletException, IOException {
-        RequestDispatcher dispatcher = request.getRequestDispatcher(pagePath);
-        dispatcher.forward(request, response);
+        View.forwardPage(request, response, pagePath);
     }
     
     private boolean isStringIsNullOrEmpty(String inputString) {

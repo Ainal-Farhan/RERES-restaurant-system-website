@@ -71,6 +71,7 @@ public class BookingTableServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
         processRequest(request, response);
     }
 
@@ -85,7 +86,7 @@ public class BookingTableServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
         String action = request.getParameter("action");
         
         if(isStringIsNullOrEmpty(action)) {
@@ -132,7 +133,7 @@ public class BookingTableServlet extends HttpServlet {
 //                session.setAttribute("tableCode", request.getParameter("tableCode"));
 //                session.setAttribute("bookDesc", request.getParameter("bookDescription"));
                 session.setAttribute("timeCode", timeCode);
-                forwardPage(request, response, "OrderFoodServlet?action=viewOrderFood");
+                forwardPage(request, response, "OrderFoodServlet?action=viewOrderFood&bookingPrice=" + bookPrice);
             }
         }
         else {
