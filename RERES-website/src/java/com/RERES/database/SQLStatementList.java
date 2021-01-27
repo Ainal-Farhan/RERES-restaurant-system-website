@@ -36,6 +36,8 @@ public interface SQLStatementList {
     String SQL_STATEMENT_RETRIEVE_TABLE_LIST = "SELECT * FROM `bookingtable`";
     String SQL_STATEMENT_RETRIEVE_BOOKING_INFO = "SELECT `booking_id` FROM `booking` WHERE `time_code` = ? AND booking_date = ? AND fk_bookingTableID = ? ";
     String SQL_STATEMENT_RETRIEVE_SPECIFIC_MEMBERSHIP_INFORMATION = "SELECT * FROM `membership` WHERE `fk_UserID` = ?";
+    String SQL_STATEMENT_RETRIEVE_FOOD_LIST = "SELECT * FROM `food` WHERE `food_category` = ?;";
+    
     
     // List of INSERT instruction
     String SQL_STATEMENT_INSERT_SUCCESSFULLY_PAY_FOR_A_BOOKING = "INSERT INTO `payment` "
@@ -46,6 +48,8 @@ public interface SQLStatementList {
             + "(`booking_description`, `booking_date`, `time_slot`, `time_code`, `booking_quantity`, `booking_price`, `fk_userID`, `fk_bookingTableID`) " 
             +"VALUES (?,?,?,?,?,?,?,?)";
     String SQL_STATEMENT_INSERT_PAYMENT_INFO = "INSERT INTO `payment`(`fk_bookingID`) VALUES (?);";
+    String SQL_STATEMENT_INSERT_ORDER_ITEM = "INSERT  INTO `orderitem`(`item_quantity`, `total_price`, `fk_bookingID`, `fk_foodID`) " 
+            +"VALUES(?, ?, ?, ?)";
     
     // List of UPDATE instruction
     String SQL_STATEMENT_UPDATE_A_USER_INFORMATION = "UPDATE `user` SET `name`=?,`age`=?,`birth_date`=?,`email`=?,`address`=?,`gender`=?,`phone_number`=?,`profile_photo`=? WHERE `user`.`user_id`=?;";

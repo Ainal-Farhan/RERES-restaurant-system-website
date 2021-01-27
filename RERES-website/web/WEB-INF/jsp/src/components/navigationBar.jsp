@@ -322,7 +322,11 @@
                         }
                             %>
                     <li class="nav-item <%= FAQActive %>">
-                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/FAQServlet"><i class="far fa-copy"></i>FAQ</a>
+                        <form action="FAQServlet" method="POST" name="faq">
+                            <div onClick="document.forms['faq'].submit();">
+                                <a class="nav-link" href="javascript:void(0);"><i class="far fa-question-circle"></i></i>FAQ</a>
+                            </div>
+                        </form>
                     </li>
                     <li class="nav-item <%= membershipActive %>">
                         <form action="MembershipServlet" method="POST" name="membership_view">

@@ -55,8 +55,8 @@
                                     <option value="10">6.00 PM - 7.00 PM</option>
                                     <option value="11">7.00 PM - 8.00 PM</option>
                                     <option value="12">8.00 PM - 9.00 PM</option>
-                                    <option value="14">9.00 PM - 10.00 PM</option>
-                                    <option value="15">10.00 PM - 11.00 PM</option>
+                                    <option value="13">9.00 PM - 10.00 PM</option>
+                                    <option value="14">10.00 PM - 11.00 PM</option>
                                 </select>
                             </div>
                         </div>
@@ -190,12 +190,13 @@
                         <%
                         if(request.getAttribute("isCheck") != null && (Boolean)request.getAttribute("isCheck")) {
                         %>
-                        <h3><%= String.format("Price: RM%.2f", request.getAttribute("bookPrice")) %></h3>
+                            <h3><%= String.format("Price: RM%.2f", request.getAttribute("bookPrice")) %></h3>
+                            <input type="hidden" name="action" value="makeReserve">
+                            <input class="btn btn-success btn-block btn-lg" type="submit" value="Make Reservation">
                         <%
                         }
                         %>
-                            <input type="hidden" name="action" value="makeReserve">
-                            <input class="btn btn-success btn-block btn-lg" type="submit" value="Make Reservation">
+                            
                         </div>
                     </div>
                 </form>
