@@ -79,8 +79,10 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getParameter("action");
+        if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
         
+        String action = request.getParameter("action");
+                
         if(action == null) {
             
         }
@@ -103,6 +105,8 @@ public class UserServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
+        
         String action = request.getParameter("action");
         HttpSession session = request.getSession();
         
@@ -111,6 +115,7 @@ public class UserServlet extends HttpServlet {
             
         }
         else if(action.equals(ACTION_VIEW_HOME_PAGE_AUTHENTICATED)) {
+            request.setAttribute("selectedPage", "homePage");
             View.forwardPage(request, response, Path.HOME_VIEW_PATH);
         }
         else if(action.equals(ACTION_VIEW_USER_LIST)) {
@@ -229,20 +234,27 @@ public class UserServlet extends HttpServlet {
             request.setAttribute("selectedPage", "homePage");
             
             View.setOverlayStatusMessage(request, response, ACTION_VIEW_HOME_PAGE_AUTHENTICATED, "Successfully Login", "UserServlet", null, null);
-            
             View.includePage(request, response, Path.HOME_VIEW_PATH);
         }
         else {
             request.setAttribute("selectedPage", "loginPage");
-            View.forwardPage(request, response, Path.LOGIN_VIEW_PATH);
+            View.setOverlayStatusMessage(request, response, "redirectLogin", "Invalid username, email or password", "LoginServlet", null, null);
+            View.includePage(request, response, Path.LOGIN_VIEW_PATH);
         }
     }
     
     private void processRegisterUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException {
         if(setUserRegistrationIntoDatabase(request)) {
+            
             request.setAttribute("selectedPage", "loginPage");
-            View.forwardPage(request, response, Path.LOGIN_VIEW_PATH);
+            View.setOverlayStatusMessage(request, response, "redirectLogin", "Successfully register a new customer. Now, please login with your login credential", "LoginServlet", null, null);
+            View.includePage(request, response, Path.LOGIN_VIEW_PATH);
+        }
+        else {
+            request.setAttribute("selectedPage", "registerPage");
+            View.setOverlayStatusMessage(request, response, "redirectRegister", "Failed to register a new customer", "RegistrationServlet", null, null);
+            View.includePage(request, response, Path.REGISTRATION_VIEW_PATH);
         }
     }
     

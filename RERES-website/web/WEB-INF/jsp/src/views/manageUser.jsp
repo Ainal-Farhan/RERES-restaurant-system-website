@@ -12,7 +12,7 @@
         <style><%@include file="../../../css/style/global.css"%></style>
         <style><%@include file="../../../css/style/manageUser.css"%></style>
     </head>
-    <body>
+    <body>        
         <header>
             <%@include file = "../components/navigationBar.jsp" %>
         </header>

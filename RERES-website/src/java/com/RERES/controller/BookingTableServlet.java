@@ -71,6 +71,7 @@ public class BookingTableServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
         processRequest(request, response);
     }
 
@@ -85,7 +86,7 @@ public class BookingTableServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
         String action = request.getParameter("action");
         
         if(isStringIsNullOrEmpty(action)) {
@@ -125,18 +126,24 @@ public class BookingTableServlet extends HttpServlet {
     
     private void processMakeReservation(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
         String orderFood = request.getParameter("foodOrder");
         if(orderFood.equals("now")) {
-//                forwardPage(request, response, "/OrderFoodServlet");
-            forwardPage(request, response, Path.ORDER_FOOD_VIEW_PATH);
+            if(setBookingTableIntoDatabase(request, response)) {
+//                session.setAttribute("tableCode", request.getParameter("tableCode"));
+//                session.setAttribute("bookDesc", request.getParameter("bookDescription"));
+                session.setAttribute("timeCode", timeCode);
+                forwardPage(request, response, "OrderFoodServlet?action=viewOrderFood&bookingPrice=" + bookPrice);
+            }
         }
-        else
-//            forwardPage(request, response, Path.BOOKING_TABLE_VIEW_PATH);
+        else {
             if(setBookingTableIntoDatabase(request, response)) {
                 forwardPage(request, response, "BookingServlet?action=viewBookingListForCustomer");
+//                forwardPage(request, response, Path.PAYMENT_FORM_VIEW_PATH);
             }else {
                 forwardPage(request, response, Path.BOOKING_TABLE_VIEW_PATH);
             }
+        }
     }
     
     private boolean getTableAvailability(HttpServletRequest request) {
@@ -229,9 +236,9 @@ public class BookingTableServlet extends HttpServlet {
             st2.setInt(3, tableCode);
             
             // Statement to update the selected table status to unavailable
-            PreparedStatement st3 = con.prepareStatement(SQLStatementList.SQL_STATEMENT_UPDATE_BOOKING_TABLE_STATUS);
-            st3.setString(1, "unavailable");
-            st3.setInt(2, tableCode);
+//            PreparedStatement st3 = con.prepareStatement(SQLStatementList.SQL_STATEMENT_UPDATE_BOOKING_TABLE_STATUS);
+//            st3.setString(1, "unavailable");
+//            st3.setInt(2, tableCode);
                     
             if(st.executeUpdate() > 0) {
                 ResultSet result2 = st2.executeQuery();
@@ -240,14 +247,14 @@ public class BookingTableServlet extends HttpServlet {
                     // Statement to insert the payment info
                     PreparedStatement st4 = con.prepareStatement(SQLStatementList.SQL_STATEMENT_INSERT_PAYMENT_INFO);
                     st4.setInt(1, result2.getInt("booking_id"));
+                    session.setAttribute("bookingID", result2.getInt("booking_id"));
                     
-                    if(st3.executeUpdate() > 0 && st4.executeUpdate() > 0) {
+                    if(st4.executeUpdate() > 0) {
                         return true;
                     }
                     
                 } 
             }
-            
             
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(BookingTableServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -343,7 +350,7 @@ public class BookingTableServlet extends HttpServlet {
             case 12: 
                 return "8.00 PM - 9.00 PM";
             case 13:
-                return "9.00 PM - 10.00 PM';";
+                return "9.00 PM - 10.00 PM";
             case 14:
                 return "10.00 PM - 11.00 PM";
             default:

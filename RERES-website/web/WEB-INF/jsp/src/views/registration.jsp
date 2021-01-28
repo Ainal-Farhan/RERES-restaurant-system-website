@@ -7,7 +7,7 @@
         <style><%@include file="../../../css/style/global.css"%></style>
         <style><%@include file="../../../css/style/registration.css"%></style>
     </head>
-    <body>
+    <body>        
         <header>
             <%@include file = "../components/homeNavigationBar.jsp" %>
         </header>
@@ -29,47 +29,54 @@
                                             <div class="row">
                                                 <div class="col">
                                                     <div class="form-group">
-                                                        <!--<label for="name">Full name:</label>-->
+                                                        <label for="name">Full name:</label>
                                                         <input type="text" class="form-control form-control-lg" placeholder="Enter full name" name="fullname" id="name" required>
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <!--<label for="phoneNumber">Phone number:</label>-->
+                                                        <label for="phoneNumber">Phone number:</label>
                                                         <input type="text" class="form-control form-control-lg" placeholder="Enter phone number" name="phoneNumber" id="phoneNumber" required>
                                                     </div>
                                                     <div class="form-group">
-                                                        <!--<label for="email">Email address:</label>-->
+                                                        <label for="email">Email address:</label>
                                                         <input type="email" class="form-control form-control-lg" placeholder="Enter email" name="email" id="email" required>
                                                     </div>
                                                     <div class="form-group">
-                                                        <!--<label for="username">Username:</label>-->
+                                                        <label for="username">Username:</label>
                                                         <input type="text" class="form-control form-control-lg" placeholder="Enter username" name="username" id="username" required>
                                                     </div>
                                                     <div class="form-group">
-                                                        <!--<label for="pwd">Password:</label>-->
+                                                        <label for="pwd">Password:</label>
                                                         <input type="password" class="form-control form-control-lg" placeholder="Enter password" name="pwd" id="pwd" required>
                                                     </div>
                                                     <div class="form-group">
-                                                        <!--<label for="confirmPwd">Confirm password:</label>-->
+                                                        <label for="confirmPwd">Confirm password:</label>
                                                         <input type="password" class="form-control form-control-lg" placeholder="Confirm password" name="confirmPwd" id="confirmPwd" required>
                                                     </div>
                                                 </div>
                                                 
                                                 <div class="col">
                                                     <div class="form-group">
-                                                        <!--<label for="address">Address:</label>-->
+                                                        <label for="address">Address:</label>
                                                         <input type="text" class="form-control form-control-lg" placeholder="Enter address" name="address" id="address">
+                                                        <label for="city">City</label>
                                                         <input type="text" class="form-control form-control-lg" placeholder="Enter city" name="city" id="city">
+                                                        <label for="poscode">Poscode:</label>
                                                         <input type="text" class="form-control form-control-lg" placeholder="Enter poscode" name="poscode" id="poscode">
+                                                        <label for="state">State</label>
                                                         <input type="text" class="form-control form-control-lg" placeholder="Enter state" name="state" id="state">
                                                     </div>
                                                     <div class="form-group">
-                                                        <input type="number" class="form-control form-control-lg" placeholder="Enter your age" name="age" min="1">
+                                                        <label for="age">Age:</label>
+                                                        <input type="number" class="form-control form-control-lg" placeholder="Enter your age" id="age" name="age" min="1">
                                                     </div>
                                                     <div class="form-group">
-                                                        <input type="date" class="form-control form-control-lg" placeholder="Enter you date of birth" name="birthdate">
+                                                        <label for="birthdate">Date of Birth:</label>
+                                                        <input type="date" class="form-control form-control-lg" placeholder="Enter you date of birth" id="birthdate" name="birthdate">
                                                     </div>
+                                                    Gender: <br>
                                                     <div class="form-check-inline form-control-lg">
+                                                        
                                                         <label class="form-check-label">
                                                             <input type="radio" class="form-check-input" name="gender" value="male">Male
                                                         </label>
