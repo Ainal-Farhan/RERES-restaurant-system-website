@@ -30,6 +30,8 @@ public interface Path extends Serializable {
     String HOME_VIEW_PATH = MAIN_VIEW_PATH + "/home.jsp";
     String BOOKING_LIST_VIEW_PATH = MAIN_VIEW_PATH + "/viewBookingListPage.jsp";
     String MENU_LIST_VIEW_PATH = MAIN_VIEW_PATH + "/manageMenu/menuListPage.jsp";
+    String ADD_NEW_FOOD_VIEW_PATH = MAIN_VIEW_PATH + "/manageMenu/addNewFood.jsp";
+    String UPDATE_FOOD_VIEW_PATH = MAIN_VIEW_PATH + "/manageMenu/updateFood.jsp";
     //--------------------------------------------------------------------------
     
     // Path for the main component file
