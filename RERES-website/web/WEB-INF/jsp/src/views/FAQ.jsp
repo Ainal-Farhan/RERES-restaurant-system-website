@@ -63,6 +63,14 @@
                             <button type="button" class="collapsible">Open Section 1</button>
                             <div class="content">
                                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                                <form action="UserServlet" method="POST" name="profile">
+                                    <div onClick="document.forms['profile'].submit();">
+                                        <input type="hidden" name="action" value="viewProfile">
+                                        <input type="hidden" name="userType" value="<%= currentUserType.toLowerCase() %>">
+                                        <input type="hidden" name="userID" value="<%= currentUserID %>">
+                                        <a class="nav-link" href="javascript:void(0);"><i class="far fa-user"></i>PROFILE</a>
+                                    </div>
+                                </form>
                             </div>
                             <button type="button" class="collapsible">Open Section 2</button>
                             <div class="content">

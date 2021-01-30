@@ -340,9 +340,6 @@
                             </div>
                         </form>
                     </li>
-                    <%
-                        }
-                            %>
                     <li class="nav-item <%= FAQActive %>">
                         <form action="FAQServlet" method="POST" name="faq">
                             <div onClick="document.forms['faq'].submit();">
@@ -350,6 +347,9 @@
                             </div>
                         </form>
                     </li>
+                    <%
+                        }
+                            %>
                     <li class="nav-item nav-item-custom">
                         <form action="UserServlet" method="POST" name="logout">
                             <div onClick="document.forms['logout'].submit();">

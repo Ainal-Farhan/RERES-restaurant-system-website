@@ -33,7 +33,7 @@
             <%@include file = "../components/navigationBar.jsp" %>
         </header>
         
-            <jsp:useBean id="membership" class="com.RERES.model.Membership" scope="request" />
+        <jsp:useBean id="membership" class="com.RERES.model.Membership" scope="request" />
         
         <div class="content-container">
             <div class="caption">
@@ -46,7 +46,7 @@
                             <div class="table-responsive custom-shadow">
                                 <table class="table table-light table-striped" style="margin-bottom:0;">
                                     <thead class="thead-dark">
-                                        <tr><th colspan="3" style="text-align:center;"><img src="${pageContext.servletContext.contextPath}/assets/img/Documentation/member.jpg" width="280" height="200"></th></tr>
+                                        <tr><th colspan="3" style="text-align:center;"><img src="https://static.toiimg.com/photo/72975551.cms" width="280" height="200"></th></tr>
                                     </thead>
                                     <tbody>
                                         <tr class="custom-shadow">

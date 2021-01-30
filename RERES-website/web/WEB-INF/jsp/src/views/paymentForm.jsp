@@ -94,7 +94,7 @@
 
                     <div class="form-group">
                         <input type="hidden" name="action" value="<%= request.getAttribute("actionPay") %>">
-                        <input type="hidden" name="bookingID" value="<%= (Integer)request.getAttribute("bookingID") %>">
+                        <input type="hidden" name="bookingID" value="<%= (Integer)request.getAttribute("ID") %>">
                         <input type="submit" class="btn btn-success btn-group-payment" value="Pay <%= String.format("RM%.2f", amountToPay) %>">
                     </div>
                 </form>
