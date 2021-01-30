@@ -65,7 +65,6 @@
                                         path = com.RERES.path.Path.PROFILE_PICTURE_CUSTOMER_PATH; 
                                     }
                                 %>
-                                <c:set var="profilePicturePath" value="<%= path %>" />
                                 
                                 <c:forEach items="${requestScope.users}" var="user" varStatus="loop">
                                     <tr>
@@ -73,7 +72,7 @@
                                         <td><c:out value="${user.name}" /></td>
                                         <td><c:out value="${user.age}" /></td>
                                         <td><c:out value="${user.email}" /></td>
-                                        <td><img src='<c:out value="${pageContext.servletContext.contextPath}${profilePicturePath}/${user.profilePhoto}"/>' width='30' height='30' alt="Profile Photo" /></td>
+                                        <td><img src='data:image/png;base64, <c:out value="${user.profilePhoto}" />' width='30' height='30' alt="Profile Photo" style="border-radius: 50%;" /></td>
                                         <%  if(currentUserType.equalsIgnoreCase("admin")) { %>
                                         <td>
                                             <form action="UserServlet" method="POST">

@@ -8,6 +8,7 @@ package com.RERES.controller;
 import com.RERES.database.Database;
 import com.RERES.database.SQLStatementList;
 import com.RERES.path.Path;
+import com.RERES.references.TopNavigationBarReference;
 import com.RERES.view.View;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -29,8 +30,12 @@ import javax.servlet.http.HttpServletResponse;
  * @author PC
  */
 public class PaymentServlet extends HttpServlet {
-    private final String ACTION_VIEW_PAYMENT_FORM = "viewPaymentForm";
-    private final String ACTION_PAY = "pay";
+    private final String ACTION_VIEW_PAYMENT_FORM_BOOKING = "viewPaymentFormBooking";
+    private final String ACTION_VIEW_PAYMENT_FORM_RENEW = "viewPaymentFormRenewMembership";
+    private final String ACTION_PAY_BOOKING = "payBooking";
+    private final String ACTION_CANCEL_PAY_BOOKING = "cancelPayBooking";
+    private final String ACTION_PAY_MEMBERSHIP = "payMembership";
+    private final String ACTION_CANCEL_PAY_MEMBERSHIP = "cancelPayMembership";
     
     
     /**
@@ -84,13 +89,35 @@ public class PaymentServlet extends HttpServlet {
         if(isStringIsNullOrEmpty(action)) {
             
         }
-        else if(action.equals(ACTION_VIEW_PAYMENT_FORM)) {
-            request.setAttribute("selectedPage", "bookingTablePage");
+        else if(action.equals(ACTION_VIEW_PAYMENT_FORM_BOOKING)) {
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.BOOKING_TABLE_PAGE);
             processViewPaymentForm(request, response);
         }
-        else if(action.equals(ACTION_PAY)) {
-            request.setAttribute("selectedPage", "bookingTablePage");
-            processPay(request, response);
+        else if(action.equals(ACTION_PAY_BOOKING)) {
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.BOOKING_TABLE_PAGE);
+            processPayBooking(request, response);
+        }
+        else if(action.equals(ACTION_CANCEL_PAY_BOOKING)) {
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.BOOKING_TABLE_PAGE);
+            String[] nameLabels = {"bookingID"};
+            String[] valueLabels = {request.getParameter("bookingID")};
+            
+            View.setOverlayStatusMessage(request, response, "viewBookingDetails", "You have choose not to pay now.", "BookingServlet", nameLabels, valueLabels);
+            View.includePage(request, response, Path.HOME_VIEW_PATH);
+        }
+        else if(action.equals(ACTION_VIEW_PAYMENT_FORM_RENEW)) {
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.MEMBERSHIP_PAGE);
+            processViewPaymentForm(request, response);
+        }
+        else if(action.equals(ACTION_PAY_MEMBERSHIP)) {
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.MEMBERSHIP_PAGE);
+            processPayMembership(request, response);
+        }
+        else if(action.equals(ACTION_CANCEL_PAY_MEMBERSHIP)) {
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.MEMBERSHIP_PAGE);
+            
+            View.setOverlayStatusMessage(request, response, "viewMembershipPage", "You have choose not to renew your membership.", "MembershipServlet", null, null);
+            View.includePage(request, response, Path.HOME_VIEW_PATH);
         }
     }
 
@@ -108,16 +135,45 @@ public class PaymentServlet extends HttpServlet {
             throws ServletException, IOException {
         double payAmount = Double.parseDouble(request.getParameter("payAmount"));
         String payName = request.getParameter("payName");
-        int bookingID = Integer.parseInt(request.getParameter("bookingID"));
-        
+        int bookingID = Integer.parseInt(request.getParameter("ID"));
+        String actionPay = request.getParameter("actionPay");
+        String actionCancelPay = request.getParameter("actionCancelPay");
+                
         request.setAttribute("payAmount", payAmount);
         request.setAttribute("payName", payName);
-        request.setAttribute("bookingID", bookingID);
+        request.setAttribute("ID", bookingID);
+        request.setAttribute("actionPay", actionPay);
+        request.setAttribute("actionCancelPay", actionCancelPay);
         
         forwardPage(request, response, Path.MAIN_VIEW_PATH + "/paymentForm.jsp");
     }
     
-    private void processPay(HttpServletRequest request, HttpServletResponse response)
+    private void processPayMembership(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        String payMethod = request.getParameter("PaymentOptions");
+        double paidAmount = Double.parseDouble(request.getParameter("total-payment"));
+        
+        String message = "";
+        
+        if(isStringIsNullOrEmpty(payMethod)) {
+            
+        }
+        else {
+            if(MembershipServlet.setRenewMembership(request)) {
+                message = String.format("Successfully paid RM%.2f for renew your membership via %s", paidAmount, payMethod.toUpperCase());
+                
+            }
+            else {
+                message = String.format("Failed to pay RM%.2f for renew your membership", paidAmount);
+            }
+            
+            View.setOverlayStatusMessage(request, response, "viewMembershipPage", message, "MembershipServlet", null, null);
+            View.includePage(request, response, Path.HOME_VIEW_PATH);
+        }
+    }
+    
+    private void processPayBooking(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String payMethod = request.getParameter("PaymentOptions");
         double paidAmount = Double.parseDouble(request.getParameter("total-payment"));

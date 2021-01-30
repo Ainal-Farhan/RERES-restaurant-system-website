@@ -1,3 +1,4 @@
+<%@page import="com.RERES.references.TopNavigationBarReference"%>
 <%@page import="com.RERES.path.Path"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -222,22 +223,20 @@
             String profileActive = mainStyle;
             String FAQActive = mainStyle;
             String membershipActive = mainStyle;
-            String helpChatActive = mainStyle;
             String manageFoodActive = mainStyle;
             
-            if(request.getAttribute("selectedPage") != null) {
-                String selectedPage = (String)request.getAttribute("selectedPage");
+            if(request.getAttribute(TopNavigationBarReference.SELECTED_PAGE) != null) {
+                String selectedPage = (String)request.getAttribute(TopNavigationBarReference.SELECTED_PAGE);
                 
-                if(selectedPage.equals("staffListPage")) staffActive = "active";
-                else if(selectedPage.equals("customersListPage")) customersActive = "active";
-                else if(selectedPage.equals("bookingTablePage")) bookingTableActive = "active";
-                else if(selectedPage.equals("bookingListPage")) bookingListActive = "active";
-                else if(selectedPage.equals("profilePage")) profileActive = "active";
-                else if(selectedPage.equals("FAQPage")) FAQActive = "active";
-                else if(selectedPage.equals("membershipPage")) membershipActive = "active";
-                else if(selectedPage.equals("helpChatPage")) helpChatActive = "active";
-                else if(selectedPage.equals("homePage")) homeActive = "active";
-                else if(selectedPage.equals("manageFoodPage")) manageFoodActive = "active";
+                if(selectedPage.equals(TopNavigationBarReference.STAFF_LIST_PAGE)) staffActive = "active";
+                else if(selectedPage.equals(TopNavigationBarReference.CUSTOMERS_LIST_PAGE)) customersActive = "active";
+                else if(selectedPage.equals(TopNavigationBarReference.BOOKING_TABLE_PAGE)) bookingTableActive = "active";
+                else if(selectedPage.equals(TopNavigationBarReference.BOOKING_LIST_PAGE)) bookingListActive = "active";
+                else if(selectedPage.equals(TopNavigationBarReference.PROFILE_PAGE)) profileActive = "active";
+                else if(selectedPage.equals(TopNavigationBarReference.FAQ_PAGE)) FAQActive = "active";
+                else if(selectedPage.equals(TopNavigationBarReference.MEMBERSHIP_PAGE)) membershipActive = "active";
+                else if(selectedPage.equals(TopNavigationBarReference.HOME_PAGE)) homeActive = "active";
+                else if(selectedPage.equals(TopNavigationBarReference.MANAGE_FOOD_PAGE)) manageFoodActive = "active";
             }
         %>
         <nav class="navbar navbar-expand-lg navbar-mainbg">
@@ -333,6 +332,14 @@
                             </div>
                         </form>
                     </li>
+                    <li class="nav-item <%= membershipActive %>">
+                        <form action="MembershipServlet" method="POST" name="membership_view">
+                            <div onClick="document.forms['membership_view'].submit();">
+                                <input type="hidden" name="action" value="viewMembershipPage">
+                                <a class="nav-link" href="javascript:void(0);"><i class="fas fa-user-friends"></i>MEMBERSHIP</a>
+                            </div>
+                        </form>
+                    </li>
                     <%
                         }
                             %>
@@ -342,17 +349,6 @@
                                 <a class="nav-link" href="javascript:void(0);"><i class="far fa-question-circle"></i></i>FAQ</a>
                             </div>
                         </form>
-                    </li>
-                    <li class="nav-item <%= membershipActive %>">
-                        <form action="MembershipServlet" method="POST" name="membership_view">
-                            <div onClick="document.forms['membership_view'].submit();">
-                                <input type="hidden" name="action" value="viewMembershipPage">
-                                <a class="nav-link" href="javascript:void(0);"><i class="fas fa-user-friends"></i>MEMBERSHIP</a>
-                            </div>
-                        </form>
-                    </li>
-                    <li class="nav-item <%= helpChatActive %>">
-                        <a class="nav-link" href="${pageContext.servletContext.contextPath}/HelpChatServlet"><i class="fas fa-hands-helping"></i>HELP CHAT</a>
                     </li>
                     <li class="nav-item nav-item-custom">
                         <form action="UserServlet" method="POST" name="logout">

@@ -9,6 +9,9 @@ import com.RERES.database.Database;
 import com.RERES.path.Path;
 import com.RERES.database.SQLStatementList;
 import com.RERES.model.BookingTable;
+import static com.RERES.references.TopNavigationBarReference.HOME_PAGE;
+import static com.RERES.references.TopNavigationBarReference.SELECTED_PAGE;
+import com.RERES.view.View;
 
 import java.io.IOException;
 import java.sql.*;
@@ -43,6 +46,7 @@ public class BookingTableServlet extends HttpServlet {
     private static double bookPrice;
     private static String checkMessage;
     private static String checkNoTableMessage;
+    private static String discountMessage;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -72,7 +76,9 @@ public class BookingTableServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
-        processRequest(request, response);
+        request.setAttribute(SELECTED_PAGE, HOME_PAGE);
+        View.setOverlayStatusMessage(request, response, "none", "doGet() is not used. Back to Home Page", "none", null, null);
+        View.includePage(request, response, Path.HOME_VIEW_PATH);
     }
 
     /**
@@ -90,7 +96,9 @@ public class BookingTableServlet extends HttpServlet {
         String action = request.getParameter("action");
         
         if(isStringIsNullOrEmpty(action)) {
-            
+            request.setAttribute(SELECTED_PAGE, HOME_PAGE);
+            View.setOverlayStatusMessage(request, response, "none", "Some errors happen. Back to Home Page", "none", null, null);
+            View.includePage(request, response, Path.HOME_VIEW_PATH);
         }
         else if(action.equals(ACTION_VIEW_BOOKING_TABLE)) {
             request.setAttribute("selectedPage", "bookingTablePage");
@@ -133,15 +141,27 @@ public class BookingTableServlet extends HttpServlet {
 //                session.setAttribute("tableCode", request.getParameter("tableCode"));
 //                session.setAttribute("bookDesc", request.getParameter("bookDescription"));
                 session.setAttribute("timeCode", timeCode);
-                forwardPage(request, response, "OrderFoodServlet?action=viewOrderFood&bookingPrice=" + bookPrice);
+                
+                String[] nameLabels = {"bookingPrice"};
+                String[] valueLabels = {Double.toString(bookPrice)};
+                
+                View.setOverlayStatusMessage(request, response, "viewOrderFood", "Successfully booked a table. Proceed to Order Food", "OrderFoodServlet", nameLabels, valueLabels);
+                
+                View.includePage(request, response, Path.BOOKING_TABLE_VIEW_PATH);
             }
         }
         else {
             if(setBookingTableIntoDatabase(request, response)) {
-                forwardPage(request, response, "BookingServlet?action=viewBookingListForCustomer");
-//                forwardPage(request, response, Path.PAYMENT_FORM_VIEW_PATH);
+                String[] nameLabels = {"payAmount", "payName", "ID", "actionPay", "actionCancelPay"};
+                String[] valueLabels = {Double.toString(bookPrice), "" , Integer.toString((Integer)session.getAttribute("bookingID")), "payBooking", "cancelPayBooking"};
+
+                View.setOverlayStatusMessage(request, response, "viewPaymentFormBooking", "Successfully booked a table. Proceed to payment page", "PaymentServlet", nameLabels, valueLabels);
+
+                View.includePage(request, response, Path.BOOKING_TABLE_VIEW_PATH);
             }else {
-                forwardPage(request, response, Path.BOOKING_TABLE_VIEW_PATH);
+                View.setOverlayStatusMessage(request, response, "viewBookingTable", "Failed to book a table", "BookingTableServlet", null, null);
+
+                View.includePage(request, response, Path.BOOKING_TABLE_VIEW_PATH);
             }
         }
     }
@@ -195,6 +215,7 @@ public class BookingTableServlet extends HttpServlet {
             request.setAttribute("timeSlot", timeSlot);
             request.setAttribute("btlist", bookingTableList);
             request.setAttribute("bookPrice", bookPrice);
+            request.setAttribute("discountMessage", discountMessage);
             
             return true;
             
@@ -210,6 +231,10 @@ public class BookingTableServlet extends HttpServlet {
             HttpSession session = request.getSession();
             
             if(isStaticAttributesIsNull()) return false;
+            
+            if(MembershipServlet.fulfilRequirementForDiscount(request)) {
+                MembershipServlet.setMembershipStatusToExpired(request);
+            }
             
             int tableCode = Integer.parseInt(request.getParameter("tableCode"));
             String bookDesc = request.getParameter("bookDescription");
@@ -276,7 +301,18 @@ public class BookingTableServlet extends HttpServlet {
         timeCode = Integer.parseInt(request.getParameter("timeCode"));
         timeSlot = timePicker(request.getParameter("timeCode"));
         bookQuantity = Integer.parseInt(request.getParameter("bookQuantity"));
-        bookPrice = bookQuantity * 15.00;
+        
+        //check whether the customer fulfil the requirement for getting the discount
+        if(MembershipServlet.fulfilRequirementForDiscount(request)) {
+            discountMessage = "50% Discount";
+            bookPrice = bookQuantity * 15.00 * 0.5;
+        }
+        else {
+            discountMessage = "No Discount";
+            bookPrice = bookQuantity * 15.00;
+        }
+        
+        
         checkMessage = "Available table for " + bookQuantity + " person(s)" + " on " + bookDate + " at " + timePicker(request.getParameter("timeCode"));
         checkNoTableMessage = "Sorry no available table for " + bookQuantity + " person(s)" + " on " + bookDate + " at " + timePicker(request.getParameter("timeCode"));
         

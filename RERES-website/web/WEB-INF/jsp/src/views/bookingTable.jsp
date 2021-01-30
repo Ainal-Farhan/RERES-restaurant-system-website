@@ -201,7 +201,7 @@
                         <%
                         if(request.getAttribute("isCheck") != null && (Boolean)request.getAttribute("isCheck")) {
                         %>
-                            <h3><%= String.format("Price: RM%.2f", request.getAttribute("bookPrice")) %></h3>
+                            <h4><%= String.format("Price: RM%.2f (%s)", request.getAttribute("bookPrice"), request.getAttribute("discountMessage")) %></h4>
                             <input type="hidden" name="action" value="makeReserve">
                             <input class="btn btn-success btn-block btn-lg" type="submit" value="Make Reservation">
                         <%

@@ -1,3 +1,4 @@
+<%@page import="com.RERES.references.TopNavigationBarReference"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.RERES.path.Path"%>
 <!DOCTYPE html>
@@ -210,12 +211,12 @@
             String loginActive = "nav-item-custom";
             String registerActive = "nav-item-custom";
             
-            if(request.getAttribute("selectedPage") != null) {
-                String selectedPage = (String)request.getAttribute("selectedPage");
+            if(request.getAttribute(TopNavigationBarReference.SELECTED_PAGE) != null) {
+                String selectedPage = (String)request.getAttribute(TopNavigationBarReference.SELECTED_PAGE);
                 
-                if(selectedPage.equals("loginPage")) loginActive = "active";
-                else if(selectedPage.equals("registrationPage")) registerActive = "active";
-                else if(selectedPage.equals("homePage")) homeActive = "active";
+                if(selectedPage.equals(TopNavigationBarReference.LOGIN_PAGE)) loginActive = "active";
+                else if(selectedPage.equals(TopNavigationBarReference.REGISTRATION_PAGE)) registerActive = "active";
+                else if(selectedPage.equals(TopNavigationBarReference.HOME_PAGE)) homeActive = "active";
             }
         %>
         

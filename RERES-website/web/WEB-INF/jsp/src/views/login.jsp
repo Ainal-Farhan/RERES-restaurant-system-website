@@ -19,12 +19,12 @@
                     <div class="caption">
                         <div class="container-sm">
                             <div class="d-flex justify-content-center mb-3">
-                                <div class="card" style="width:600px">
-                                    <div class="card-header">
+                                <div class="card  custom-shadow container-login bg-info" style="width:600px">
+                                    <div class="card-header custom-shadow bg-light">
                                         <h3>Login</h3>
                                     </div>
 
-                                    <div class="card-body">
+                                    <div class="card-body custom-shadow bg-light">
                                         <form action="UserServlet" method="POST">
                                             <div class="form-group">
                                                 <label for="usernameOrEmail">Username/Email:</label>
@@ -35,14 +35,12 @@
                                                 <input type="password" class="form-control form-control-lg" placeholder="Enter password" name="pwd" id="pwd" required>
                                             </div>
                                             <input type="hidden" name="action" value="authLogin"/>
-                                            <input type="submit" class="btn btn-danger btn-block btn-lg" value="Login"/>
-                                            
-                                          </form>
-                                    </div>
-
-                                    <div class="card-footer">
-                                        <a href="#">Forgot Password?</a><br/>
-                                        New to RERES? <a href="${pageContext.servletContext.contextPath}/RegistrationServlet?action=redirectRegister">Register here</a>
+                                            <input type="submit" class="btn btn-success btn-block btn-lg" value="Login"/>
+                                        </form>
+                                        
+                                        <div class="card-footer">
+                                            New to RERES? <a href="${pageContext.servletContext.contextPath}/RegistrationServlet?action=redirectRegister">Register here</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

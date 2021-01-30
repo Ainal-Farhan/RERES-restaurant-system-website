@@ -227,7 +227,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><b>RM</b></span>
                                         </div>
-                                        <input type="number" class="form-control" placeholder="" name="foodPrice" id="foodPrice" min="0" value='<jsp:getProperty name="food" property="foodPrice"/>' step="0.01" required>
+                                        <input type="number" class="form-control" placeholder="" name="foodPrice" id="foodPrice" min="0" value='<%= String.format("%.2f", food.getFoodPrice()) %>' step="0.01" required>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -270,7 +270,7 @@
                     <div class="mt-2">
                         <form action="ManageFoodServlet" method="POST">
                             <input type="hidden" name="action" value="viewListOfMenu">
-                            <input type="submit" class="btn btn-danger " value="Cancel"/>
+                            <input type="submit" class="btn btn-danger btn-block btn-lg" value="Cancel"/>
                         </form>
                     </div>
                 </div>

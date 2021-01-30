@@ -93,9 +93,16 @@
                     </div>
 
                     <div class="form-group">
-                        <input type="hidden" name="action" value="pay">
+                        <input type="hidden" name="action" value="<%= request.getAttribute("actionPay") %>">
                         <input type="hidden" name="bookingID" value="<%= (Integer)request.getAttribute("bookingID") %>">
                         <input type="submit" class="btn btn-success btn-group-payment" value="Pay <%= String.format("RM%.2f", amountToPay) %>">
+                    </div>
+                </form>
+                <form action="PaymentServlet" method="POST">
+                    <div class="form-group">
+                        <input type="hidden" name="action" value="<%= request.getAttribute("actionCancelPay") %>">
+                        <input type="hidden" name="bookingID" value="<%= (Integer)request.getAttribute("ID") %>">
+                        <input type="submit" class="btn btn-danger btn-group-payment" value="Cancel">
                     </div>
                 </form>
             </div>

@@ -16,6 +16,8 @@ import com.RERES.model.Refund;
 import com.RERES.model.User;
 import com.RERES.path.Path;
 import static com.RERES.path.Path.MAIN_VIEW_PATH;
+import static com.RERES.references.TopNavigationBarReference.HOME_PAGE;
+import static com.RERES.references.TopNavigationBarReference.SELECTED_PAGE;
 import com.RERES.view.View;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -105,7 +107,9 @@ public class BookingServlet extends HttpServlet {
             throws ServletException, IOException {
         if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
         
-        processRequest(request, response);
+        request.setAttribute(SELECTED_PAGE, HOME_PAGE);
+        View.setOverlayStatusMessage(request, response, "none", "doGet() is not used. Back to Home Page", "none", null, null);
+        View.includePage(request, response, Path.HOME_VIEW_PATH);
     }
 
     /**
@@ -124,7 +128,9 @@ public class BookingServlet extends HttpServlet {
         String action = request.getParameter("action");
         
         if(isStringIsNullOrEmpty(action)) {
-            
+            request.setAttribute(SELECTED_PAGE, HOME_PAGE);
+            View.setOverlayStatusMessage(request, response, "none", "Some errors happen. Back to Home Page", "none", null, null);
+            View.includePage(request, response, Path.HOME_VIEW_PATH);
         }
         else if(action.equals(ACTION_VIEW_BOOKING_LIST)) {
             request.setAttribute("selectedPage", "bookingListPage");
@@ -204,6 +210,10 @@ public class BookingServlet extends HttpServlet {
         String[] valueLabels = {Integer.toString(bookingID)};
         String message = "";
         
+        if(status.equalsIgnoreCase("present")) {
+            updateSuccessBookingMadeInMembershipTable();
+        }
+        
         if(status.equalsIgnoreCase("refunded")) {
             if(addRefundInfoIntoDatabase(request, response)) {
                 if(changeTheSelectedBookingStatus(status, bookingID)) {
@@ -263,6 +273,7 @@ public class BookingServlet extends HttpServlet {
     
     private void processViewBookingList(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
         if(getAllBookingInfoFromDatabase()) {
             request.setAttribute("bookingList", bookingList);
             request.setAttribute("labels", this.PUBLIC_INFO_LABELS);
@@ -276,9 +287,7 @@ public class BookingServlet extends HttpServlet {
         
         HttpSession session = request.getSession();
         
-        if(session == null) {
-            return;
-        }
+        String search;
         
         if(getAllBookingInfoFromDatabaseForCustomer((Integer)session.getAttribute("currentUserID"))) {
             request.setAttribute("bookingList", bookingList);
@@ -323,6 +332,23 @@ public class BookingServlet extends HttpServlet {
         }
         
         return false;
+    }
+    
+    private void updateSuccessBookingMadeInMembershipTable() {
+        Connection con;
+        
+        try {
+            con = new Database().getCon();
+            
+            PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_UPDATE_MEMBERSHIP_SUCCESS_ORDER_MADE);
+            
+            st.setInt(1, selectedBooking.getFkUserID());
+            
+            st.executeUpdate();
+            
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private boolean changeTheSelectedBookingStatus(String status, int bookingID)

@@ -26,8 +26,8 @@ public interface SQLStatementList {
         "LEFT JOIN `food` ON `food`.`food_id` = `orderitem`.`fk_foodID` " +
         "LEFT JOIN `refund` ON `refund`.`fk_bookingID` = ? " +
         "WHERE `booking`.`booking_id` = ?;";
-    String SQL_STATEMENT_RETRIEVE_ALL_BOOKING_INFORMATION = "SELECT * FROM `booking`;";
-    String SQL_STATEMENT_RETRIEVE_ALL_BOOKING_INFORMATION_FOR_A_CUSTOMER = "SELECT * FROM `booking` WHERE `fk_userID` = ?;";
+    String SQL_STATEMENT_RETRIEVE_ALL_BOOKING_INFORMATION = "SELECT * FROM `booking` ORDER BY `booking_date` DESC;";
+    String SQL_STATEMENT_RETRIEVE_ALL_BOOKING_INFORMATION_FOR_A_CUSTOMER = "SELECT * FROM `booking` WHERE `fk_userID` = ? ORDER BY `booking_date` DESC;";
     String SQL_STATEMENT_RETRIEVE_PAYMENT_INFORMATION_WITH_BOOKING_ID = "SELECT * FROM `payment` WHERE `fk_bookingID` =?;";
     String SQL_STATEMENT_RETRIEVE_USER_AUTHENTICATE = "SELECT * FROM `user` WHERE `password` = ? AND `username` = ? OR `email` = ?;";
     String SQL_STATEMENT_RETRIEVE_BOOKING_LIST_AND_TABLE_LIST = "SELECT `booking`.`booking_id`, `booking`.`booking_date`, `booking`.`time_slot`, `booking`.`time_code`, `booking`.`booking_quantity`, `booking`.`fk_bookingTableID`, " + 
@@ -41,7 +41,7 @@ public interface SQLStatementList {
     String SQL_STATEMENT_RETRIEVE_FOOD_LIST_BY_CATEGORY = "SELECT * FROM `food` WHERE `food_category` = ?;";
     String SQL_STATEMENT_RETRIEVE_FOOD_LIST = "SELECT * FROM `food`";
     String SQL_STATEMENT_RETRIEVE_FOOD_LIST_BY_FOODID = "SELECT * FROM `food` WHERE `food`.`food_id` = ?;";
-    
+    String SQL_STATEMENT_RETRIEVE_USERID = "SELECT `user_id` FROM `user` WHERE `email` = ? AND `username` = ?;";
     
     // List of INSERT instruction
     String SQL_STATEMENT_INSERT_SUCCESSFULLY_PAY_FOR_A_BOOKING = "INSERT INTO `payment` "
@@ -57,14 +57,16 @@ public interface SQLStatementList {
     String SQL_STATEMENT_INSERT_REFUND_INFO = "INSERT INTO `refund`(`refund_price`, `refund_description`, `refund_status`, `fk_bookingID`) VALUES (?,?,?,?);";
     String SQL_STATEMENT_INSERT_NEW_FOOD = "INSERT INTO `food`(`food_name`, `food_price`, `food_description`, `food_category`, `food_photo`) "
             + "VALUES (?, ?, ?, ?, ?);";
+    String SQL_STATEMENT_INSERT_MEMBERSHIP_INFO = "INSERT INTO `membership`(`member_name`, `fk_userID`) VALUES (?,?);";
     
     // List of UPDATE instruction
-    String SQL_STATEMENT_UPDATE_A_USER_INFORMATION = "UPDATE `user` SET `name`=?,`age`=?,`birth_date`=?,`email`=?,`address`=?,`gender`=?,`phone_number`=?,`profile_photo`=? WHERE `user`.`user_id`=?;";
+    String SQL_STATEMENT_UPDATE_A_USER_INFORMATION = "UPDATE `user` SET `name`=?,`age`=?, `email`=?,`address`=?,`phone_number`=? WHERE `user`.`user_id`=?;";
     String SQL_STATEMENT_UPDATE_A_PAYMENT_INFORMATION = "UPDATE `payment` SET `payment_status` = ?, `payment_method` = ?, `total_payment` = ?, `date_paid` = ? WHERE `payment`.`fk_bookingID` = ?";
     String SQL_STATEMENT_UPDATE_THE_BOOKING_STATUS = "UPDATE `booking` SET `booking_status` = ? WHERE `booking`.`booking_id` = ?";
     String SQL_STATEMENT_UPDATE_BOOKING_TABLE_STATUS = "UPDATE `bookingtable` SET `bookingTable_status`= ?  WHERE  `bookingTable_id` = ?;";
-    String SQL_STATEMENT_UPDATE_MEMBERSHIP_STATUS = "UPDATE `membership` SET `member_status` = ? WHERE `member_id` = ?";
+    String SQL_STATEMENT_UPDATE_MEMBERSHIP_STATUS = "UPDATE `membership` SET `member_status` = ?, `success_booking_made` = 0 WHERE `member_id` = ?";
     String SQL_STATEMENT_UPDATE_USER_PROFILE_PICTURE = "UPDATE `user` SET `profile_photo` = ? WHERE `user_id` = ?";
+    String SQL_STATEMENT_UPDATE_MEMBERSHIP_SUCCESS_ORDER_MADE = "UPDATE `membership` SET `success_booking_made` = `success_booking_made` + 1 WHERE `fk_userID` = ? AND `member_status` = 'member'";
     String SQL_STATEMENT_UPDATE_FOOD_DETAILS = "UPDATE `food` SET `food_name`=?, `food_price`=?, `food_description`=?, `food_category`=?, `food_photo`=? WHERE `food`.`food_id` = ?;";
     
     // List of DELETE instruction
