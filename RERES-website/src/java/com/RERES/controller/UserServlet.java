@@ -56,6 +56,8 @@ public class UserServlet extends HttpServlet {
     private final String USER_TYPE_CUSTOMER = "customer";
     private final String USER_TYPE_STAFF = "staff";
     
+    private static String errorMessage;
+    
     private static ArrayList<User> users;
     private static User user;
     
@@ -245,15 +247,23 @@ public class UserServlet extends HttpServlet {
     
     private void processRegisterUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException {
-        if(setUserRegistrationIntoDatabase(request)) {
-            
-            request.setAttribute("selectedPage", "loginPage");
-            View.setOverlayStatusMessage(request, response, "redirectLogin", "Successfully register a new customer. Now, please login with your login credential", "LoginServlet", null, null);
-            View.includePage(request, response, Path.LOGIN_VIEW_PATH);
+        
+        if(checkUserInput(request)) {
+            if(setUserRegistrationIntoDatabase(request)) {
+
+                request.setAttribute("selectedPage", "loginPage");
+                View.setOverlayStatusMessage(request, response, "redirectLogin", "Successfully register a new customer. Now, please login with your login credential", "LoginServlet", null, null);
+                View.includePage(request, response, Path.LOGIN_VIEW_PATH);
+            }
+            else {
+                request.setAttribute("selectedPage", "registerPage");
+                View.setOverlayStatusMessage(request, response, "redirectRegister", "Failed to register a new customer", "RegistrationServlet", null, null);
+                View.includePage(request, response, Path.REGISTRATION_VIEW_PATH);
+            }
         }
         else {
             request.setAttribute("selectedPage", "registerPage");
-            View.setOverlayStatusMessage(request, response, "redirectRegister", "Failed to register a new customer", "RegistrationServlet", null, null);
+            View.setOverlayStatusMessage(request, response, "redirectRegister", errorMessage, "RegistrationServlet", null, null);
             View.includePage(request, response, Path.REGISTRATION_VIEW_PATH);
         }
     }
@@ -725,5 +735,21 @@ public class UserServlet extends HttpServlet {
         request.setAttribute("selectedUser", selectedUser);
         request.setAttribute("selectedUserType", selectedUser.getUserType());
         request.setAttribute("selectedUserProfilePhoto", selectedUser.getProfilePhoto());
+    }
+
+    private boolean checkUserInput(HttpServletRequest request) {
+        String phoneNumber = request.getParameter("phoneNumber");
+        String password = request.getParameter("pwd");
+        String confirmPassword = request.getParameter("confirmPwd");
+        
+        if(!phoneNumber.matches("^[0-9]+$")) {
+            errorMessage = "Please enter a valid phone number";
+            return false;
+        }
+        else if(!password.equals(confirmPassword)) {
+            errorMessage = "The password you entered does not match";
+            return false;
+        }
+        return true;
     }
 }

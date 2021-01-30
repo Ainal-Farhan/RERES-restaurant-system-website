@@ -9,10 +9,15 @@ import com.RERES.database.Database;
 import com.RERES.path.Path;
 import com.RERES.model.Food;
 import com.RERES.database.SQLStatementList;
+import com.RERES.utility.ImageUtility;
 import com.RERES.view.View;
+import java.io.ByteArrayOutputStream;
 import java.sql.*;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -27,12 +32,14 @@ import javax.servlet.http.HttpSession;
  */
 public class OrderFoodServlet extends HttpServlet {
     
-    private final String VIEW_ORDER_FOOD = "viewOrderFood";
-    private final String ADD_FOOD_TO_CART = "addFood";
-    private final String DELETE_FOOD_IN_CART = "deleteFoodInCart";
-    private final String CANCEL_ORDER_FOOD = "cancelOrderFood";
-    private final String CONFIRM_ORDER_FOOD = "confirmOrderFood";
+    private final String ACTION_VIEW_ORDER_FOOD = "viewOrderFood";
+    private final String ACTION_ADD_FOOD_TO_CART = "addFood";
+    private final String ACTION_DELETE_FOOD_IN_CART = "deleteFoodInCart";
+    private final String ACTION_CANCEL_ORDER_FOOD = "cancelOrderFood";
+    private final String ACTION_CONFIRM_ORDER_FOOD = "confirmOrderFood";
+    private final String ACTION_GET_FOOD_IMAGE = "getFoodImage";
 
+    private static ArrayList<Food> foodList = new ArrayList<>();
     private static ArrayList<Food> foodInCartList = new ArrayList<>();
     private static double totalFoodPrice;
     private static int bookingID;
@@ -67,6 +74,18 @@ public class OrderFoodServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String action = request.getParameter("action");
+        int foodID = Integer.parseInt(request.getParameter("foodID"));
+        
+        if(isStringIsNullOrEmpty(action)) {
+            
+        }
+        else if(action.equals(ACTION_GET_FOOD_IMAGE)) {
+            System.out.println(foodID);
+            System.out.println("getffodIMgeag");
+            getFoodImage(response, foodID);
+        }
+        
         if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
         processRequest(request, response);
     }
@@ -89,33 +108,35 @@ public class OrderFoodServlet extends HttpServlet {
         if(isStringIsNullOrEmpty(action)) {
             
         }
-        else if(action.equals(VIEW_ORDER_FOOD)) {
+        else if(action.equals(ACTION_VIEW_ORDER_FOOD)) {
             // This is where the bookingPrice was initialized
             bookingPrice = Double.parseDouble(request.getParameter("bookingPrice"));
-            
+            foodList.clear();
             foodInCartList.removeAll(foodInCartList);
             getFoodList(request);
             forwardPage(request, response, Path.ORDER_FOOD_VIEW_PATH);
         }
-        else if(action.equals(ADD_FOOD_TO_CART)) {
+        else if(action.equals(ACTION_ADD_FOOD_TO_CART)) {
             addFoodToCart(request);
             totalFoodPrice = calculateTotalPrice(foodInCartList);
             request.setAttribute("foodInCartList", foodInCartList);
             request.setAttribute("totalPrice", totalFoodPrice);
             request.setAttribute("isFoodAdded", true);
+            foodList.removeAll(foodList);
             getFoodList(request);
             forwardPage(request, response, Path.ORDER_FOOD_VIEW_PATH);
         }
-        else if(action.equals(DELETE_FOOD_IN_CART)) {
+        else if(action.equals(ACTION_DELETE_FOOD_IN_CART)) {
             deleteFoodInCartList(request);
             totalFoodPrice = calculateTotalPrice(foodInCartList);
             request.setAttribute("foodInCartList", foodInCartList);
             request.setAttribute("totalPrice", totalFoodPrice);
             request.setAttribute("isFoodAdded", true);
+            foodList.removeAll(foodList);
             getFoodList(request);
             forwardPage(request, response, Path.ORDER_FOOD_VIEW_PATH);
         }
-        else if(action.equals(CONFIRM_ORDER_FOOD)) {
+        else if(action.equals(ACTION_CONFIRM_ORDER_FOOD)) {
             HttpSession session = request.getSession(false);
             int selectedBookingID = (Integer) session.getAttribute("bookingID");    
             
@@ -134,7 +155,7 @@ public class OrderFoodServlet extends HttpServlet {
                 View.includePage(request, response, Path.HOME_VIEW_PATH);
             }
         }
-        else if(action.equals(CANCEL_ORDER_FOOD)) {
+        else if(action.equals(ACTION_CANCEL_ORDER_FOOD)) {
             HttpSession session = request.getSession(false);
             int selectedBookingID = (Integer) session.getAttribute("bookingID");
             
@@ -159,22 +180,39 @@ public class OrderFoodServlet extends HttpServlet {
     
     private void getFoodList(HttpServletRequest request) {
         try {
-            ArrayList<Food> foodList = new ArrayList<>();
+            
             HttpSession session = request.getSession();
             timeCode = (Integer) session.getAttribute("timeCode");
             foodCategory = categoryPicker();
-            System.out.println("Category" + foodCategory);
             Connection con = new Database().getCon();
-            PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_RETRIEVE_FOOD_LIST);
+            PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_RETRIEVE_FOOD_LIST_BY_CATEGORY);
             st.setString(1, foodCategory);
             ResultSet rs = st.executeQuery();
             
             while(rs.next()) {
-                foodList.add(new Food(rs.getInt("food_id"), rs.getString("food_name"), rs.getDouble("food_price"), rs.getString("food_description"), rs.getString("food_photo")));
+                Blob blob = rs.getBlob("food_photo");
+                ByteArrayOutputStream outputStream = null;
+                String base64Image = null;
+                try (InputStream inputStream = blob.getBinaryStream()) {
+                    outputStream = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[4096];
+                    int bytesRead = -1;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {                  
+                        outputStream.write(buffer, 0, bytesRead);
+                    }   byte[] imageBytes = outputStream.toByteArray();
+                    base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                } catch (IOException ex) {
+                    Logger.getLogger(ManageFoodServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                outputStream.close();
+                
+                foodList.add(new Food(rs.getInt("food_id"), rs.getString("food_name"), rs.getDouble("food_price"), rs.getString("food_description"), base64Image));
             }
             
             request.setAttribute("foodList", foodList);
         } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(OrderFoodServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(OrderFoodServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -186,21 +224,30 @@ public class OrderFoodServlet extends HttpServlet {
         int foodQuantity = Integer.parseInt(request.getParameter("foodQuantity"));
         double foodPrice = Double.parseDouble(request.getParameter("foodPrice"));
         double totalPrice = foodPrice * foodQuantity;
+        System.out.println("id"+foodID+" name:"+foodName+" qty:"+foodQuantity+ " fpri:"+foodPrice+" tpri:"+totalPrice);
         
         foodInCart = new Food(foodID, foodName, totalPrice, foodQuantity);
         
-        if(foodInCartList.isEmpty())
+        if(foodInCartList.isEmpty()) {
+            System.out.println("empty then added");
             foodInCartList.add(foodInCart);
-        else {
-            for(int i = 0; i<foodInCartList.size(); i++) {
-                if(foodInCart.getFoodID() == foodInCartList.get(i).getFoodID()) {
-                    foodInCartList.get(i).setFoodQuantity(foodQuantity + foodInCartList.get(i).getFoodQuantity());
-                    foodInCartList.get(i).setFoodPrice(foodInCartList.get(i).getFoodQuantity()*foodPrice);
-                }
-            }
         }
-        
-        Logger.getLogger(Database.class.getName()).log(Level.INFO, "INFO" + foodID + " " + foodName + " " + foodPrice + " " +  foodQuantity + " " + totalPrice);
+        else {
+            int foodIndex;
+            if(checkIfFoodInCart(foodID) == 1)
+            {
+                System.out.println("same food");
+                foodIndex = getIndexOfSameFood(foodID);
+                System.out.println("foodID: " + foodID + "  " + "gotFoodIndex: "+foodIndex);
+                foodInCartList.get(foodIndex).setFoodQuantity(foodQuantity + foodInCartList.get(foodIndex).getFoodQuantity());
+                foodInCartList.get(foodIndex).setFoodPrice(foodInCartList.get(foodIndex).getFoodQuantity()*foodPrice);
+            }
+            else {
+                System.out.println("not same food");
+                foodInCartList.add(foodInCart);
+            }
+            
+        }
     }
 
     private boolean setFoodOrderIntoDatabase(HttpServletRequest request, int selectedBookingID) {
@@ -218,11 +265,10 @@ public class OrderFoodServlet extends HttpServlet {
                 st.setInt(4, f.getFoodID());
                 
                 insertStatus += st.executeUpdate();
-                
-                Logger.getLogger(Database.class.getName()).log(Level.INFO, "INFO" + " " + selectedBookingID + " " + f.getFoodQuantity() + " " + totalFoodPrice + " " + f.getFoodID() );
             }
-            Logger.getLogger(Database.class.getName()).log(Level.INFO, "INFO" + " " + insertStatus + " " + foodInCartList.size());
+            
             st.close();
+            
             if(insertStatus == foodInCartList.size()) return true;
             
         } catch (SQLException | ClassNotFoundException ex) {
@@ -233,7 +279,6 @@ public class OrderFoodServlet extends HttpServlet {
 
     private void deleteFoodInCartList(HttpServletRequest request) {
         int indexOfFood = Integer.parseInt(request.getParameter("indexOfFood"));
-        Logger.getLogger(Database.class.getName()).log(Level.INFO, "INFO" + indexOfFood);
         
         foodInCartList.remove(indexOfFood);
     }
@@ -244,6 +289,29 @@ public class OrderFoodServlet extends HttpServlet {
             totalPrice += foodInCart.getFoodPrice();
         }
         return totalPrice;
+    }
+    
+    private int getIndexOfSameFood(int foodID) {
+        int same = 0;
+        int indexOfFood = 0;
+        for(int i = 0; i<foodInCartList.size(); i++) {
+            if(foodID == foodInCartList.get(i).getFoodID()) {
+                same += 1;
+                indexOfFood = i;
+            }
+        }
+        if(same == 1) return indexOfFood;
+        else return -1;
+    }
+    
+    private int checkIfFoodInCart(int foodID) {
+        int same = 0;
+        for(int i = 0; i<foodInCartList.size(); i++) {
+            if(foodID == foodInCartList.get(i).getFoodID()) {
+                same += 1;
+            }
+        }
+        return same;
     }
     
     private void forwardPage(HttpServletRequest request, HttpServletResponse response,String pagePath)
@@ -262,4 +330,16 @@ public class OrderFoodServlet extends HttpServlet {
         else return null;
     }
     
+    private void getFoodImage(HttpServletResponse response, int foodID) {
+        for(Food f : foodList) {
+            if(f.getFoodID() == foodID) {
+                System.out.println(f.getFoodPhoto());
+                try {
+                    ImageUtility.displaySelectedImage(response, f.getFoodPhoto());
+                } catch (ServletException | IOException ex) {
+                    Logger.getLogger(ManageFoodServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
 }

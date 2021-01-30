@@ -17,6 +17,7 @@ public class Food implements Serializable{
     private double foodPrice;
     private int foodQuantity;
     private String foodDescription;
+    private String foodCategory;
     private String foodPhoto;
     
     public Food() {}
@@ -34,6 +35,15 @@ public class Food implements Serializable{
         this.foodName = foodName;
         this.foodPrice = foodPrice;
         this.foodQuantity = foodQuantity;
+    }
+    
+    public Food(int foodID, String foodName, double foodPrice, String foodDescription, String foodPhoto, String foodCategoy) {
+        this.foodID = foodID;
+        this.foodName = foodName;
+        this.foodPrice = foodPrice;
+        this.foodDescription = foodDescription;
+        this.foodPhoto = foodPhoto;
+        this.foodCategory = foodCategoy;
     }
 
     public int getFoodID() {
@@ -82,6 +92,14 @@ public class Food implements Serializable{
 
     public void setFoodQuantity(int foodQuantity) {
         this.foodQuantity = foodQuantity;
+    }
+
+    public String getFoodCategory() {
+        return foodCategory;
+    }
+
+    public void setFoodCategory(String foodCategory) {
+        this.foodCategory = foodCategory;
     }
     
 }

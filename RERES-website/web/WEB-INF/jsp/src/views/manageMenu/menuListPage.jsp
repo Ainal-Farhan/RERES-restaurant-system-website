@@ -5,6 +5,8 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -19,7 +21,63 @@
         </header>
         
         <div class="content-container">
-            <h1>MENU LIST PAGE</h1>
+            <div class="container-custom bgContent bg-light p-4">
+                <div class="row">
+                    <div class="col-10">
+                        <table class="table table-striped mt-2">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Food Image</th>
+                                    <th>Food ID</th>
+                                    <th>Food Name</th>
+                                    <th>Food Price</th>
+                                    <th>Food Description</th>
+                                    <th>Food Category</th>
+                                    <th style="width: 10px;"></th>
+                                    <th style="width: 10px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach items="${requestScope.allFoodList}" var="food" varStatus="loop">
+                                <tr>
+                                    <td><h5><c:out value="${loop.index + 1}" /></h5></td>
+                                    <td><img id="profilePicture" src='ManageFoodServlet?action=getFoodImage&foodID=<c:out value="${food.foodID}" />' alt="profile picture" class="mx-auto d-block custom-shadow" width="200" height="200" style="border-radius: 50%;"></td>
+                                    <td><c:out value="${food.foodID}" /></td>
+                                    <td><c:out value="${food.foodName}" /></td>
+                                    <td>RM <fmt:formatNumber type="number" maxFractionDigits="2" minFractionDigits="2" value="${food.foodPrice}"/></td>
+                                    <td><c:out value="${food.foodDescription}" /></td>
+                                    
+                                    <td><c:out value="${food.foodCategory}" /></td>
+                                    <td style="width: 10px;">
+                                        <form action="ManageFoodServlet" method="POST">
+                                            <input type="hidden" name="action" value="goToUpdateFood">
+                                            <input type="hidden" name="foodID" value="<c:out value="${food.foodID}" />">
+                                            <input type="submit" class="btn btn-warning btn-sm" value="Update">
+                                        </form>
+                                    </td>
+                                    <td style="width: 10px;">
+                                        <form action="ManageFoodServlet" method="POST">
+                                            <input type="hidden" name="action" value="deleteFood">
+                                            <input type="hidden" name="foodID" value="<c:out value="${food.foodID}" />">
+                                            <button type="submit" class="btn btn-sm btn-danger"><i class="far fa-trash-alt"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="col-2">
+                        <form action="ManageFoodServlet" method="POST">
+                            <input type="hidden" name="action" value="goToAddNewFood">
+                            <input type="submit" class="btn btn-success btn-block btn-lg mt-2" value="Add New Food">
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <footer>
