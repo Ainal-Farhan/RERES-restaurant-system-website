@@ -85,7 +85,6 @@ public class OrderFoodServlet extends HttpServlet {
             System.out.println("getffodIMgeag");
             getFoodImage(response, foodID);
         }
-        
         if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
         processRequest(request, response);
     }
@@ -180,7 +179,6 @@ public class OrderFoodServlet extends HttpServlet {
     
     private void getFoodList(HttpServletRequest request) {
         try {
-            
             HttpSession session = request.getSession();
             timeCode = (Integer) session.getAttribute("timeCode");
             foodCategory = categoryPicker();
