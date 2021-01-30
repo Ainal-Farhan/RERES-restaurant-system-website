@@ -58,7 +58,11 @@
                                     </tr>
                                     <tr>
                                         <td style="text-align: right;">
-                                            <button id="button1" >View Rewards</button>
+                                            
+                                            <form action="MembershipServlet" method="POST">
+                                                <input type="hidden" name="action" value="ViewRewards">
+                                                <input type="submit" value="View Rewards">
+                                            </form>
                                         </td>
                                         <td style="text-align: left;">
                                             <form action="MembershipServlet" method="POST">
