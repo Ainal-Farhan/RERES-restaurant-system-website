@@ -1,4 +1,5 @@
 <%@page import="java.util.ArrayList"%>
+<%@page import="java.util.Calendar"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.RERES.model.BookingTable" %>
 <!DOCTYPE html>
@@ -10,6 +11,7 @@
         <style><%@include file="../../../css/style/global.css"%></style>
         <style><%@include file="../../../css/style/bookingTable.css"%></style>
     </head>
+    
     <body>
         <header>
             <%@include file = "../components/navigationBar.jsp" %>
@@ -26,10 +28,19 @@
                                 <div class="input-group-prepend">
                                     <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
                                 </div>
+                                <% 
+                                    Calendar calendar = Calendar.getInstance();
+                                    String dd = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH) + 1);
+                                    String mm = Integer.toString(calendar.get(Calendar.MONTH) + 1);
+                                    String yyyy = Integer.toString(calendar.get(Calendar.YEAR));
+                                    if(Integer.parseInt(dd) < 10)dd = '0' + dd;
+                                    if(Integer.parseInt(mm) < 10)mm = '0' + mm;
+                                    String minDate = "" + yyyy + "-" + mm + "-" + dd;
+                                %>
                                 <%  if(request.getAttribute("timeCode") != null && request.getAttribute("timeSlot") != null) { %>
-                                <input type="date" class="form-control form-control-lg" name="bookDate" value="<%= request.getAttribute("selectedDate") %>" required>
+                                <input type="date" class="form-control form-control-lg" name="bookDate" min="<%= minDate %>" id="date1" value="<%= request.getAttribute("selectedDate") %>" required/>
                                 <%  }  else { %>
-                                <input type="date" class="form-control form-control-lg" name="bookDate" required>
+                                <input type="date" class="form-control form-control-lg" name="bookDate" min="<%= minDate %>" id="date2" required>
                                 <%  } %>
                             </div>
                         </div>

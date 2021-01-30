@@ -45,7 +45,7 @@
                                     <td><c:out value="${food.foodName}"/></td>
                                     <td>RM <fmt:formatNumber type="number" maxFractionDigits="2" minFractionDigits="2" value="${food.foodPrice}"/></td>
                                     <td><c:out value="${food.foodDescription}"/></td>
-                                    <td><img src='<c:out value="${pageContext.servletContext.contextPath}${profilePicturePath}/${food.foodPhoto}"/>' width='30' height='30' alt="Profile Photo" /></td>
+                                    <td><img id="profilePicture" src='OrderFoodServlet?action=getFoodImage&foodID=<c:out value="${food.foodID}" />' alt="profile picture" class="mx-auto d-block custom-shadow" width="200" height="200" style="border-radius: 50%;"></td>
                                     <td style="width: 250px; padding-left: 20px">
                                         <form action="OrderFoodServlet" method="POST" class="form-inline">
                                             <input type="hidden" name="foodID" value='<c:out value="${food.foodID}"/>'>
@@ -109,7 +109,6 @@
             <c:if test="${requestScope.isFoodAdded == true}">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <%--<c:set var="totalPrice" scope="request" value="${requestScope.totalPrice}"/>--%>
                     <h1>Total Price: RM <fmt:formatNumber type="number" maxFractionDigits="2" minFractionDigits="2" value="${requestScope.totalPrice}"/></h1>
                 </li>
                 <li class="nav-item ml-4">

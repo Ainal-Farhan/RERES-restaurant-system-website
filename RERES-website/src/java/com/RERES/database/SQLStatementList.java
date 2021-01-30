@@ -38,7 +38,9 @@ public interface SQLStatementList {
     String SQL_STATEMENT_RETRIEVE_TABLE_LIST = "SELECT * FROM `bookingtable`";
     String SQL_STATEMENT_RETRIEVE_BOOKING_INFO = "SELECT `booking_id` FROM `booking` WHERE `time_code` = ? AND booking_date = ? AND fk_bookingTableID = ? ";
     String SQL_STATEMENT_RETRIEVE_SPECIFIC_MEMBERSHIP_INFORMATION = "SELECT * FROM `membership` WHERE `fk_UserID` = ?";
-    String SQL_STATEMENT_RETRIEVE_FOOD_LIST = "SELECT * FROM `food` WHERE `food_category` = ?;";
+    String SQL_STATEMENT_RETRIEVE_FOOD_LIST_BY_CATEGORY = "SELECT * FROM `food` WHERE `food_category` = ?;";
+    String SQL_STATEMENT_RETRIEVE_FOOD_LIST = "SELECT * FROM `food`";
+    String SQL_STATEMENT_RETRIEVE_FOOD_LIST_BY_FOODID = "SELECT * FROM `food` WHERE `food`.`food_id` = ?;";
     
     
     // List of INSERT instruction
@@ -53,6 +55,8 @@ public interface SQLStatementList {
     String SQL_STATEMENT_INSERT_ORDER_ITEM = "INSERT  INTO `orderitem`(`item_quantity`, `total_price`, `fk_bookingID`, `fk_foodID`) " 
             +"VALUES(?, ?, ?, ?)";
     String SQL_STATEMENT_INSERT_REFUND_INFO = "INSERT INTO `refund`(`refund_price`, `refund_description`, `refund_status`, `fk_bookingID`) VALUES (?,?,?,?);";
+    String SQL_STATEMENT_INSERT_NEW_FOOD = "INSERT INTO `food`(`food_name`, `food_price`, `food_description`, `food_category`, `food_photo`) "
+            + "VALUES (?, ?, ?, ?, ?);";
     
     // List of UPDATE instruction
     String SQL_STATEMENT_UPDATE_A_USER_INFORMATION = "UPDATE `user` SET `name`=?,`age`=?,`birth_date`=?,`email`=?,`address`=?,`gender`=?,`phone_number`=?,`profile_photo`=? WHERE `user`.`user_id`=?;";
@@ -61,7 +65,9 @@ public interface SQLStatementList {
     String SQL_STATEMENT_UPDATE_BOOKING_TABLE_STATUS = "UPDATE `bookingtable` SET `bookingTable_status`= ?  WHERE  `bookingTable_id` = ?;";
     String SQL_STATEMENT_UPDATE_MEMBERSHIP_STATUS = "UPDATE `membership` SET `member_status` = ? WHERE `member_id` = ?";
     String SQL_STATEMENT_UPDATE_USER_PROFILE_PICTURE = "UPDATE `user` SET `profile_photo` = ? WHERE `user_id` = ?";
+    String SQL_STATEMENT_UPDATE_FOOD_DETAILS = "UPDATE `food` SET `food_name`=?, `food_price`=?, `food_description`=?, `food_category`=?, `food_photo`=? WHERE `food`.`food_id` = ?;";
     
     // List of DELETE instruction
     String SQL_STATEMENT_DELETE_A_USER_INFORMATION = "DELETE FROM `user` WHERE `user`.`user_id` = ?;";
+    String SQL_STATEMENT_DELETE_A_FOOD = "DELETE FROM `food` WHERE `food`.`food_id` = ?;";
 }
