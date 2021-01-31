@@ -225,6 +225,7 @@
             String membershipActive = mainStyle;
             String manageFoodActive = mainStyle;
             String dashboardActive = mainStyle;
+            String manageTableActive = mainStyle;
             
             if(request.getAttribute(TopNavigationBarReference.SELECTED_PAGE) != null) {
                 String selectedPage = (String)request.getAttribute(TopNavigationBarReference.SELECTED_PAGE);
@@ -239,6 +240,7 @@
                 else if(selectedPage.equals(TopNavigationBarReference.HOME_PAGE)) homeActive = "active";
                 else if(selectedPage.equals(TopNavigationBarReference.MANAGE_FOOD_PAGE)) manageFoodActive = "active";
                 else if(selectedPage.equals(TopNavigationBarReference.DASHBOARD_PAGE)) dashboardActive = "active";
+                else if(selectedPage.equals(TopNavigationBarReference.MANAGE_TABLE_PAGE)) manageTableActive = "active";
             }
         %>
         <nav class="navbar navbar-expand-lg navbar-mainbg">
@@ -295,6 +297,16 @@
                         </form>
                     </li>
                     
+                    
+                    <li class="nav-item <%= manageTableActive %>">
+                        <form action="BookingTableServlet" method="POST" name="manage_table">
+                            <div onClick="document.forms['manage_table'].submit();">
+                                <input type="hidden" name="action" value="manageTableBooking">
+                                <a class="nav-link" href="javascript:void(0);"><i class="fas fa-table"></i>MANAGE TABLE</a>
+                            </div>
+                        </form>
+                    </li>
+                    
                     <li class="nav-item <%= manageFoodActive %>">
                         <form action="ManageFoodServlet" method="POST" name="manage_menu_list">
                             <div onClick="document.forms['manage_menu_list'].submit();">
@@ -314,7 +326,7 @@
                     </li>
                     
                     <%  } 
-                        if(currentUserType.equalsIgnoreCase("staff") || currentUserType.equalsIgnoreCase("customer")) { %>
+                        if(currentUserType.equalsIgnoreCase("staff") || currentUserType.equalsIgnoreCase("customer") || currentUserType.equalsIgnoreCase("admin")) { %>
                     <li class="nav-item <%= profileActive %>">
                         <form action="UserServlet" method="POST" name="profile">
                             <div onClick="document.forms['profile'].submit();">
@@ -339,7 +351,7 @@
                         <form action="BookingTableServlet" method="POST" name="booking_table">
                             <div onClick="document.forms['booking_table'].submit();">
                                 <input type="hidden" name="action" value="viewBookingTable">
-                                <a class="nav-link" href="javascript:void(0);"><i class="far fa-edit"></i>BOOKING TABLE</a>
+                                <a class="nav-link" href="javascript:void(0);"><i class="far fa-edit"></i>MAKE RESERVATION</a>
                             </div>
                         </form>
                     </li>

@@ -56,11 +56,17 @@
                                         </div>
                                             
                                         <div style="padding: 3px 3px 3px 3px;">
-                                            <form action="ManageFoodServlet" method="POST">
+                                            <form action="ManageFoodServlet" method="POST" onsubmit="return confirmDelete()">
                                                 <input type="hidden" name="action" value="deleteFood">
                                                 <input type="hidden" name="foodID" value="<c:out value="${food.foodID}" />">
                                                 <button type="submit" class="btn btn-sm btn-danger" style="width:100px;"><i class="far fa-trash-alt"></i> Delete</button>
                                             </form>
+                                                
+                                            <script>
+                                                function confirmDelete() {
+                                                    return confirm("Delete this menu? Please be advised that this action is nonreversible");
+                                                }
+                                            </script>
                                         </div>
                                     </td>
                                 </tr>

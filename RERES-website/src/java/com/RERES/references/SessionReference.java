@@ -14,4 +14,6 @@ public interface SessionReference {
     String CURRENT_USER_TYPE = "currentUserType"; // store String value
     String CURRENT_USER_ID = "currentUserID"; // store Integer value
     String IS_AUTHENTICATED = "isAuthenticated"; // store Boolean value
+    String PROFILE_PICTURE = "profilePicture"; // store Boolean value
+    String NAME = "name"; // store Boolean value
 }

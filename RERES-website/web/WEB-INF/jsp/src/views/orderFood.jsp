@@ -15,7 +15,6 @@
     <body>
         <header>
             <%@include file = "../components/navigationBar.jsp" %>
-            <%@include file = "../components/orderFoodBar.jsp" %>
         </header>
         
         <div class="content-container">

@@ -39,6 +39,7 @@ public interface SQLStatementList {
     String SQL_STATEMENT_RETRIEVE_BOOKING_INFO = "SELECT `booking_id` FROM `booking` WHERE `time_code` = ? AND booking_date = ? AND fk_bookingTableID = ? ";
     String SQL_STATEMENT_RETRIEVE_SPECIFIC_MEMBERSHIP_INFORMATION = "SELECT * FROM `membership` WHERE `fk_UserID` = ?";
     String SQL_STATEMENT_RETRIEVE_FOOD_LIST_BY_CATEGORY = "SELECT * FROM `food` WHERE `food_category` = ?;";
+    String SQL_STATEMENT_RETRIEVE_BOOKING_TABLE = "SELECT * FROM `bookingtable`;";
     String SQL_STATEMENT_RETRIEVE_FOOD_LIST = "SELECT * FROM `food`";
     String SQL_STATEMENT_RETRIEVE_FOOD_LIST_BY_FOODID = "SELECT * FROM `food` WHERE `food`.`food_id` = ?;";
     String SQL_STATEMENT_RETRIEVE_USERID = "SELECT `user_id` FROM `user` WHERE `email` = ? AND `username` = ?;";

@@ -250,7 +250,6 @@
                                 <a class="nav-link" href="javascript:void(0);"><i class="fas fa-sign-out-alt"></i>REGISTER</a>
                             </div>
                         </form>
-                      </a>
                     </li>
                 </ul>
             </div>

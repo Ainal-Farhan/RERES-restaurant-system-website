@@ -209,7 +209,7 @@
         <div class="content-container">
             <div class="container manage-menu-container bgContent bg-light p-4">
                 <div class="register-form">
-                    <div class="card-header">
+                    <div class="card-header bg-dark text-white">
                         <h3 style="text-align: center">Add New Food</h3>
                     </div>
                     <form action="ManageFoodServlet" method="POST" class="mt-3" onSubmit="return checkEitherImageIsSelected()">
