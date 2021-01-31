@@ -178,12 +178,12 @@
             <div class="container-custom bg-light">
                 <div class="graph-main-container">                    
                     <div class="graph-container">
-                        <table class="table table-striped">
+                        <table class="table table-striped" style="text-align:center;">
                             <tbody>
                                 <tr>
-                                    <td colspan="2" style="text-align:center;">
+                                    <td colspan="2">
                                         <div class="graph-container">
-                                            <div id="bar_graph_bookingPriceYear"></div>
+                                            <div  style="width:1200px; margin:0 auto;" id="bar_graph_bookingPriceYear"></div>
                                         </div>
                                     </td>
                                 </tr>
@@ -227,10 +227,10 @@
                                 </tr>
                                 <tr>
                                     <td class="align-middle" style="text-align:center">
-                                        <div id="bar_graph_bookingPriceMonth"></div>
+                                        <div style="width:600px; margin:0 auto;" id="bar_graph_bookingPriceMonth"></div>
                                     </td>
                                     <td class="align-middle" style="text-align:center">
-                                        <div id="bar_graph_bookingPriceDay"></div>
+                                        <div style="width:600px; margin:0 auto;" id="bar_graph_bookingPriceDay"></div>
                                     </td>
                                 </tr>
                             </tbody>
