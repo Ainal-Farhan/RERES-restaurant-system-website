@@ -32,10 +32,32 @@ public class LoginServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        
+        String action = request.getParameter("action");
+        String username = request.getParameter("username");
+        String password = request.getParameter("pwd");
+        
         try (PrintWriter out = response.getWriter()) {
-            RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.LOGIN_VIEW_PATH);
-            dispatcher.forward(request, response);
+            
+            if(action.equals("redirectLogin")) {
+                request.setAttribute("selectedPage", "loginPage");
+                RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.LOGIN_VIEW_PATH);
+                dispatcher.forward(request, response);
+            }
+            else if(action.equals("authLogin")) {
+                if(username.equals("hasan")) {
+                    request.setAttribute("selectedPage", "profilePage");
+                    RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.PROFILE_VIEW_PATH);
+                    dispatcher.forward(request, response);
+                }
+                else {
+                request.setAttribute("selectedPage", "registrationPage");
+                    RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.REGISTRATION_VIEW_PATH);
+                    dispatcher.forward(request, response);
+                }
+            }
         }
+            
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -50,6 +72,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
         processRequest(request, response);
     }
 
@@ -64,6 +87,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
         processRequest(request, response);
     }
 

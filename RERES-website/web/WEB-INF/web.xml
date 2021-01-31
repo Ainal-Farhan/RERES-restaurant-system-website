@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
-                             http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
-         version="3.1">
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <display-name>RERES Restaurant</display-name>
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
     <error-page>
         <exception-type>javax.servlet.ServletException</exception-type>
         <location>/error.jsp</location>
@@ -46,16 +45,24 @@
         <servlet-class>com.RERES.controller.OrderFoodServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DocumentationServlet</servlet-name>
-        <servlet-class>com.RERES.controller.DocumentationServlet</servlet-class>
+        <servlet-name>FAQServlet</servlet-name>
+        <servlet-class>com.RERES.controller.FAQServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>MembershipServlet</servlet-name>
         <servlet-class>com.RERES.controller.MembershipServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>HelpChatServlet</servlet-name>
-        <servlet-class>com.RERES.controller.HelpChatServlet</servlet-class>
+        <servlet-name>BookingServlet</servlet-name>
+        <servlet-class>com.RERES.controller.BookingServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ManageFoodServlet</servlet-name>
+        <servlet-class>com.RERES.controller.ManageFoodServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DashboardServlet</servlet-name>
+        <servlet-class>com.RERES.controller.DashboardServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ManageBookingServlet</servlet-name>
@@ -94,20 +101,28 @@
         <url-pattern>/OrderFoodServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DocumentationServlet</servlet-name>
-        <url-pattern>/DocumentationServlet</url-pattern>
+        <servlet-name>FAQServlet</servlet-name>
+        <url-pattern>/FAQServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>MembershipServlet</servlet-name>
         <url-pattern>/MembershipServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>HelpChatServlet</servlet-name>
-        <url-pattern>/HelpChatServlet</url-pattern>
+        <servlet-name>BookingServlet</servlet-name>
+        <url-pattern>/BookingServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ManageFoodServlet</servlet-name>
+        <url-pattern>/ManageFoodServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DashboardServlet</servlet-name>
+        <url-pattern>/DashboardServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
-            30
+            60
         </session-timeout>
     </session-config>
 </web-app>

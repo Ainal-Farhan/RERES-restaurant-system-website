@@ -1,0 +1,30 @@
+.bgContent {
+    background-color: RGB(248, 249, 251);
+}
+
+.topForm {
+    padding-right: 100px;
+    padding-left: 100px;
+    padding-top: 20px;
+}
+
+.booking-table-layout {
+    text-align:center;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.table-table-status,
+.booking-table-form,
+.booking-table-layout-image {
+    justify-content:center;
+    align-items:center;
+    padding: 10px 10px 10px 10px;
+    margin: 10px 10px 10px 10px;
+    
+    box-shadow: 
+        rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, 
+        rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, 
+        rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+}
