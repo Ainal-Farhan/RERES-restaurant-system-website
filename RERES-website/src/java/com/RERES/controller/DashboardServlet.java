@@ -5,16 +5,24 @@
  */
 package com.RERES.controller;
 
+import com.RERES.database.Database;
+import com.RERES.database.SQLStatementList;
 import com.RERES.path.Path;
+import java.sql.Connection;
 import com.RERES.references.TopNavigationBarReference;
 import com.RERES.view.View;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import java.sql.*; 
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author ainal farhan
@@ -35,15 +43,9 @@ public class DashboardServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet DashboardServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet DashboardServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+            
+            RequestDispatcher dispatcher = getServletConfig().getServletContext().getRequestDispatcher(Path.DASHBOARD_PATH);
+            dispatcher.forward(request, response);
         }
     }
 
@@ -85,7 +87,7 @@ public class DashboardServlet extends HttpServlet {
         else if(action.equals(ACTION_VIEW_DASHBOARD)) {
             request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.DASHBOARD_PAGE);
             
-            getBookingPrice();
+            getBookingPrice(request, response);
             
             View.forwardPage(request, response, Path.DASHBOARD_PATH);
         }
@@ -102,7 +104,39 @@ public class DashboardServlet extends HttpServlet {
     }// </editor-fold>
 
     
-    private void getBookingPrice() {
+    private void getBookingPrice(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        try{
+        ArrayList <String> dateYear = new ArrayList<>();
+        ArrayList <String> dateMonth = new ArrayList<>();
+        ArrayList <String> dateDay= new ArrayList<>();
+
+        ArrayList<Double> bookingPriceYear = new ArrayList<>();
+        ArrayList<Double> bookingPriceMonth = new ArrayList<>();
+        ArrayList<Double> bookingPriceDay = new ArrayList<>();
         
+        Connection con = new Database().getCon();
+        PreparedStatement statement = con.prepareStatement(SQLStatementList.SQL_STATEMENT_RETRIEVE_DATAPOINTYEAR);
+
+        ResultSet resultSet = statement.executeQuery();
+
+            while(resultSet.next()){
+                dateYear.add(resultSet.getString("EXTRACT(YEAR FROM booking_date)"));
+                dateMonth.add(resultSet.getString("EXTRACT(Month FROM booking_date)"));
+                dateDay.add(resultSet.getString("EXTRACT(Day FROM booking_date)"));
+                bookingPriceYear.add(resultSet.getDouble("booking_price"));
+                bookingPriceMonth.add(resultSet.getDouble("booking_price"));
+                bookingPriceDay.add(resultSet.getDouble("booking_price"));
+
+            }
+        request.setAttribute("dateYear", dateYear);
+        request.setAttribute("dateMonth", dateMonth);
+        request.setAttribute("dateDay", dateDay);
+
+        request.setAttribute("bookingPrice", bookingPriceYear);        
+        
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
