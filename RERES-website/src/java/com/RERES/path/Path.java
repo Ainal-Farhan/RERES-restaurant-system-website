@@ -28,6 +28,7 @@ public interface Path extends Serializable {
     String MEMBERSHIP_VIEW_PATH = MAIN_VIEW_PATH + "/membership.jsp";
     String HELP_CHAT_VIEW_PATH = MAIN_VIEW_PATH + "/helpChat.jsp";
     String HOME_VIEW_PATH = MAIN_VIEW_PATH + "/home.jsp";
+    String DASHBOARD_PATH = MAIN_VIEW_PATH + "/dashboard.jsp";
     String BOOKING_LIST_VIEW_PATH = MAIN_VIEW_PATH + "/viewBookingListPage.jsp";
     String MENU_LIST_VIEW_PATH = MAIN_VIEW_PATH + "/manageMenu/menuListPage.jsp";
     String ADD_NEW_FOOD_VIEW_PATH = MAIN_VIEW_PATH + "/manageMenu/addNewFood.jsp";

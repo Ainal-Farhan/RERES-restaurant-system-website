@@ -60,6 +60,10 @@
         <servlet-name>ManageFoodServlet</servlet-name>
         <servlet-class>com.RERES.controller.ManageFoodServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>DashboardServlet</servlet-name>
+        <servlet-class>com.RERES.controller.DashboardServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ManageBookingServlet</servlet-name>
         <url-pattern>/ManageBookingServlet</url-pattern>
@@ -111,6 +115,10 @@
     <servlet-mapping>
         <servlet-name>ManageFoodServlet</servlet-name>
         <url-pattern>/ManageFoodServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DashboardServlet</servlet-name>
+        <url-pattern>/DashboardServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

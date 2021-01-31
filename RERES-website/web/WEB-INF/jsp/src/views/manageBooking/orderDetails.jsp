@@ -71,7 +71,7 @@
                                     <tr>
                                         <td><%= foods.get(i).getFoodName() %></td>
                                         <td><%= foods.get(i).getFoodDescription() %></td>
-                                        <td><%= String.format("RM%.2f", foods.get(i).getFoodPrice()) %></td>
+                                        <td><%= String.format("RM%.2f", orderItems.get(i).getTotalPrice() / orderItems.get(i).getItemQuantity()) %></td>
                                         <td><%= orderItems.get(i).getItemQuantity() %></td>
                                         <td><%= String.format("RM%.2f", orderItems.get(i).getTotalPrice()) %></td>
                                     </tr>
