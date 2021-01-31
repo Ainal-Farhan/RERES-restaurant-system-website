@@ -178,7 +178,7 @@
             <div class="container-custom bg-light">
                 <div class="graph-main-container">                    
                     <div class="graph-container">
-                        <table class="table table-striped">
+                        <table class="table table-striped" style="text-align:center;">
                             <tbody>
                                 <tr>
                                     <td colspan="2" style="text-align:center;">
