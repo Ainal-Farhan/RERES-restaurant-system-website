@@ -42,7 +42,9 @@ public interface SQLStatementList {
     String SQL_STATEMENT_RETRIEVE_FOOD_LIST = "SELECT * FROM `food`";
     String SQL_STATEMENT_RETRIEVE_FOOD_LIST_BY_FOODID = "SELECT * FROM `food` WHERE `food`.`food_id` = ?;";
     String SQL_STATEMENT_RETRIEVE_USERID = "SELECT `user_id` FROM `user` WHERE `email` = ? AND `username` = ?;";
-    String SQL_STATEMENT_RETRIEVE_DATAPOINTYEAR = "SELECT EXTRACT(YEAR FROM booking_date), EXTRACT(MONTH FROM booking_date), EXTRACT(DAY FROM booking_date), booking_price FROM booking";
+    String SQL_STATEMENT_RETRIEVE_MONEY_GAINED_SELECTED_MONTH = "SELECT EXTRACT(DAY FROM booking_date), booking_price FROM booking WHERE EXTRACT(YEAR FROM booking_date) = ? AND EXTRACT(MONTH FROM booking_date) = ? ORDER BY booking_date ASC;";
+    String SQL_STATEMENT_RETRIEVE_MONEY_GAINED_SELECTED_YEAR = "SELECT EXTRACT(MONTH FROM booking_date), booking_price FROM booking WHERE EXTRACT(YEAR FROM booking_date) = ? ORDER BY booking_date ASC;";
+    String SQL_STATEMENT_RETRIEVE_MONEY_GAINED_LATEST_5_YEARS = "SELECT EXTRACT(YEAR FROM booking_date), booking_price FROM booking ORDER BY booking_date ASC;";
     
     // List of INSERT instruction
     String SQL_STATEMENT_INSERT_SUCCESSFULLY_PAY_FOR_A_BOOKING = "INSERT INTO `payment` "

@@ -17,7 +17,7 @@
             <%@include file = "../components/navigationBar.jsp" %>
             <%@include file = "../components/bookNavigationBar.jsp" %>
         </header>
-       
+        
         <div class="content-container">
             <div class="container-custom bgContent p-4" style="min-height:85vh;">
                 <form action="BookingTableServlet" method="POST">
