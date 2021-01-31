@@ -7,7 +7,6 @@
         <style>
             <%@include file="../../../css/style/global.css"%>
             body{
-                background-image:url("${pageContext.servletContext.contextPath}/assets/img/Documentation/hallwways.jpg" );
                 width:100%;
                 background-position: center;
                 background-repeat: no-repeat;
@@ -60,7 +59,7 @@
                                             <td class="align-middle"><label class="form-control-plaintext"><jsp:getProperty name="membership" property="memberID"/></label></td>
                                         </tr>
                                         <tr class="custom-shadow">
-                                            <th class="align-middle">Success Booking Made</th>
+                                            <th class="align-middle">Successfully Present</th>
                                             <th class="align-middle">:</th>
                                             <%  if(membership.getMemberStatus().equalsIgnoreCase("member")) { %>
                                             <td class="align-middle"><label class="form-control-plaintext"><%= membership.getSuccessBookingMade() %><%= membership.getSuccessBookingMade() < 3? " (" + (3 - membership.getSuccessBookingMade()) + " more bookings to get 50% discount)" : " (Get 50% discount on your next booking)" %></label></td>

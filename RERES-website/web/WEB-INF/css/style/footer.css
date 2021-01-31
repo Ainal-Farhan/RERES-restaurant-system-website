@@ -76,3 +76,11 @@ box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 transition: all 250ms ease-in-out 0s;
 
 }
+
+.container-footer {
+    width: 95%;
+    display: block;
+    margin-right:auto;
+    margin-left:auto;
+    text-align: center;
+}

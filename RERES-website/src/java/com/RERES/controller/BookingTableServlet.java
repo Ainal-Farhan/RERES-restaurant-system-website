@@ -9,6 +9,7 @@ import com.RERES.database.Database;
 import com.RERES.path.Path;
 import com.RERES.database.SQLStatementList;
 import com.RERES.model.BookingTable;
+import com.RERES.references.TopNavigationBarReference;
 import static com.RERES.references.TopNavigationBarReference.HOME_PAGE;
 import static com.RERES.references.TopNavigationBarReference.SELECTED_PAGE;
 import com.RERES.view.View;
@@ -38,6 +39,12 @@ public class BookingTableServlet extends HttpServlet {
     private final String ACTION_VIEW_BOOKING_TABLE = "viewBookingTable";
     private final String ACTION_CHECK_AVAILABILITY = "checkAvailability";
     private final String ACTION_MAKE_RESERVATION = "makeReserve";
+    private final String ACTION_MANAGE_TABLE = "manageTableBooking";
+    private final String ACTION_CHANGE_BOOKING_TABLE_STATUS = "changeBookingTableStatus";
+    
+    
+    private final String BOOKING_TABLE_STATUS_AVAILABLE = "available";
+    private final String BOOKING_TABLE_STATUS_UNAVAILABLE = "unavailable";
     
     private static java.sql.Date bookDate;
     private static int timeCode;
@@ -47,6 +54,8 @@ public class BookingTableServlet extends HttpServlet {
     private static String checkMessage;
     private static String checkNoTableMessage;
     private static String discountMessage;
+    
+    private static ArrayList<BookingTable> bookingTables;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -111,6 +120,14 @@ public class BookingTableServlet extends HttpServlet {
         else if(action.equals(ACTION_MAKE_RESERVATION)) {
             processMakeReservation(request, response);
         }
+        else if(action.equals(ACTION_MANAGE_TABLE)) {
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.MANAGE_TABLE_PAGE);
+            processManageTable(request, response);
+        }
+        else if (action.equals(ACTION_CHANGE_BOOKING_TABLE_STATUS)) {
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.MANAGE_TABLE_PAGE);
+            processChangeBookingTableStatus(request, response);
+        }
     }
 
     /**
@@ -123,6 +140,61 @@ public class BookingTableServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
     
+    private void processChangeBookingTableStatus(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        String status = request.getParameter("bookingTableStatus");
+        int bookingTableID = Integer.parseInt(request.getParameter("bookingTableID"));
+        
+        if(status.toLowerCase().equals(BOOKING_TABLE_STATUS_AVAILABLE)) status = BOOKING_TABLE_STATUS_UNAVAILABLE;
+        else status = BOOKING_TABLE_STATUS_AVAILABLE;
+        
+        String message = "";
+        
+        if(changeBookingTableStatusInDatabase(status, bookingTableID, request)) {
+            message = "Successfully change booking status to " + status.toUpperCase();
+        }
+        else {
+            message = "Failed to change the booking status to " + status.toUpperCase();
+        }
+        
+        View.setOverlayStatusMessage(request, response, "manageTableBooking", message, "BookingTableServlet", null, null);
+        
+        request.setAttribute("bookingTables", bookingTables);
+        View.includePage(request, response, Path.MANAGE_TABLE_PATH);
+    }
+    
+    private boolean changeBookingTableStatusInDatabase(String status, int bookingTableID, HttpServletRequest request) 
+            throws ServletException, IOException {
+        try {            
+            Connection con = new Database().getCon();
+            PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_UPDATE_BOOKING_TABLE_STATUS);
+            
+            st.setString(1, status);
+            st.setInt(2, bookingTableID);
+            
+            while(st.executeUpdate() > 0) {
+                if(bookingTables != null) {
+                    for(int i =0; i < bookingTables.size(); i++) {
+                        if(bookingTables.get(i).getBookingTableID() == bookingTableID) {
+                            bookingTables.get(i).setBookingTableStatus(status);
+                            break;
+                        }
+                    }
+                }
+                else {
+                    getAllBookingTableInfo(request);
+                }
+                return true;
+            }
+            
+            
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(BookingTableServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+    
     private void processCheckTable(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         if(getTableAvailability(request)){
@@ -130,6 +202,46 @@ public class BookingTableServlet extends HttpServlet {
         }
 //        getTableAvailability(request);
 //        forwardPage(request, response, Path.BOOKING_TABLE_VIEW_PATH);
+    }
+    
+    private void processManageTable(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        if(getAllBookingTableInfo(request)) {
+            request.setAttribute("bookingTables", bookingTables);
+            View.forwardPage(request, response, Path.MANAGE_TABLE_PATH);
+        }
+    }
+    
+    private boolean getAllBookingTableInfo(HttpServletRequest request) 
+            throws ServletException, IOException {
+        
+            bookingTables = new ArrayList<>();
+            
+        try {            
+            Connection con = new Database().getCon();
+            PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_RETRIEVE_BOOKING_TABLE);
+            
+            ResultSet rs = st.executeQuery();
+            
+            while(rs.next()) {
+                BookingTable bookingTable = new BookingTable();
+                
+                bookingTable.setBookingTableID(rs.getInt("bookingTable_id"));
+                bookingTable.setBookingTableCode(rs.getInt("bookingTable_code"));
+                bookingTable.setBookingTableStatus(rs.getString("bookingTable_status"));
+                bookingTable.setBookingTableCapacity(rs.getInt("bookingTable_capacity"));
+                
+                bookingTables.add(bookingTable);
+            }
+            
+            return true;
+            
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(BookingTableServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+        
     }
     
     private void processMakeReservation(HttpServletRequest request, HttpServletResponse response) 
@@ -320,7 +432,7 @@ public class BookingTableServlet extends HttpServlet {
     }
     
     private ArrayList<BookingTable> getTablebookingList() {
-        ArrayList<BookingTable> bookingTableList = new ArrayList<BookingTable>();
+        ArrayList<BookingTable> bookingTableList = new ArrayList<>();
         
         try {
             Connection con = new Database().getCon();

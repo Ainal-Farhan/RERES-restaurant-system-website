@@ -23,6 +23,7 @@ public interface TopNavigationBarReference {
     String MEMBERSHIP_PAGE = "membershipPage";
     String MANAGE_FOOD_PAGE = "manageFoodPage";
     String DASHBOARD_PAGE = "dashboardPage";
+    String MANAGE_TABLE_PAGE = "manageTablePage";
     
     // List of pageSelected values for public
     String LOGIN_PAGE = "loginPage";

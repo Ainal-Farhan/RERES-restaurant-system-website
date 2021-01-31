@@ -1,3 +1,4 @@
+<%@page import="com.RERES.references.SessionReference"%>
 <%@page import="com.RERES.utility.ImageUtility"%>
 <%@page import="java.time.Period"%>
 <%@page import="java.time.LocalDate"%>
@@ -331,7 +332,7 @@
                         <button type="button" class="btn btn-primary btn-group-manage-user" id="back-btn" onclick="changeInputStatus(true)">Back</button>
                         <% } %>
                         
-                        <% if(currentUserType.equalsIgnoreCase("admin")) { %>
+                        <% if(currentUserType.equalsIgnoreCase("admin") && (Integer)session.getAttribute(SessionReference.CURRENT_USER_ID) != selectedUser.getUserID()) { %>
                         <input type="submit" class="btn btn-danger btn-group-manage-user" id="delete-btn" name="delete-button" value="Delete" onclick="deleteConfirmation()">
                         <% } %>
                         

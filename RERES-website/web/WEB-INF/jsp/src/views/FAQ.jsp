@@ -8,8 +8,6 @@
         <%@include file="../../../css/style/global.css"%>
    
             body {
-                background-image:url("${pageContext.servletContext.contextPath}/assets/img/Documentation/hallwways.jpg" );
-
                 background-position: center;
                 background-repeat: no-repeat;
                 background-size:cover;

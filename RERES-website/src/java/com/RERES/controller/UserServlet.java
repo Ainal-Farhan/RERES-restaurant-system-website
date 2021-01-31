@@ -152,6 +152,7 @@ public class UserServlet extends HttpServlet {
                 
                 if(updateSelectedUserProfilePictureIntoDatabase(translatedImage, uploadedImage)) {
                     message = "Successfully update the profile picture with " + fileName;
+                    session.setAttribute(SessionReference.PROFILE_PICTURE, uploadedImage);
                 }
                 else {
                     message = "Failed to update the profile picture with " + fileName;
@@ -172,7 +173,7 @@ public class UserServlet extends HttpServlet {
         }
         else if(action.equals(ACTION_VIEW_PROFILE)) {
             
-            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, getSelectedPageBasedOnUserType(request.getParameter("userType"), (String)session.getAttribute(SessionReference.CURRENT_USER_TYPE)));
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.PROFILE_PAGE);
             
             processViewProfile(request, response);
         }
@@ -283,11 +284,29 @@ public class UserServlet extends HttpServlet {
            ResultSet rs = st.executeQuery();
            
            while(rs.next()){
-               HttpSession session = request.getSession();
-               session.setAttribute(SessionReference.CURRENT_USER_TYPE, rs.getString("user_type"));
-               session.setAttribute(SessionReference.CURRENT_USER_ID, rs.getInt("user_id"));
-               session.setAttribute(SessionReference.IS_AUTHENTICATED, true);
-               return true;
+                HttpSession session = request.getSession();
+                session.setAttribute(SessionReference.CURRENT_USER_TYPE, rs.getString("user_type"));
+                session.setAttribute(SessionReference.CURRENT_USER_ID, rs.getInt("user_id"));
+                session.setAttribute(SessionReference.IS_AUTHENTICATED, true);
+
+                Blob blob = rs.getBlob("profile_photo");
+                 
+                ByteArrayOutputStream outputStream;
+                String base64Image;
+                try (InputStream inputStream = blob.getBinaryStream()) {
+                    outputStream = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[4096];
+                    int bytesRead = -1;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {                  
+                        outputStream.write(buffer, 0, bytesRead);
+                    }   byte[] imageBytes = outputStream.toByteArray();
+                    base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                }
+                outputStream.close();
+               
+                session.setAttribute(SessionReference.PROFILE_PICTURE, base64Image);
+                session.setAttribute(SessionReference.NAME, rs.getString("name"));
+                return true;
            }
            
         } catch (SQLException | ClassNotFoundException  ex) {

@@ -2,7 +2,27 @@
     min-height: 100vh;
     padding-top: 30px;
     padding-bottom: 30px;
+    overflow: hidden;
+}
+
+.content-container:before {
+    content: "";
+    position: absolute;
+    width : 100%;
+    min-height: inherit;
     background-image: url("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.teN8fOeOseUho-VmWSHg0AHaFj%26pid%3DApi&f=1");
+    background-repeat: repeat;
+    z-index: -1;
+    
+    filter        : blur(5px);
+    -moz-filter   : blur(5px);
+    -webkit-filter: blur(5px);
+    -o-filter     : blur(5px);
+
+    transition        : all 2s linear;
+    -moz-transition   : all 2s linear;
+    -webkit-transition: all 2s linear;
+    -o-transition     : all 2s linear;
 }
 
 .container-custom {

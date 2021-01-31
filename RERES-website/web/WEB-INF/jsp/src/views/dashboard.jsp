@@ -182,7 +182,7 @@
                             <tbody>
                                 <tr>
                                     <td colspan="2" style="text-align:center;">
-                                        <div class="graph-container">
+                                        <div class="graph-container" style="width:1200px; margin:0 auto;">
                                             <div id="bar_graph_bookingPriceYear"></div>
                                         </div>
                                     </td>
@@ -194,7 +194,7 @@
                                                 <div class="form-group row">
                                                     <label for="year" class="col-1 col-form-label">Year</label>
                                                     <div class="col">
-                                                        <select id="year" name="selectedYear" class="form-control">
+                                                        <select id="year" name="selectedYear" class="form-control" >
                                                             <%  for(int i = 0 ; i < totalYear; i++) { %>
                                                                 <% if(YEARS[i] == Integer.parseInt(selectedYear)) { %>
                                                                     <option selected><%= YEARS[i] %></option>
@@ -226,11 +226,11 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="align-middle" style="text-align:center">
-                                        <div id="bar_graph_bookingPriceMonth"></div>
+                                    <td class="align-middle">
+                                        <div id="bar_graph_bookingPriceMonth" style="width:600px; margin:0 auto;"></div>
                                     </td>
-                                    <td class="align-middle" style="text-align:center">
-                                        <div id="bar_graph_bookingPriceDay"></div>
+                                    <td class="align-middle">
+                                        <div id="bar_graph_bookingPriceDay" style="width:600px; margin:0 auto;"></div>
                                     </td>
                                 </tr>
                             </tbody>
