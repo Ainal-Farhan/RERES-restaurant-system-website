@@ -250,7 +250,6 @@ public class UserServlet extends HttpServlet {
         
         if(checkUserInput(request)) {
             if(setUserRegistrationIntoDatabase(request)) {
-
                 request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.LOGIN_PAGE);
                 View.setOverlayStatusMessage(request, response, "redirectLogin", "Successfully register a new customer. Now, please login with your login credential", "LoginServlet", null, null);
                 View.includePage(request, response, Path.LOGIN_VIEW_PATH);

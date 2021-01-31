@@ -30,7 +30,6 @@
                                 </div>
                                 <% 
                                     Calendar calendar = Calendar.getInstance();
-                                    
                                     // Getting the date a day after current date
                                     calendar.add(Calendar.DATE, 1);
                                     
@@ -47,7 +46,6 @@
                                     
                                     // Create the date with the format of (YYYY-MM-DD), eg: 2020-01-31
                                     String minDate = "" + yyyy + "-" + mm + "-" + dd;
-                                    
                                 %>
                                 <%  if(request.getAttribute("timeCode") != null && request.getAttribute("timeSlot") != null) { %>
                                 <input type="date" class="form-control form-control-lg" name="bookDate" min="<%= minDate %>" id="date1" value="<%= request.getAttribute("selectedDate") %>" required/>
