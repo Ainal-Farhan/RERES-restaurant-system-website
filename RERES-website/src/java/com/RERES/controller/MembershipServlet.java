@@ -8,6 +8,8 @@ package com.RERES.controller;
 import com.RERES.database.Database;
 import com.RERES.database.SQLStatementList;
 import com.RERES.model.Membership;
+import com.RERES.path.Path;
+import com.RERES.view.View;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -27,6 +29,8 @@ import javax.servlet.http.HttpSession;
  * @author PC
  */
 public class MembershipServlet extends HttpServlet {
+    final double RENEW_PRICE=30.00;
+    
     final String ACTION_VIEW_MEMBERSHIP_PAGE="viewMembershipPage";
     final String ACTION_RENEW_MEMBERSHIP="RenewMembership";
   
@@ -66,9 +70,13 @@ public class MembershipServlet extends HttpServlet {
             }
             else if (action.equals(ACTION_RENEW_MEMBERSHIP)){
                 request.setAttribute("selectedPage", "membershipPage");
-                setRenewMembership(request);
-                request.setAttribute("membership",membership);
-                request.getRequestDispatcher("/WEB-INF/jsp/src/views/membership.jsp").forward(request, response);
+                
+                String[] nameLabels = {"payAmount", "payName", "ID", "actionPay", "actionCancelPay"};
+                String[] valueLabels = {Double.toString(RENEW_PRICE), membership.getMemberName() , Integer.toString(membership.getMemberID()), "payMembership", "cancelPayMembership"};
+
+                View.setOverlayStatusMessage(request, response, "viewPaymentFormRenewMembership", "Proceed to payment page for renew your membership", "PaymentServlet", nameLabels, valueLabels);
+
+                View.includePage(request, response, Path.HOME_VIEW_PATH);
             }
         }
     }
@@ -114,8 +122,24 @@ public class MembershipServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private void setRenewMembership(HttpServletRequest request) 
+    public static boolean fulfilRequirementForDiscount(HttpServletRequest request) 
             throws ServletException, IOException {
+        if(membership == null) {
+            new MembershipServlet().setSpecificUserMembershipInformation(request);
+        }
+        
+        if(membership.getSuccessBookingMade() >= 3) return true;
+        
+        return false;
+    }
+    
+    public static boolean setRenewMembership(HttpServletRequest request) 
+            throws ServletException, IOException {
+        
+        if(membership == null) {
+            new MembershipServlet().setSpecificUserMembershipInformation(request);
+            request.setAttribute("membership",membership);
+        }
         
         try {
        
@@ -127,13 +151,42 @@ public class MembershipServlet extends HttpServlet {
            
            int result=st.executeUpdate();
             if(result>0) {
-
                 membership.setMemberStatus("member");
-             }
+                return true;
+            }
         }
         catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         }  
+        return false;
+    }
+    
+    public static boolean setMembershipStatusToExpired(HttpServletRequest request) 
+            throws ServletException, IOException {
+        
+        if(membership == null) {
+            new MembershipServlet().setSpecificUserMembershipInformation(request);
+            request.setAttribute("membership",membership);
+        }
+        
+        try {
+       
+           Connection con = new Database().getCon();
+           PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_UPDATE_MEMBERSHIP_STATUS);
+          
+           st.setString(1 ,"expired");
+           st.setInt(2, membership.getMemberID());
+           
+           int result=st.executeUpdate();
+            if(result>0) {
+                membership.setMemberStatus("expired");
+                return true;
+            }
+        }
+        catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+        }  
+        return false;
     }
     
     private void setSpecificUserMembershipInformation(HttpServletRequest request) 
@@ -153,14 +206,11 @@ public class MembershipServlet extends HttpServlet {
            ResultSet result = st.executeQuery();
 
             if(result.next()) {
-
                 membership.setFkUserID(result.getInt("fk_userID"));
                 membership.setMemberID(result.getInt("member_id"));
                 membership.setMemberName(result.getString("member_name"));
                 membership.setMemberStatus(result.getString("member_status"));
                 membership.setSuccessBookingMade(result.getInt("success_booking_made"));
-
-
              }
         }
         catch (SQLException | ClassNotFoundException ex) {

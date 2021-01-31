@@ -19,12 +19,12 @@
                     <div class="caption">
                         <div class="container-sm">
                             <div class="d-flex justify-content-center mb-3">
-                                <div class="card" style="width:900px">
-                                    <div class="card-header">
+                                <div class="card custom-shadow container-register bg-info" style="width:900px">
+                                    <div class="card-header custom-shadow bg-light">
                                         <h3>Register Here</h3>
                                     </div>
 
-                                    <div class="card-body">
+                                    <div class="card-body custom-shadow bg-light">
                                         <form action="UserServlet" method="POST">
                                             <div class="row">
                                                 <div class="col">
@@ -32,72 +32,131 @@
                                                         <label for="name">Full name:</label>
                                                         <input type="text" class="form-control form-control-lg" placeholder="Enter full name" name="fullname" id="name" required>
                                                     </div>
-
-                                                    <div class="form-group">
-                                                        <label for="phoneNumber">Phone number:</label>
-                                                        <input type="text" class="form-control form-control-lg" placeholder="Enter phone number" name="phoneNumber" id="phoneNumber" required>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="email">Email address:</label>
-                                                        <input type="email" class="form-control form-control-lg" placeholder="Enter email" name="email" id="email" required>
-                                                    </div>
+                                                </div>
+                                                <div class="col">
                                                     <div class="form-group">
                                                         <label for="username">Username:</label>
                                                         <input type="text" class="form-control form-control-lg" placeholder="Enter username" name="username" id="username" required>
                                                     </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group row">
+                                                <div class="col">
+                                                    <div class="form-group">
+                                                        <label for="birthdate" id="age-label">Date of Birth:</label>
+                                                        <input type="hidden" id="age" name="age">
+                                                        <input type="date" class="form-control form-control-lg" onchange="calcAge()" placeholder="Enter you date of birth" id="birthdate" name="birthdate">
+                                                        
+                                                        <script>
+                                                            function calcAge() {
+                                                                const today = new Date();
+                                                                const birthDate = new Date(document.getElementById('birthdate').value);
+
+                                                                yearsDifference = today.getFullYear() - birthDate.getFullYear();
+
+                                                                if (
+                                                                    today.getMonth() < birthDate.getMonth() ||
+                                                                    (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())
+                                                                ) {
+                                                                    yearsDifference--;
+                                                                }
+
+                                                                document.getElementById('age').value = yearsDifference;
+                                                                document.getElementById('age-label').innerHTML = "Date of Birth: (" + yearsDifference + " years old)";
+                                                            };
+                                                        </script>
+                                                        
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col">
+                                                    Gender: <br/>
+                                                    <div class="form-check form-check-inline form-control-lg">
+                                                        <input type="radio" class="form-check-input" id="gender-male" name="gender" value="male" checked>
+                                                        <label class="form-check-label" for="gender-male">Male</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline form-control-lg">
+                                                        <input type="radio" class="form-check-input" id="gender-female" name="gender" value="female">
+                                                        <label class="form-check-label" for="gender-female">Female</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="form-group">
+                                                        <label for="email">Email address:</label>
+                                                        <input type="email" class="form-control form-control-lg" placeholder="Enter email" name="email" id="email" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-group">
+                                                        <label for="phoneNumber">Phone number:</label>
+                                                        <input type="text" class="form-control form-control-lg" placeholder="Enter phone number" name="phoneNumber" id="phoneNumber" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col">
                                                     <div class="form-group">
                                                         <label for="pwd">Password:</label>
                                                         <input type="password" class="form-control form-control-lg" placeholder="Enter password" name="pwd" id="pwd" required>
                                                     </div>
+                                                </div>
+                                                <div class="col">
                                                     <div class="form-group">
                                                         <label for="confirmPwd">Confirm password:</label>
                                                         <input type="password" class="form-control form-control-lg" placeholder="Confirm password" name="confirmPwd" id="confirmPwd" required>
                                                     </div>
                                                 </div>
-                                                
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="address">Address:</label>
+                                                <input type="text" class="form-control form-control-lg" placeholder="Enter address" name="address" id="address">
+                                            </div>
+                                            <div class="form-group row">
                                                 <div class="col">
-                                                    <div class="form-group">
-                                                        <label for="address">Address:</label>
-                                                        <input type="text" class="form-control form-control-lg" placeholder="Enter address" name="address" id="address">
-                                                        <label for="city">City</label>
-                                                        <input type="text" class="form-control form-control-lg" placeholder="Enter city" name="city" id="city">
-                                                        <label for="poscode">Poscode:</label>
-                                                        <input type="text" class="form-control form-control-lg" placeholder="Enter poscode" name="poscode" id="poscode">
-                                                        <label for="state">State</label>
-                                                        <input type="text" class="form-control form-control-lg" placeholder="Enter state" name="state" id="state">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="age">Age:</label>
-                                                        <input type="number" class="form-control form-control-lg" placeholder="Enter your age" id="age" name="age" min="1">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="birthdate">Date of Birth:</label>
-                                                        <input type="date" class="form-control form-control-lg" placeholder="Enter you date of birth" id="birthdate" name="birthdate">
-                                                    </div>
-                                                    Gender: <br>
-                                                    <div class="form-check-inline form-control-lg">
-                                                        
-                                                        <label class="form-check-label">
-                                                            <input type="radio" class="form-check-input" name="gender" value="male">Male
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check-inline form-control-lg">
-                                                        <label class="form-check-label">
-                                                          <input type="radio" class="form-check-input" name="gender" value="female">Female
-                                                        </label>
-                                                    </div>
+                                                    <label for="city">City</label>
+                                                    <input type="text" class="form-control form-control-lg" placeholder="Enter city" name="city" id="city">
+                                                </div>
+                                                <div class="col">
+                                                    <label for="poscode">Post Code:</label>
+                                                    <input type="text" class="form-control form-control-lg" placeholder="Enter poscode" name="poscode" id="poscode">
+                                                </div>
+                                                <div class="col">
+                                                    <label for="state">State</label>
+                                                    <select class="form-control form-control-lg" id="state" name="state">
+                                                        <option>Johor</option>
+                                                        <option>Kedah</option>
+                                                        <option>Kelantan</option>
+                                                        <option>Melaka</option>
+                                                        <option>Negeri Sembilan</option>
+                                                        <option>Pahang</option>
+                                                        <option>Penang</option>
+                                                        <option>Perak</option>
+                                                        <option>Perlis</option>
+                                                        <option>Sabah</option>
+                                                        <option>Sarawak</option>
+                                                        <option>Selangor</option>
+                                                        <option>Terengganu</option>
+                                                        <option>Wilayah Persekutuan Kuala Lumpur</option>
+                                                        <option>Wilayah Persekutuan Labuan</option>
+                                                        <option>Wilayah Persekutuan Putrajaya</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="mt-3">
-                                            <input type="hidden" name="userType" value="customer">
-                                            <input type="hidden" name="action" value="registerUser">
-                                            <input type="submit" class="btn btn-danger btn-block btn-lg" value="Register"/>
+                                                <input type="hidden" name="userType" value="customer">
+                                                <input type="hidden" name="action" value="registerUser">
+                                                <input type="submit" class="btn btn-success btn-block btn-lg" value="Register"/>
                                             </div>
-                                          </form>
-                                    </div>
-
-                                    <div class="card-footer">
-                                        Already registered? <a href="${pageContext.servletContext.contextPath}/LoginServlet?action=redirectLogin">Login here</a>
+                                        </form>
+                                        <div class="card-footer">
+                                            Already registered? <a href="${pageContext.servletContext.contextPath}/LoginServlet?action=redirectLogin">Login here</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

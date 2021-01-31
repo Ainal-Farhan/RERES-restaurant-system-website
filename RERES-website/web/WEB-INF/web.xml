@@ -53,10 +53,6 @@
         <servlet-class>com.RERES.controller.MembershipServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>HelpChatServlet</servlet-name>
-        <servlet-class>com.RERES.controller.HelpChatServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>BookingServlet</servlet-name>
         <servlet-class>com.RERES.controller.BookingServlet</servlet-class>
     </servlet>
@@ -107,10 +103,6 @@
     <servlet-mapping>
         <servlet-name>MembershipServlet</servlet-name>
         <url-pattern>/MembershipServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>HelpChatServlet</servlet-name>
-        <url-pattern>/HelpChatServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>BookingServlet</servlet-name>

@@ -9,6 +9,9 @@ import com.RERES.database.Database;
 import com.RERES.database.SQLStatementList;
 import com.RERES.model.User;
 import com.RERES.path.Path;
+import com.RERES.references.SessionReference;
+import com.RERES.references.TopNavigationBarReference;
+import com.RERES.references.UserServletReference;
 import com.RERES.utility.ImageUtility;
 import com.RERES.view.View;
 import java.io.ByteArrayOutputStream;
@@ -61,14 +64,6 @@ public class UserServlet extends HttpServlet {
     private static ArrayList<User> users;
     private static User user;
     
-    final String[] PUBLIC_INFO_LABELS = {
-        "No",
-        "Name",
-        "Age",
-        "Email",
-        "Profile Picture",
-    };
-    
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -101,7 +96,6 @@ public class UserServlet extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
-     * @throws java.text.ParseException
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -114,10 +108,12 @@ public class UserServlet extends HttpServlet {
         
         
         if(isStringIsNullOrEmpty(action)) {
-            
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.HOME_PAGE);
+            View.setOverlayStatusMessage(request, response, "none", "Some errors happen. Back to Home Page", "none", null, null);
+            View.includePage(request, response, Path.HOME_VIEW_PATH);
         }
         else if(action.equals(ACTION_VIEW_HOME_PAGE_AUTHENTICATED)) {
-            request.setAttribute("selectedPage", "homePage");
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.HOME_PAGE);
             View.forwardPage(request, response, Path.HOME_VIEW_PATH);
         }
         else if(action.equals(ACTION_VIEW_USER_LIST)) {
@@ -125,17 +121,14 @@ public class UserServlet extends HttpServlet {
         }
         else if(action.equals(ACTION_VIEW_A_USER)) {
             
-            if(request.getParameter("userType").equalsIgnoreCase("staff") && ((String)session.getAttribute("currentUserType")).equalsIgnoreCase("admin")) request.setAttribute("selectedPage", "staffListPage");
-            else if(request.getParameter("userType").equalsIgnoreCase("customer") && ((String)session.getAttribute("currentUserType")).equalsIgnoreCase("admin")) request.setAttribute("selectedPage", "customersListPage");
-            else request.setAttribute("selectedPage", "profilePage");
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, getSelectedPageBasedOnUserType(request.getParameter("userType"), (String)session.getAttribute(SessionReference.CURRENT_USER_TYPE)));
                 
             processViewAUser(request, response);
         }
         else if(action.equals(ACTION_UPDATE_USER_PROFILE_PICTURE)) {
-            if(((String)session.getAttribute("currentUserType")).equalsIgnoreCase("admin") && user.getUserType().equalsIgnoreCase("staff")) request.setAttribute("selectedPage", "staffListPage");
-            else if(((String)session.getAttribute("currentUserType")).equalsIgnoreCase("admin") && user.getUserType().equalsIgnoreCase("customer")) request.setAttribute("selectedPage", "customersListPage");
-            else request.setAttribute("selectedPage", "profilePage");
             
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, getSelectedPageBasedOnUserType(user.getUserType(), (String)session.getAttribute(SessionReference.CURRENT_USER_TYPE)));
+                        
             String uploadButton = request.getParameter("upload-btn");
             String defaultButton = request.getParameter("default-btn");
             
@@ -178,20 +171,14 @@ public class UserServlet extends HttpServlet {
             View.includePage(request, response, Path.USER_SERVLET_VIEW_PATH + "/manageUser.jsp");
         }
         else if(action.equals(ACTION_VIEW_PROFILE)) {
-            String currentUserType = (String)session.getAttribute("currentUserType");
             
-            if(currentUserType.equalsIgnoreCase("admin") && request.getParameter("userType").equalsIgnoreCase("staff")) request.setAttribute("selectedPage", "staffListPage");
-            else if(currentUserType.equalsIgnoreCase("admin") && request.getParameter("userType").equalsIgnoreCase("customer")) request.setAttribute("selectedPage", "customersListPage");
-            else request.setAttribute("selectedPage", "profilePage");
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, getSelectedPageBasedOnUserType(request.getParameter("userType"), (String)session.getAttribute(SessionReference.CURRENT_USER_TYPE)));
             
             processViewProfile(request, response);
         }
         else if(action.equals(ACTION_UPDATE_OR_DELETE_A_USER)) {
             
-            String currentUserType = (String)session.getAttribute("currentUserType");
-            if(currentUserType.equalsIgnoreCase("admin") && user.getUserType().equalsIgnoreCase("staff")) request.setAttribute("selectedPage", "staffListPage");
-            else if(currentUserType.equalsIgnoreCase("admin") && user.getUserType().equalsIgnoreCase("customer")) request.setAttribute("selectedPage", "customersListPage");
-            else request.setAttribute("selectedPage", "profilePage");
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, getSelectedPageBasedOnUserType(user.getUserType(), (String)session.getAttribute(SessionReference.CURRENT_USER_TYPE)));
             
             try {
                 processUpdateOrDeleteAUser(request, response);
@@ -215,8 +202,11 @@ public class UserServlet extends HttpServlet {
         }
         else if(action.equals(ACTION_LOGOUT_USER)) {
             session.invalidate();
-            request.setAttribute("selectedPage", "homePage");
-            View.forwardPage(request, response, Path.HOME_VIEW_PATH);
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.HOME_PAGE);
+            
+            View.setOverlayStatusMessage(request, response, "none", "Sucessfully Logout", "none", null, null);
+            
+            View.includePage(request, response, Path.HOME_VIEW_PATH);
         }
     }
 
@@ -230,16 +220,26 @@ public class UserServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
     
+    private String getSelectedPageBasedOnUserType(String userType, String currentUserType) {
+        
+        if(currentUserType.equalsIgnoreCase(UserServletReference.USER_TYPE_ADMIN)) {
+            if(userType.equalsIgnoreCase(USER_TYPE_STAFF)) return TopNavigationBarReference.STAFF_LIST_PAGE;
+            else return TopNavigationBarReference.CUSTOMERS_LIST_PAGE;
+        }
+        
+        return TopNavigationBarReference.PROFILE_PAGE;
+    }
+    
     protected void processLoginUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException {
         if(authenticateUser(request)) {
-            request.setAttribute("selectedPage", "homePage");
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.HOME_PAGE);
             
             View.setOverlayStatusMessage(request, response, ACTION_VIEW_HOME_PAGE_AUTHENTICATED, "Successfully Login", "UserServlet", null, null);
             View.includePage(request, response, Path.HOME_VIEW_PATH);
         }
         else {
-            request.setAttribute("selectedPage", "loginPage");
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.LOGIN_PAGE);
             View.setOverlayStatusMessage(request, response, "redirectLogin", "Invalid username, email or password", "LoginServlet", null, null);
             View.includePage(request, response, Path.LOGIN_VIEW_PATH);
         }
@@ -251,18 +251,18 @@ public class UserServlet extends HttpServlet {
         if(checkUserInput(request)) {
             if(setUserRegistrationIntoDatabase(request)) {
 
-                request.setAttribute("selectedPage", "loginPage");
+                request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.LOGIN_PAGE);
                 View.setOverlayStatusMessage(request, response, "redirectLogin", "Successfully register a new customer. Now, please login with your login credential", "LoginServlet", null, null);
                 View.includePage(request, response, Path.LOGIN_VIEW_PATH);
             }
             else {
-                request.setAttribute("selectedPage", "registerPage");
+                request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.REGISTRATION_PAGE);
                 View.setOverlayStatusMessage(request, response, "redirectRegister", "Failed to register a new customer", "RegistrationServlet", null, null);
                 View.includePage(request, response, Path.REGISTRATION_VIEW_PATH);
             }
         }
         else {
-            request.setAttribute("selectedPage", "registerPage");
+            request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.REGISTRATION_PAGE);
             View.setOverlayStatusMessage(request, response, "redirectRegister", errorMessage, "RegistrationServlet", null, null);
             View.includePage(request, response, Path.REGISTRATION_VIEW_PATH);
         }
@@ -285,9 +285,9 @@ public class UserServlet extends HttpServlet {
            
            while(rs.next()){
                HttpSession session = request.getSession();
-               session.setAttribute("currentUserType", rs.getString("user_type"));
-               session.setAttribute("currentUserID", rs.getInt("user_id"));
-               session.setAttribute("isAuthenticated", true);
+               session.setAttribute(SessionReference.CURRENT_USER_TYPE, rs.getString("user_type"));
+               session.setAttribute(SessionReference.CURRENT_USER_ID, rs.getInt("user_id"));
+               session.setAttribute(SessionReference.IS_AUTHENTICATED, true);
                return true;
            }
            
@@ -313,6 +313,55 @@ public class UserServlet extends HttpServlet {
 
             return imageBlob;
         }
+    
+    private int getUserIDFromDatabase(String email, String username) {
+        try {
+            
+            Connection con = new Database().getCon();
+            
+            PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_RETRIEVE_USERID);
+
+            st.setString(1, email);
+            st.setString(2, username);
+
+            ResultSet result = st.executeQuery();
+            
+            if(result.next()) {
+                result.getInt("user_id");
+                
+                if(result.wasNull()) {
+                    return -1;
+                }
+                
+                return result.getInt("user_id");
+            }
+            
+            st.close();
+            
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return -1;
+    }
+    
+    private boolean setUserMembershipIntoDatabase(String name, int userID) {
+        try {
+            
+            Connection con = new Database().getCon();
+            
+            PreparedStatement st = con.prepareStatement(SQLStatementList.SQL_STATEMENT_INSERT_MEMBERSHIP_INFO);
+            st.setString(1, name);
+            st.setInt(2, userID);
+
+            return st.executeUpdate() > 0;
+            
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return false;
+    }
     
     private boolean setUserRegistrationIntoDatabase(HttpServletRequest request)
             throws ServletException, IOException {
@@ -355,11 +404,21 @@ public class UserServlet extends HttpServlet {
 
             int count = st.executeUpdate();
 
-            System.out.println(fullname + address + city + poscode + state + phoneNumber + email + username + password + confirmPassword + userType + age + sqlDate + gender + st.toString());
-
             if(count > 0)
             {
-                return true;
+                int userId = getUserIDFromDatabase(email, username);
+                
+                if(userId != -1) {
+                    if(setUserMembershipIntoDatabase(fullname, userId))
+                        return true;
+                    
+                    PreparedStatement st2 = con.prepareStatement(SQLStatementList.SQL_STATEMENT_DELETE_A_USER_INFORMATION);
+                    st2.setInt(1, userId);
+                    
+                    st2.executeUpdate();
+                }
+                
+                return false;
             }
             
             st.close();
@@ -497,13 +556,10 @@ public class UserServlet extends HttpServlet {
             
             st.setString(1, selectedUser.getName());
             st.setInt(2, selectedUser.getAge());
-            st.setDate(3, selectedUser.getBirthDate());
-            st.setString(4, selectedUser.getEmail());
-            st.setString(5, selectedUser.getAddress());
-            st.setString(6, selectedUser.getGender());
-            st.setString(7, selectedUser.getPhoneNumber());
-            st.setString(8, selectedUser.getProfilePhoto());
-            st.setInt(9, selectedUser.getUserID());
+            st.setString(3, selectedUser.getEmail());
+            st.setString(4, selectedUser.getAddress());
+            st.setString(5, selectedUser.getPhoneNumber());
+            st.setInt(6, selectedUser.getUserID());
             
             int result = st.executeUpdate();
             
@@ -724,9 +780,9 @@ public class UserServlet extends HttpServlet {
             throws ServletException, IOException {
         
         request.setAttribute("users", users);
-        request.setAttribute("labels", this.PUBLIC_INFO_LABELS);
+        request.setAttribute("labels", UserServletReference.PUBLIC_INFO_LABELS);
         request.setAttribute("userType", userType.toUpperCase());
-        request.setAttribute("labelsLength", this.PUBLIC_INFO_LABELS.length);
+        request.setAttribute("labelsLength", UserServletReference.PUBLIC_INFO_LABELS.length);
     }
     
     private void setAttributesForManageAUser(HttpServletRequest request, HttpServletResponse response, User selectedUser)

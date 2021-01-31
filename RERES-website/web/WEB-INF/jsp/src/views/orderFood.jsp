@@ -29,8 +29,8 @@
                                     <th>Food Name</th>
                                     <th>Food Price</th>
                                     <th>Food Description</th>
-                                    <th>Food Image</th>
-                                    <th> </th>
+                                    <th style="text-align:center;">Food Image</th>
+                                    <th style="text-align:center;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -41,12 +41,12 @@
                                 <%  } %>
                             <c:forEach items="${requestScope.foodList}" var="food" varStatus="loop">
                                 <tr>
-                                    <td><h5><c:out value="${loop.index + 1}" /></h5></td>
-                                    <td><c:out value="${food.foodName}"/></td>
-                                    <td>RM <fmt:formatNumber type="number" maxFractionDigits="2" minFractionDigits="2" value="${food.foodPrice}"/></td>
-                                    <td><c:out value="${food.foodDescription}"/></td>
-                                    <td><img id="profilePicture" src='OrderFoodServlet?action=getFoodImage&foodID=<c:out value="${food.foodID}" />' alt="profile picture" class="mx-auto d-block custom-shadow" width="200" height="200" style="border-radius: 50%;"></td>
-                                    <td style="width: 250px; padding-left: 20px">
+                                    <td class="align-middle"><h5><c:out value="${loop.index + 1}" /></h5></td>
+                                    <td class="align-middle"><c:out value="${food.foodName}"/></td>
+                                    <td class="align-middle">RM <fmt:formatNumber type="number" maxFractionDigits="2" minFractionDigits="2" value="${food.foodPrice}"/></td>
+                                    <td class="align-middle"><c:out value="${food.foodDescription}"/></td>
+                                    <td class="align-middle"><img id="profilePicture" src='OrderFoodServlet?action=getFoodImage&foodID=<c:out value="${food.foodID}" />' alt="profile picture" class="mx-auto d-block custom-shadow" width="100" height="100" style="border-radius: 50%;"></td>
+                                    <td class="align-middle" style="width: 250px; padding-left: 20px">
                                         <form action="OrderFoodServlet" method="POST" class="form-inline">
                                             <input type="hidden" name="foodID" value='<c:out value="${food.foodID}"/>'>
                                             <input type="hidden" name="foodName" value='<c:out value="${food.foodName}"/>'>
@@ -61,7 +61,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="col-lg-3 table-your-order-list">
+                    <div class="col-lg table-your-order-list">
                         <table class="table table-striped mt-2" >
                             <thead class="thead-dark">
                                 <tr>
@@ -83,7 +83,7 @@
                                         <form action="OrderFoodServlet" method="POST">
                                             <input type="hidden" name="indexOfFood" value='<c:out value="${index}"/>'>
                                             <input type="hidden" name="action" value="deleteFoodInCart">
-                                            <button type="submit" class="btn btn-sm btn-danger"><i class="far fa-trash-alt"></i></button>
+                                            <button type="submit" class="btn btn-sm btn-danger"><i class="far fa-trash-alt"></i> Delete</button>
                                         </form>
                                     </td>
                                 </tr>

@@ -21,6 +21,7 @@ body {
     color: white; /* Text color */
     outline: none;
     font-weight: 500;
+    padding: 5px 5px 5px 5px;
     background: #0099cc; /* For browsers that do not support gradients */
     background: -webkit-linear-gradient(#e5f4f9, #b2e0ef, #7fcce5, #0089b7, #0099CC, #b2e0ef); /* For Safari 5.1 to 6.0 */
     background: -o-linear-gradient(#e5f4f9, #b2e0ef, #7fcce5, #0089b7, #0099CC, #b2e0ef); /* For Opera 11.1 to 12.0 */

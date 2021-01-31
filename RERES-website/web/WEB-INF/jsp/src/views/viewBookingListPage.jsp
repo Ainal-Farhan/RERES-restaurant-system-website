@@ -19,9 +19,8 @@
         <header>
             <%@include file = "../components/navigationBar.jsp" %>
         </header>
-        
-        <div class="content-container"> 
-            <div class="booking-list-container">
+        <div class="content-container">         
+            <div class="booking-list-container">            
                 <div class='table-responsive' id='customer-list'>
                     <table class='table table-hover table-view-list bg-light table-striped' style="border-radius:24px;text-align: center;">
                         <thead class="thead-dark">

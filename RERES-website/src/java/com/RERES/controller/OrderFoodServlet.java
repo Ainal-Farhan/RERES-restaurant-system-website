@@ -9,6 +9,7 @@ import com.RERES.database.Database;
 import com.RERES.path.Path;
 import com.RERES.model.Food;
 import com.RERES.database.SQLStatementList;
+import com.RERES.references.TopNavigationBarReference;
 import com.RERES.utility.ImageUtility;
 import com.RERES.view.View;
 import java.io.ByteArrayOutputStream;
@@ -17,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -104,6 +104,8 @@ public class OrderFoodServlet extends HttpServlet {
         if(!com.RERES.utility.SessionValidator.checkSession(request, response)) return;
         String action = request.getParameter("action");
         
+        request.setAttribute(TopNavigationBarReference.SELECTED_PAGE, TopNavigationBarReference.BOOKING_TABLE_PAGE);
+        
         if(isStringIsNullOrEmpty(action)) {
             
         }
@@ -146,10 +148,10 @@ public class OrderFoodServlet extends HttpServlet {
                 payAmount = foodInCartList.stream().map((f) -> f.getFoodPrice()).reduce(payAmount, (accumulator, _item) -> accumulator + _item);
                 payAmount += bookingPrice;
                 
-                String[] nameLabels = {"payAmount", "payName", "bookingID"};
-                String[] valueLabels = {Double.toString(payAmount), "" ,Integer.toString(selectedBookingID)};
+                String[] nameLabels = {"payAmount", "payName", "ID", "actionPay", "actionCancelPay"};
+                String[] valueLabels = {Double.toString(payAmount), "" ,Integer.toString(selectedBookingID), "payBooking", "cancelPayBooking"};
                 
-                View.setOverlayStatusMessage(request, response, "viewPaymentForm", "Please Pay Now, Your orders would not be processed if you did not pay for it", "PaymentServlet", nameLabels, valueLabels);
+                View.setOverlayStatusMessage(request, response, "viewPaymentFormBooking", "Please Pay Now, Your orders would not be processed if you did not pay for it", "PaymentServlet", nameLabels, valueLabels);
                 
                 View.includePage(request, response, Path.HOME_VIEW_PATH);
             }
@@ -158,10 +160,11 @@ public class OrderFoodServlet extends HttpServlet {
             HttpSession session = request.getSession(false);
             int selectedBookingID = (Integer) session.getAttribute("bookingID");
             
-            String[] nameLabels = {"bookingID"};
-            String[] valueLabels = {Integer.toString(selectedBookingID)};
-            
-            View.setOverlayStatusMessage(request, response, "viewTheSelectedBooking", "You have cancelled the food order", "BookingServlet", nameLabels, valueLabels);
+            String[] nameLabels = {"payAmount", "payName", "ID", "actionPay", "actionCancelPay"};
+            String[] valueLabels = {Double.toString(bookingPrice), "" ,Integer.toString(selectedBookingID), "payBooking", "cancelPayBooking"};
+
+            View.setOverlayStatusMessage(request, response, "viewPaymentFormBooking", "You have cancelled the food order. Proceed to payment page", "PaymentServlet", nameLabels, valueLabels);
+
             View.includePage(request, response, Path.HOME_VIEW_PATH);
         }
     }

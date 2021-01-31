@@ -68,17 +68,25 @@
                                         <td><%= selectedBookingPayment.getPaymentStatus().toUpperCase().equals("DONE")? selectedBookingPayment.getDatePaid() : "-" %></td>
                                     </tr>
                                     <%  if(!selectedBookingPayment.getPaymentStatus().toUpperCase().equals("DONE")) { %>
+                                        <%  if((Period.between(LocalDate.now(), LocalDate.parse(selectedBooking.getBookingDate().toString())).getDays()) < 0) { %>
+                                    <tr>
+                                        <th colspan="4" style="text-align: center">You have not pay for the booking.</th> 
+                                    </tr>
+                                        <%  } else { %>
                                     <tr>
                                         <th colspan="4" style="text-align: center">
                                             <form action="PaymentServlet" method="POST">
-                                                <input type="hidden" name="action" value="viewPaymentForm">
+                                                <input type="hidden" name="action" value="viewPaymentFormBooking">
+                                                <input type="hidden" name="actionPay" value="payBooking">
+                                                <input type="hidden" name="actionCancelPay" value="cancelPayBooking">
                                                 <input type="hidden" name="payAmount" value="<%= totalPriceForOrders + selectedBooking.getBookingPrice() %>">
-                                                <input type="hidden" name="bookingID" value="<%= selectedBooking.getBookingID() %>">
+                                                <input type="hidden" name="ID" value="<%= selectedBooking.getBookingID() %>">
                                                 <input type="hidden" name="payName" value="<%= selectedBookingUser.getName() %>">
                                                 <input type="submit" class="btn btn-success" value="Pay <%= String.format("RM%.2f", totalPriceForOrders + selectedBooking.getBookingPrice()) %> Now?">
                                             </form>
                                         </th> 
                                     </tr>
+                                        <%  } %>
                                     <%  } %>
                                 </tbody>
                             </table>
