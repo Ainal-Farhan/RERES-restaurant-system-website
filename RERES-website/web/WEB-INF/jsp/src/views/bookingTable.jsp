@@ -30,12 +30,24 @@
                                 </div>
                                 <% 
                                     Calendar calendar = Calendar.getInstance();
-                                    String dd = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH) + 1);
+                                    
+                                    // Getting the date a day after current date
+                                    calendar.add(Calendar.DATE, 1);
+                                    
+                                    // Getting the day, month, and year of the date
+                                    String dd = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
                                     String mm = Integer.toString(calendar.get(Calendar.MONTH) + 1);
                                     String yyyy = Integer.toString(calendar.get(Calendar.YEAR));
+                                    
+                                    // Append '0' if the day is less than 10, eg: 1 -> 01 
                                     if(Integer.parseInt(dd) < 10)dd = '0' + dd;
+                                    
+                                    // Append '0' if the month is less than 10, eg: 1 -> 01
                                     if(Integer.parseInt(mm) < 10)mm = '0' + mm;
+                                    
+                                    // Create the date with the format of (YYYY-MM-DD), eg: 2020-01-31
                                     String minDate = "" + yyyy + "-" + mm + "-" + dd;
+                                    
                                 %>
                                 <%  if(request.getAttribute("timeCode") != null && request.getAttribute("timeSlot") != null) { %>
                                 <input type="date" class="form-control form-control-lg" name="bookDate" min="<%= minDate %>" id="date1" value="<%= request.getAttribute("selectedDate") %>" required/>

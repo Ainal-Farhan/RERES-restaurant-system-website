@@ -224,6 +224,7 @@
             String FAQActive = mainStyle;
             String membershipActive = mainStyle;
             String manageFoodActive = mainStyle;
+            String dashboardActive = mainStyle;
             
             if(request.getAttribute(TopNavigationBarReference.SELECTED_PAGE) != null) {
                 String selectedPage = (String)request.getAttribute(TopNavigationBarReference.SELECTED_PAGE);
@@ -237,6 +238,7 @@
                 else if(selectedPage.equals(TopNavigationBarReference.MEMBERSHIP_PAGE)) membershipActive = "active";
                 else if(selectedPage.equals(TopNavigationBarReference.HOME_PAGE)) homeActive = "active";
                 else if(selectedPage.equals(TopNavigationBarReference.MANAGE_FOOD_PAGE)) manageFoodActive = "active";
+                else if(selectedPage.equals(TopNavigationBarReference.DASHBOARD_PAGE)) dashboardActive = "active";
             }
         %>
         <nav class="navbar navbar-expand-lg navbar-mainbg">
@@ -280,6 +282,15 @@
                                 <input type="hidden" name="action" value="viewUserList">
                                 <input type="hidden" name="viewUserType" value="customer">
                                 <a class="nav-link" href="javascript:void(0);"><i class="fas fa-users"></i>CUSTOMERS</a>
+                            </div>
+                        </form>
+                    </li>
+                    
+                    <li class="nav-item <%= dashboardActive %>">
+                        <form action="DashboardServlet" method="POST" name="dashboard">
+                            <div onClick="document.forms['dashboard'].submit();">
+                                <input type="hidden" name="action" value="viewDashboard">
+                                <a class="nav-link" href="javascript:void(0);"><i class="fas fa-tachometer-alt"></i>DASHBOARD</a>
                             </div>
                         </form>
                     </li>

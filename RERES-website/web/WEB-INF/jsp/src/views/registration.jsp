@@ -1,3 +1,4 @@
+<%@page import="java.util.Calendar"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -25,7 +26,7 @@
                                     </div>
 
                                     <div class="card-body custom-shadow bg-light">
-                                        <form action="UserServlet" method="POST">
+                                        <form action="UserServlet" method="POST" onSubmit='return validateForm()'>
                                             <div class="row">
                                                 <div class="col">
                                                     <div class="form-group">
@@ -36,23 +37,37 @@
                                                 <div class="col">
                                                     <div class="form-group">
                                                         <label for="username">Username:</label>
-                                                        <input type="text" class="form-control form-control-lg" placeholder="Enter username" name="username" id="username" required>
+                                                        <input type="text" class="form-control form-control-lg" autocomplete="username" placeholder="Enter username" name="username" id="username" required>
                                                     </div>
                                                 </div>
                                             </div>
+                                            
+                                            <% 
+                                                Calendar calendar = Calendar.getInstance();
+
+                                                // Getting the date a day after current date
+                                                calendar.add(Calendar.YEAR, -16);
+
+                                                // Getting the year of the date
+                                                String yyyy = Integer.toString(calendar.get(Calendar.YEAR));
+
+                                                // Create the date with the format of (YYYY-MM-DD), eg: 2020-01-31
+                                                String maxDate = "" + yyyy + "-12-31";
+
+                                            %>
                                             
                                             <div class="form-group row">
                                                 <div class="col">
                                                     <div class="form-group">
                                                         <label for="birthdate" id="age-label">Date of Birth:</label>
                                                         <input type="hidden" id="age" name="age">
-                                                        <input type="date" class="form-control form-control-lg" onchange="calcAge()" placeholder="Enter you date of birth" id="birthdate" name="birthdate">
-                                                        
+                                                        <input type="date" class="form-control form-control-lg" max="<%= maxDate %>" onchange="calcAge()" placeholder="Enter you date of birth" id="birthdate" name="birthdate">
+                                                        <p id="ageErrorMessage" hidden></p>
                                                         <script>
                                                             function calcAge() {
                                                                 const today = new Date();
                                                                 const birthDate = new Date(document.getElementById('birthdate').value);
-
+                                                                
                                                                 yearsDifference = today.getFullYear() - birthDate.getFullYear();
 
                                                                 if (
@@ -60,6 +75,17 @@
                                                                     (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())
                                                                 ) {
                                                                     yearsDifference--;
+                                                                }
+                                                                
+                                                                if(yearsDifference < 15) {
+                                                                    document.getElementById("ageErrorMessage").hidden = false;
+                                                                    document.getElementById("ageErrorMessage").innerHTML = "*You must be at least 15 years old to register";
+                                                                    document.getElementById("ageErrorMessage").style.color = "red";
+                                                                }
+                                                                else {
+                                                                    document.getElementById("ageErrorMessage").hidden = false;
+                                                                    document.getElementById("ageErrorMessage").innerHTML = "*Looks Good";
+                                                                    document.getElementById("ageErrorMessage").style.color = "green";
                                                                 }
 
                                                                 document.getElementById('age').value = yearsDifference;
@@ -71,14 +97,16 @@
                                                 </div>
                                                 
                                                 <div class="col">
-                                                    Gender: <br/>
-                                                    <div class="form-check form-check-inline form-control-lg">
-                                                        <input type="radio" class="form-check-input" id="gender-male" name="gender" value="male" checked>
-                                                        <label class="form-check-label" for="gender-male">Male</label>
-                                                    </div>
-                                                    <div class="form-check form-check-inline form-control-lg">
-                                                        <input type="radio" class="form-check-input" id="gender-female" name="gender" value="female">
-                                                        <label class="form-check-label" for="gender-female">Female</label>
+                                                    <div class="form-control-plaintext">
+                                                        Gender: <br/>
+                                                        <div class="form-check form-check-inline form-control-lg">
+                                                            <input type="radio" class="form-check-input" id="gender-male" name="gender" value="male" checked>
+                                                            <label class="form-check-label" for="gender-male">Male</label>
+                                                        </div>
+                                                        <div class="form-check form-check-inline form-control-lg">
+                                                            <input type="radio" class="form-check-input" id="gender-female" name="gender" value="female">
+                                                            <label class="form-check-label" for="gender-female">Female</label>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -102,15 +130,66 @@
                                                 <div class="col">
                                                     <div class="form-group">
                                                         <label for="pwd">Password:</label>
-                                                        <input type="password" class="form-control form-control-lg" placeholder="Enter password" name="pwd" id="pwd" required>
+                                                        <input type="password" class="form-control form-control-lg" placeholder="Enter password" onchange="validatePassword()" name="pwd" id="pwd" autocomplete="new-password" required>
+                                                        <p id='passMessage' hidden></p>
                                                     </div>
                                                 </div>
                                                 <div class="col">
                                                     <div class="form-group">
                                                         <label for="confirmPwd">Confirm password:</label>
-                                                        <input type="password" class="form-control form-control-lg" placeholder="Confirm password" name="confirmPwd" id="confirmPwd" required>
+                                                        <input type="password" class="form-control form-control-lg" placeholder="Confirm password" onchange="validatePassword()" autocomplete="new-password" name="confirmPwd" id="confirmPwd" required>
+                                                        <p id='confirmPassMessage' hidden></p>
                                                     </div>
                                                 </div>
+                                                
+                                                <script>
+                                                    function validatePassword() {
+                                                        const pass = document.getElementById("pwd").value;
+                                                        const confirmPass = document.getElementById("confirmPwd").value;
+                                                        
+                                                        
+                                                        if(pass.length < 8) {
+                                                            document.getElementById("passMessage").innerHTML = "*Your password must be more than 7 characters";
+                                                            document.getElementById("confirmPassMessage").innerHTML = "*Please fulfill our password requirement";
+                                                            
+                                                            document.getElementById("passMessage").hidden = false;
+                                                            document.getElementById("confirmPassMessage").hidden = false;
+                                                            
+                                                            document.getElementById("passMessage").style.color = "red";
+                                                            document.getElementById("confirmPassMessage").style.color = "red";
+                                                            
+                                                            document.getElementById("pwd").focus();
+                                                            
+                                                            return false;
+                                                        }
+                                                        else if(pass === confirmPass) {
+                                                            document.getElementById("passMessage").innerHTML = "*Looks good";
+                                                            document.getElementById("confirmPassMessage").innerHTML = "*Looks good";
+                                                            
+                                                            document.getElementById("passMessage").hidden = false;
+                                                            document.getElementById("confirmPassMessage").hidden = false;
+                                                            
+                                                            document.getElementById("passMessage").style.color = "green";
+                                                            document.getElementById("confirmPassMessage").style.color = "green";
+                                                            
+                                                            return true;
+                                                        }
+                                                        else {
+                                                            document.getElementById("passMessage").innerHTML = "*Please enter the same password";
+                                                            document.getElementById("confirmPassMessage").innerHTML = "*Please enter the same password";
+                                                            
+                                                            document.getElementById("passMessage").hidden = false;
+                                                            document.getElementById("confirmPassMessage").hidden = false;
+                                                            
+                                                            document.getElementById("passMessage").style.color = "red";
+                                                            document.getElementById("confirmPassMessage").style.color = "red";
+                                                            
+                                                            document.getElementById("confirmPwd").focus();
+                                                            
+                                                            return false;
+                                                        }
+                                                    }
+                                                </script>
                                             </div>
                                             
                                             <div class="form-group">
@@ -154,8 +233,18 @@
                                                 <input type="submit" class="btn btn-success btn-block btn-lg" value="Register"/>
                                             </div>
                                         </form>
+                                                        
+                                        <script>
+                                            function validateForm() {
+                                                if (!validatePassword()) {
+                                                    return false;
+                                                }
+                                                
+                                                return true;
+                                            }
+                                        </script>
                                         <div class="card-footer">
-                                            Already registered? <a href="${pageContext.servletContext.contextPath}/LoginServlet?action=redirectLogin">Login here</a>
+                                            <p>Already registered? <a href="${pageContext.servletContext.contextPath}/LoginServlet?action=redirectLogin">Login here</a></p>
                                         </div>
                                     </div>
                                 </div>

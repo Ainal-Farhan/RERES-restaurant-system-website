@@ -797,13 +797,22 @@ public class UserServlet extends HttpServlet {
         String phoneNumber = request.getParameter("phoneNumber");
         String password = request.getParameter("pwd");
         String confirmPassword = request.getParameter("confirmPwd");
+        int age = Integer.parseInt(request.getParameter("age"));
         
         if(!phoneNumber.matches("^[0-9]+$")) {
             errorMessage = "Please enter a valid phone number";
             return false;
         }
+        else if(password.length() < 8) {
+            errorMessage = "The password you entered must be more than 7 characters.";
+            return false;
+        }
         else if(!password.equals(confirmPassword)) {
             errorMessage = "The password you entered does not match";
+            return false;
+        }
+        else if(age < 15) {
+            errorMessage = "you must be at least 15 years old to register";
             return false;
         }
         return true;
