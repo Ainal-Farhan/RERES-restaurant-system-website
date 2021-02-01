@@ -33,19 +33,22 @@
         </header>
         
         <jsp:useBean id="membership" class="com.RERES.model.Membership" scope="request" />
-        
+        <div id="headlines">
+            <h1 style="color:red; text-align: center;">Book Now!! When you can get up to 50% of discount after 3 times of booking!!</h1>
+            
+        </div>
         <div class="content-container">
             <div class="caption">
                 <div class="container-sm container-membership">
                     <div class="d-flex justify-content-center mb-3">
                         <div class="card custom-shadow" style="width:800px">
                             <div class="card-header custom-shadow">
-                                <h1>Membership Main Menu</h1>
+                                <h1 style="text-align:center;">Membership Main Menu</h1>
                             </div>
                             <div class="table-responsive custom-shadow">
                                 <table class="table table-light table-striped" style="margin-bottom:0;">
                                     <thead class="thead-dark">
-                                        <tr><th colspan="3" style="text-align:center;"><img src="https://static.toiimg.com/photo/72975551.cms" width="280" height="200"></th></tr>
+                                        <tr><th colspan="3" style="text-align:center;"><img src="https://cdn.shopify.com/s/files/1/0823/6989/articles/welcome_image_grande.png?v=1505830814" width="280" height="200"></th></tr>
                                     </thead>
                                     <tbody>
                                         <tr class="custom-shadow">
